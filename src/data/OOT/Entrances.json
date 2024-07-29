@@ -1,0 +1,684 @@
+{
+    "Entrances": [
+        {
+            "category": "Dungeon",
+            "name": "KF Outside Deku Tree -> Deku Tree Lobby",
+            "reverse": "Deku Tree Lobby -> KF Outside Deku Tree"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Death Mountain -> Dodongos Cavern Beginning",
+            "reverse": "Dodongos Cavern Beginning -> Death Mountain"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Zoras Fountain -> Jabu Jabus Belly Beginning",
+            "reverse": "Jabu Jabus Belly Beginning -> Zoras Fountain"
+        },
+        {
+            "category": "Dungeon",
+            "name": "SFM Forest Temple Entrance Ledge -> Forest Temple Lobby",
+            "reverse": "Forest Temple Lobby -> SFM Forest Temple Entrance Ledge"
+        },
+        {
+            "category": "Dungeon",
+            "name": "DMC Fire Temple Entrance -> Fire Temple Lower",
+            "reverse": "Fire Temple Lower -> DMC Fire Temple Entrance"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Lake Hylia -> Water Temple Lobby",
+            "reverse": "Water Temple Lobby -> Lake Hylia"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Desert Colossus -> Spirit Temple Lobby",
+            "reverse": "Spirit Temple Lobby -> Desert Colossus From Spirit Lobby"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Graveyard Warp Pad Region -> Shadow Temple Entryway",
+            "reverse": "Shadow Temple Entryway -> Graveyard Warp Pad Region"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Kakariko Village -> Bottom of the Well",
+            "reverse": "Bottom of the Well -> Kakariko Village"
+        },
+        {
+            "category": "Dungeon",
+            "name": "ZF Ice Ledge -> Ice Cavern Beginning",
+            "reverse": "Ice Cavern Beginning -> ZF Ice Ledge"
+        },
+        {
+            "category": "Dungeon",
+            "name": "Gerudo Fortress -> Gerudo Training Ground Lobby",
+            "reverse": "Gerudo Training Ground Lobby -> Gerudo Fortress"
+        },
+        {
+            "category": "DungeonSpecial",
+            "name": "Ganons Castle Grounds -> Ganons Castle Lobby",
+            "reverse": "Ganons Castle Lobby -> Castle Grounds From Ganons Castle"
+        },
+        {
+            "category": "Interior",
+            "name": "Kokiri Forest -> KF Midos House",
+            "reverse": "KF Midos House -> Kokiri Forest"
+        },
+        {
+            "category": "Interior",
+            "name": "Kokiri Forest -> KF Sarias House",
+            "reverse": "KF Sarias House -> Kokiri Forest"
+        },
+        {
+            "category": "Interior",
+            "name": "Kokiri Forest -> KF House of Twins",
+            "reverse": "KF House of Twins -> Kokiri Forest"
+        },
+        {
+            "category": "Interior",
+            "name": "Kokiri Forest -> KF Know It All House",
+            "reverse": "KF Know It All House -> Kokiri Forest"
+        },
+        {
+            "category": "Interior",
+            "name": "Kokiri Forest -> KF Kokiri Shop",
+            "reverse": "KF Kokiri Shop -> Kokiri Forest"
+        },
+        {
+            "category": "Interior",
+            "name": "Lake Hylia -> LH Lab",
+            "reverse": "LH Lab -> Lake Hylia"
+        },
+        {
+            "category": "Interior",
+            "name": "LH Fishing Island -> LH Fishing Hole",
+            "reverse": "LH Fishing Hole -> LH Fishing Island"
+        },
+        {
+            "category": "Interior",
+            "name": "GV Fortress Side -> GV Carpenter Tent",
+            "reverse": "GV Carpenter Tent -> GV Fortress Side"
+        },
+        {
+            "category": "Interior",
+            "name": "Market Entrance -> Market Guard House",
+            "reverse": "Market Guard House -> Market Entrance"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Mask Shop",
+            "reverse": "Market Mask Shop -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Bombchu Bowling",
+            "reverse": "Market Bombchu Bowling -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Potion Shop",
+            "reverse": "Market Potion Shop -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Treasure Chest Game",
+            "reverse": "Market Treasure Chest Game -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Market Back Alley -> Market Bombchu Shop",
+            "reverse": "Market Bombchu Shop -> Market Back Alley"
+        },
+        {
+            "category": "Interior",
+            "name": "Market Back Alley -> Market Man in Green House",
+            "reverse": "Market Man in Green House -> Market Back Alley"
+        },
+        {
+            "category": "Interior",
+            "name": "Kakariko Village -> Kak Carpenter Boss House",
+            "reverse": "Kak Carpenter Boss House -> Kakariko Village"
+        },
+        {
+            "category": "Interior",
+            "name": "Kakariko Village -> Kak House of Skulltula",
+            "reverse": "Kak House of Skulltula -> Kakariko Village"
+        },
+        {
+            "category": "Interior",
+            "name": "Kakariko Village -> Kak Impas House",
+            "reverse": "Kak Impas House -> Kakariko Village"
+        },
+        {
+            "category": "Interior",
+            "name": "Kak Impas Ledge -> Kak Impas House Back",
+            "reverse": "Kak Impas House Back -> Kak Impas Ledge"
+        },
+        {
+            "category": "Interior",
+            "name": "Kak Backyard -> Kak Odd Medicine Building",
+            "reverse": "Kak Odd Medicine Building -> Kak Backyard"
+        },
+        {
+            "category": "Interior",
+            "name": "Graveyard -> Graveyard Dampes House",
+            "reverse": "Graveyard Dampes House -> Graveyard"
+        },
+        {
+            "category": "Interior",
+            "name": "Goron City -> GC Shop",
+            "reverse": "GC Shop -> Goron City"
+        },
+        {
+            "category": "Interior",
+            "name": "Zoras Domain -> ZD Shop",
+            "reverse": "ZD Shop -> Zoras Domain"
+        },
+        {
+            "category": "Interior",
+            "name": "Lon Lon Ranch -> LLR Talons House",
+            "reverse": "LLR Talons House -> Lon Lon Ranch"
+        },
+        {
+            "category": "Interior",
+            "name": "Lon Lon Ranch -> LLR Stables",
+            "reverse": "LLR Stables -> Lon Lon Ranch"
+        },
+        {
+            "category": "Interior",
+            "name": "Lon Lon Ranch -> LLR Tower",
+            "reverse": "LLR Tower -> Lon Lon Ranch"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Bazaar",
+            "reverse": "Market Bazaar -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Market -> Market Shooting Gallery",
+            "reverse": "Market Shooting Gallery -> Market"
+        },
+        {
+            "category": "Interior",
+            "name": "Kakariko Village -> Kak Bazaar",
+            "reverse": "Kak Bazaar -> Kakariko Village"
+        },
+        {
+            "category": "Interior",
+            "name": "Kakariko Village -> Kak Shooting Gallery",
+            "reverse": "Kak Shooting Gallery -> Kakariko Village"
+        },
+        {
+            "category": "Interior",
+            "name": "Desert Colossus -> Colossus Great Fairy Fountain",
+            "reverse": "Colossus Great Fairy Fountain -> Desert Colossus"
+        },
+        {
+            "category": "Interior",
+            "name": "Hyrule Castle Grounds -> HC Great Fairy Fountain",
+            "reverse": "HC Great Fairy Fountain -> Castle Grounds"
+        },
+        {
+            "category": "Interior",
+            "name": "Ganons Castle Grounds -> OGC Great Fairy Fountain",
+            "reverse": "OGC Great Fairy Fountain -> Castle Grounds"
+        },
+        {
+            "category": "Interior",
+            "name": "DMC Lower Nearby -> DMC Great Fairy Fountain",
+            "reverse": "DMC Great Fairy Fountain -> DMC Lower Local"
+        },
+        {
+            "category": "Interior",
+            "name": "Death Mountain Summit -> DMT Great Fairy Fountain",
+            "reverse": "DMT Great Fairy Fountain -> Death Mountain Summit"
+        },
+        {
+            "category": "Interior",
+            "name": "Zoras Fountain -> ZF Great Fairy Fountain",
+            "reverse": "ZF Great Fairy Fountain -> Zoras Fountain"
+        },
+        {
+            "category": "SpecialInterior",
+            "name": "Kokiri Forest -> KF Links House",
+            "reverse": "KF Links House -> Kokiri Forest"
+        },
+        {
+            "category": "SpecialInterior",
+            "name": "ToT Entrance -> Temple of Time",
+            "reverse": "Temple of Time -> ToT Entrance"
+        },
+        {
+            "category": "SpecialInterior",
+            "name": "Kakariko Village -> Kak Windmill",
+            "reverse": "Kak Windmill -> Kakariko Village"
+        },
+        {
+            "category": "SpecialInterior",
+            "name": "Kakariko Village -> Kak Potion Shop Front",
+            "reverse": "Kak Potion Shop Front -> Kakariko Village"
+        },
+        {
+            "category": "SpecialInterior",
+            "name": "Kak Backyard -> Kak Potion Shop Back",
+            "reverse": "Kak Potion Shop Back -> Kak Backyard"
+        },
+        {
+            "category": "Grotto",
+            "name": "Desert Colossus -> Colossus Grotto",
+            "reverse": "Colossus Grotto -> Desert Colossus"
+        },
+        {
+            "category": "Grotto",
+            "name": "Lake Hylia -> LH Grotto",
+            "reverse": "LH Grotto -> Lake Hylia"
+        },
+        {
+            "category": "Grotto",
+            "name": "Zora River -> ZR Storms Grotto",
+            "reverse": "ZR Storms Grotto -> Zora River"
+        },
+        {
+            "category": "Grotto",
+            "name": "Zora River -> ZR Fairy Grotto",
+            "reverse": "ZR Fairy Grotto -> Zora River"
+        },
+        {
+            "category": "Grotto",
+            "name": "Zora River -> ZR Open Grotto",
+            "reverse": "ZR Open Grotto -> Zora River"
+        },
+        {
+            "category": "Grotto",
+            "name": "DMC Lower Nearby -> DMC Hammer Grotto",
+            "reverse": "DMC Hammer Grotto -> DMC Lower Local"
+        },
+        {
+            "category": "Grotto",
+            "name": "DMC Upper Nearby -> DMC Upper Grotto",
+            "reverse": "DMC Upper Grotto -> DMC Upper Local"
+        },
+        {
+            "category": "Grotto",
+            "name": "GC Grotto Platform -> GC Grotto",
+            "reverse": "GC Grotto -> GC Grotto Platform"
+        },
+        {
+            "category": "Grotto",
+            "name": "Death Mountain -> DMT Storms Grotto",
+            "reverse": "DMT Storms Grotto -> Death Mountain"
+        },
+        {
+            "category": "Grotto",
+            "name": "Death Mountain Summit -> DMT Cow Grotto",
+            "reverse": "DMT Cow Grotto -> Death Mountain Summit"
+        },
+        {
+            "category": "Grotto",
+            "name": "Kak Backyard -> Kak Open Grotto",
+            "reverse": "Kak Open Grotto -> Kak Backyard"
+        },
+        {
+            "category": "Grotto",
+            "name": "Kakariko Village -> Kak Redead Grotto",
+            "reverse": "Kak Redead Grotto -> Kakariko Village"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Castle Grounds -> HC Storms Grotto",
+            "reverse": "HC Storms Grotto -> Castle Grounds"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Tektite Grotto",
+            "reverse": "HF Tektite Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Near Kak Grotto",
+            "reverse": "HF Near Kak Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Fairy Grotto",
+            "reverse": "HF Fairy Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Near Market Grotto",
+            "reverse": "HF Near Market Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Cow Grotto",
+            "reverse": "HF Cow Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Inside Fence Grotto",
+            "reverse": "HF Inside Fence Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Open Grotto",
+            "reverse": "HF Open Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Hyrule Field -> HF Southeast Grotto",
+            "reverse": "HF Southeast Grotto -> Hyrule Field"
+        },
+        {
+            "category": "Grotto",
+            "name": "Lon Lon Ranch -> LLR Grotto",
+            "reverse": "LLR Grotto -> Lon Lon Ranch"
+        },
+        {
+            "category": "Grotto",
+            "name": "SFM Entryway -> SFM Wolfos Grotto",
+            "reverse": "SFM Wolfos Grotto -> SFM Entryway"
+        },
+        {
+            "category": "Grotto",
+            "name": "Sacred Forest Meadow -> SFM Storms Grotto",
+            "reverse": "SFM Storms Grotto -> Sacred Forest Meadow"
+        },
+        {
+            "category": "Grotto",
+            "name": "Sacred Forest Meadow -> SFM Fairy Grotto",
+            "reverse": "SFM Fairy Grotto -> Sacred Forest Meadow"
+        },
+        {
+            "category": "Grotto",
+            "name": "LW Beyond Mido -> LW Scrubs Grotto",
+            "reverse": "LW Scrubs Grotto -> LW Beyond Mido"
+        },
+        {
+            "category": "Grotto",
+            "name": "Lost Woods -> LW Near Shortcuts Grotto",
+            "reverse": "LW Near Shortcuts Grotto -> Lost Woods"
+        },
+        {
+            "category": "Grotto",
+            "name": "Kokiri Forest -> KF Storms Grotto",
+            "reverse": "KF Storms Grotto -> Kokiri Forest"
+        },
+        {
+            "category": "Grotto",
+            "name": "Zoras Domain -> ZD Storms Grotto",
+            "reverse": "ZD Storms Grotto -> Zoras Domain"
+        },
+        {
+            "category": "Grotto",
+            "name": "GF Entrances Behind Crates -> GF Storms Grotto",
+            "reverse": "GF Storms Grotto -> GF Entrances Behind Crates"
+        },
+        {
+            "category": "Grotto",
+            "name": "GV Fortress Side -> GV Storms Grotto",
+            "reverse": "GV Storms Grotto -> GV Fortress Side"
+        },
+        {
+            "category": "Grotto",
+            "name": "GV Grotto Ledge -> GV Octorok Grotto",
+            "reverse": "GV Octorok Grotto -> GV Grotto Ledge"
+        },
+        {
+            "category": "Grotto",
+            "name": "LW Beyond Mido -> Deku Theater",
+            "reverse": "Deku Theater -> LW Beyond Mido"
+        },
+        {
+            "category": "Grave",
+            "name": "Graveyard -> Graveyard Shield Grave",
+            "reverse": "Graveyard Shield Grave -> Graveyard"
+        },
+        {
+            "category": "Grave",
+            "name": "Graveyard -> Graveyard Heart Piece Grave",
+            "reverse": "Graveyard Heart Piece Grave -> Graveyard"
+        },
+        {
+            "category": "Grave",
+            "name": "Graveyard -> Graveyard Royal Familys Tomb",
+            "reverse": "Graveyard Royal Familys Tomb -> Graveyard"
+        },
+        {
+            "category": "Grave",
+            "name": "Graveyard -> Graveyard Dampes Grave",
+            "reverse": "Graveyard Dampes Grave -> Graveyard"
+        },
+        {
+            "category": "Overworld",
+            "name": "Kokiri Forest -> LW Bridge From Forest",
+            "reverse": "LW Bridge -> Kokiri Forest"
+        },
+        {
+            "category": "Overworld",
+            "name": "Kokiri Forest -> Lost Woods",
+            "reverse": "LW Forest Exit -> Kokiri Forest"
+        },
+        {
+            "category": "Overworld",
+            "name": "Lost Woods -> GC Woods Warp",
+            "reverse": "GC Woods Warp -> Lost Woods"
+        },
+        {
+            "category": "Overworld",
+            "name": "Lost Woods -> Zora River",
+            "reverse": "Zora River -> LW Underwater Entrance"
+        },
+        {
+            "category": "Overworld",
+            "name": "LW Beyond Mido -> SFM Entryway",
+            "reverse": "SFM Entryway -> LW Beyond Mido"
+        },
+        {
+            "category": "Overworld",
+            "name": "LW Bridge -> Hyrule Field",
+            "reverse": "Hyrule Field -> LW Bridge"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> Lake Hylia",
+            "reverse": "Lake Hylia -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> Gerudo Valley",
+            "reverse": "Gerudo Valley -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> Market Entrance",
+            "reverse": "Market Entrance -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> Kakariko Village",
+            "reverse": "Kakariko Village -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> ZR Front",
+            "reverse": "ZR Front -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Hyrule Field -> Lon Lon Ranch",
+            "reverse": "Lon Lon Ranch -> Hyrule Field"
+        },
+        {
+            "category": "Overworld",
+            "name": "Lake Hylia -> Zoras Domain",
+            "reverse": "Zoras Domain -> Lake Hylia"
+        },
+        {
+            "category": "Overworld",
+            "name": "GV Fortress Side -> Gerudo Fortress",
+            "reverse": "Gerudo Fortress -> GV Fortress Side"
+        },
+        {
+            "category": "Overworld",
+            "name": "GF Outside Gate -> Wasteland Near Fortress",
+            "reverse": "Wasteland Near Fortress -> GF Outside Gate"
+        },
+        {
+            "category": "Overworld",
+            "name": "Wasteland Near Colossus -> Desert Colossus",
+            "reverse": "Desert Colossus -> Wasteland Near Colossus"
+        },
+        {
+            "category": "Overworld",
+            "name": "Market Entrance -> Market",
+            "reverse": "Market -> Market Entrance"
+        },
+        {
+            "category": "Overworld",
+            "name": "Market -> Castle Grounds",
+            "reverse": "Castle Grounds -> Market"
+        },
+        {
+            "category": "Overworld",
+            "name": "Market -> ToT Entrance",
+            "reverse": "ToT Entrance -> Market"
+        },
+        {
+            "category": "Overworld",
+            "name": "Kakariko Village -> Graveyard",
+            "reverse": "Graveyard -> Kakariko Village"
+        },
+        {
+            "category": "Overworld",
+            "name": "Kak Behind Gate -> Death Mountain",
+            "reverse": "Death Mountain -> Kak Behind Gate"
+        },
+        {
+            "category": "Overworld",
+            "name": "Death Mountain -> Goron City",
+            "reverse": "Goron City -> Death Mountain"
+        },
+        {
+            "category": "Overworld",
+            "name": "GC Darunias Chamber -> DMC Lower Local",
+            "reverse": "DMC Lower Nearby -> GC Darunias Chamber"
+        },
+        {
+            "category": "Overworld",
+            "name": "Death Mountain Summit -> DMC Upper Local",
+            "reverse": "DMC Upper Nearby -> Death Mountain Summit"
+        },
+        {
+            "category": "Overworld",
+            "name": "ZR Behind Waterfall -> Zoras Domain",
+            "reverse": "Zoras Domain -> ZR Behind Waterfall"
+        },
+        {
+            "category": "Overworld",
+            "name": "ZD Behind King Zora -> Zoras Fountain",
+            "reverse": "Zoras Fountain -> ZD Behind King Zora"
+        },
+        {
+            "category": "Overworld",
+            "name": "GV Lower Stream -> Lake Hylia"
+        },
+        {
+            "category": "OwlDrop",
+            "name": "LH Owl Flight -> Hyrule Field"
+        },
+        {
+            "category": "OwlDrop",
+            "name": "DMT Owl Flight -> Kak Impas Rooftop"
+        },
+        {
+            "category": "Spawn",
+            "name": "Child Spawn -> KF Links House"
+        },
+        {
+            "category": "Spawn",
+            "name": "Adult Spawn -> Temple of Time"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Minuet of Forest Warp -> Sacred Forest Meadow"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Bolero of Fire Warp -> DMC Central Local"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Serenade of Water Warp -> Lake Hylia"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Requiem of Spirit Warp -> Desert Colossus"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Nocturne of Shadow Warp -> Graveyard Warp Pad Region"
+        },
+        {
+            "category": "WarpSong",
+            "name": "Prelude of Light Warp -> Temple of Time"
+        },
+        {
+            "category": "Extra",
+            "name": "ZD Eyeball Frog Timeout -> Zoras Domain"
+        },
+        {
+            "category": "Extra",
+            "name": "ZR Top of Waterfall -> Zora River"
+        },
+        {
+            "category": "ChildBoss",
+            "name": "Deku Tree Boss Door -> Queen Gohma Boss Room",
+            "reverse": "Queen Gohma Boss Room -> Deku Tree Boss Door"
+        },
+        {
+            "category": "ChildBoss",
+            "name": "Dodongos Cavern Boss Door -> King Dodongo Boss Room",
+            "reverse": "King Dodongo Boss Room -> Dodongos Cavern Boss Door"
+        },
+        {
+            "category": "ChildBoss",
+            "name": "Jabu Jabus Belly Boss Door -> Barinade Boss Room",
+            "reverse": "Barinade Boss Room -> Jabu Jabus Belly Boss Door"
+        },
+        {
+            "category": "AdultBoss",
+            "name": "Forest Temple Boss Door -> Phantom Ganon Boss Room",
+            "reverse": "Phantom Ganon Boss Room -> Forest Temple Boss Door"
+        },
+        {
+            "category": "AdultBoss",
+            "name": "Fire Temple Boss Door -> Volvagia Boss Room",
+            "reverse": "Volvagia Boss Room -> Fire Temple Boss Door"
+        },
+        {
+            "category": "AdultBoss",
+            "name": "Water Temple Boss Door -> Morpha Boss Room",
+            "reverse": "Morpha Boss Room -> Water Temple Boss Door"
+        },
+        {
+            "category": "AdultBoss",
+            "name": "Spirit Temple Boss Door -> Twinrova Boss Room",
+            "reverse": "Twinrova Boss Room -> Spirit Temple Boss Door"
+        },
+        {
+            "category": "AdultBoss",
+            "name": "Shadow Temple Boss Door -> Bongo Bongo Boss Room",
+            "reverse": "Bongo Bongo Boss Room -> Shadow Temple Boss Door"
+        },
+        {
+            "category": "Frozen",
+            "name": "Market Back Alley -> Market Dog Lady House"
+        },
+        {
+            "category": "FrozenDungeon",
+            "name": "Gerudo Fortress -> Hideout 1 Torch Jail"
+        }
+    ]
+}

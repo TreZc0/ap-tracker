@@ -1,13 +1,84 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: "Roboto", sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.section_title {
+    cursor: pointer;
+    border-bottom: 1px solid black;
+    width: 50%;
+    font-size: medium;
+}
+
+.hinted *.section_title::before {
+    color: red;
+    font-size: xx-large;
+    content: "\00B7";
+}
+
+.section_title::after {
+    content: "▲";
+}
+
+.section_view.colapsed *.section_title::after {
+    content: "▼";
+}
+
+.section_view {
+    border-left: 1px dashed gray;
+    padding-left: 1em;
+}
+.section_view.colapsed .section_content {
+    display: none;
+}
+.section_view.checked {
+    color: grey;
+    text-decoration: line-through;
+    font-weight: lighter;
+}
+.section_check {
+    color: black;
+    font-size: medium;
+    font-weight: bold;
+}
+
+.section_check::before {
+    content: " ● ";
+}
+
+.section_check.checked {
+    color: grey;
+    text-decoration: line-through;
+    list-style-type: none;
+    font-weight: lighter;
+}
+
+.section_check.checked::before {
+    content: " ✓ ";
+}
+
+.section_check.ignored::before {
+    content: " ◌ ";
+}
+
+.section_check.hinted {
+    color: red;
+}
+.section_check.hinted::before {
+    color: red;
+    content: " ⚑ ";
+}
+
+.section_check.hinted.checked::before {
+    color: grey;
+}
+
+.section_check > .hint {
+    margin-left: 1rem;
+    font-style: italic;
+    color: coral;
+}
+
+.hint.hidden {
+    display: none;
 }

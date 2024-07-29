@@ -1,0 +1,2850 @@
+{
+    "Main Inventory": {
+        "background_color": "#3c729d",
+        "rows": 6,
+        "columns": 8,
+        "images":{
+            "boomerang": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/d/d5/OoT_Boomerang_Icon.png",
+            "hammer": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/93/OoT_Megaton_Hammer_Icon.png",
+            "bombchus": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/3/36/OoT_Bombchu_Icon.png",
+            "lens": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/0/05/OoT_Lens_of_Truth_Icon.png",
+            "dins": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/d/da/OoT_Din%27s_Fire_Icon.png",
+            "farores": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/7/7a/OoT_Farore%27s_Wind_Icon.png",
+            "nayrus": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/b/be/OoT_Nayru%27s_Love_Icon.png",
+            "fire_arrows": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/1e/OoT_Fire_Arrow_Icon.png",
+            "ice_arrows": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/3/3c/OoT_Ice_Arrow_Icon.png",
+            "light_arrows": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/7/76/OoT_Light_Arrow_Icon.png",
+            "kokiri_sword": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/53/OoT_Kokiri_Sword_Icon.png",
+            "mirror_shield": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/b/b0/OoT_Mirror_Shield_Icon_2.png",
+            "goron_tunic": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/1c/OoT_Goron_Tunic_Icon.png",
+            "zora_tunic": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/2c/OoT_Zora_Tunic_Icon.png",
+            "hover_boots": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/22/OoT_Hover_Boots_Icon.png",
+            "iron_boots": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/3/34/OoT_Iron_Boots_Icon.png",
+            "gerudo_card": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/4e/OoT_Gerudo_Token_Icon.png",
+            
+            "grey_note": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/21/Grey_Note.png",
+            "minuet": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/e/e4/Green_Note.png",
+            "bolero": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/f/f0/Red_Note.png",
+            "serenade": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/0/0f/Blue_Note.png",
+            "requiem": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/a4/Orange_Note.png",
+            "nocturne": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/97/Purple_Note.png",
+            "prelude": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/90/Yellow_Note.png",
+
+            "gold_skulltula_token": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/47/OoT_Token_Icon.png",
+            "heart_container":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/5a/OoT_Heart_Container_Icon.png",
+            
+            "deku_stick": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/2f/OoT_Deku_Stick_Icon.png",
+            "deku_nut": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/d/db/OoT_Deku_Nut_Icon.png",
+            "bow": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/9a/OoT_Fairy_Bow_Icon.png",
+            "slingshot": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/3/32/OoT_Fairy_Slingshot_Icon.png",
+            "hookshot": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/7/77/OoT_Hookshot_Icon.png",
+            "longshot": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/a4/OoT_Longshot_Icon.png",
+            "fairy_ocarina": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/97/OoT_Fairy_Ocarina_Icon.png",
+            "ocarina_of_time": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/4e/OoT_Ocarina_of_Time_Icon.png",
+
+            "goron_bracelet": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/b/b7/OoT_Goron%27s_Bracelet_Icon.png",
+            "silver_gauntlets": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/b/b9/OoT_Silver_Gauntlets_Icon.png",
+            "gold_gauntlets": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/6/6a/OoT_Golden_Gauntlets_Icon.png",
+            
+            "bombs": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/11/OoT_Bomb_Icon.png",
+            "magic_jar": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/9f/OoT3D_Magic_Jar_Icon.png",
+            "empty_bottle": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/f/fc/OoT_Bottle_Icon.png",
+            "letter_bottle": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/21/OoT_Letter_Icon.png",
+
+            "goron_sword": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/2e/OoT_Giant%27s_Knife_Icon.png",
+            "giant_knife": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/2e/OoT_Giant%27s_Knife_Icon.png",
+
+            "adult_wallet": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/f/f9/OoT_Adult%27s_Wallet_Icon.png",
+            "giant_wallet": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/8/87/OoT_Giant%27s_Wallet_Icon.png",
+
+            "silver_scale": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/4e/OoT_Silver_Scale_Icon.png",
+            "gold_scale": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/9/95/OoT_Golden_Scale_Icon.png",
+
+            "magic_beans": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/a7/OoT_Magic_Bean_Icon.png",
+
+            "egg": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/0/09/OoT_Weird_Egg_Icon.png",
+            "cucco": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/17/OoT_Cucco_Icon.png",
+            "zeldas_letter": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/2/20/OoT_Zelda%27s_Letter_Icon.png",
+
+            "keaton_mask":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/a9/OoT_Keaton_Mask_Icon.png",
+            "spooky_mask": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/5c/OoT_Spooky_Mask_Icon.png",
+            "bunny_hood": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/7/7b/OoT_Bunny_Hood_Icon.png",
+            "skull_mask":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/d/df/OoT_Skull_Mask_Icon.png",
+            "mask_of_truth": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/c/ce/OoT_Mask_of_Truth_Icon.png",
+
+            "cojiro" : "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/c/c8/OoT_Cojiro_Icon.png",
+            "odd_mushroom":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/af/OoT_Odd_Mushroom_Icon.png",
+            "odd_potion":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/5b/OoT_Odd_Potion_Icon.png",
+            "poachers_saw":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/a/a5/OoT_Poacher%27s_Saw_Icon.png",
+            "broken_sword": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/c/cc/OoT_Broken_Goron%27s_Sword_Icon.png",
+            "prescription":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/44/OoT_Prescription_Icon.png",
+            "eyeball_frog": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/c/ca/OoT_Eyeball_Frog_Icon.png",
+            "eyedrops": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/0/0b/OoT_World%27s_Finest_Eye_Drops_Icon.png",
+            "claim_check": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/1/11/OoT_Claim_Check_Icon.png",
+
+            "triforce_piece": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/0/0b/SS_Triforce_Piece_Icon.png",
+            "triforce": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/6/68/ALttP_Triforce_Title_Sprite.png",
+            "boss_key": "https://static.wikia.nocookie.net/zelda_gamepedia_en/images/4/40/OoT_Boss_Key_Icon.png",
+            "small_key":"https://static.wikia.nocookie.net/zelda_gamepedia_en/images/e/e5/OoT_Small_Key_Icon.png"
+        },
+        "slots":{
+            "boomerang": {
+                "row": 3,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boomerang": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boomerang",
+                        "tool_tip": "Boomerang",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boomerang",
+                        "text": "",
+                        "tool_tip": "Boomerang",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "hammer": {
+                "row": 3,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Megaton Hammer": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"hammer",
+                        "tool_tip": "Megaton Hammer",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"hammer",
+                        "text": "",
+                        "tool_tip": "Megaton Hammer",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+
+
+            },
+            "bombchus": {
+                "row": 2,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Bombchus (5)": {
+                        "value": 1
+                    },
+                    "Bombchus (10)": {
+                        "value": 1
+                    },
+                    "Bombchus (20)": {
+                        "value": 1
+                    },"Bombchus": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"bombchus",
+                        "tool_tip": "Bombchus",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"bombchus",
+                        "text": "",
+                        "tool_tip": "Bombchus",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+
+
+            },
+            "lens": {
+                "row": 3,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Lens of Truth": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"lens",
+                        "tool_tip": "Lens of Truth",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"lens",
+                        "text": "",
+                        "tool_tip": "Lens of Truth",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+
+
+            },
+            "dins": {
+                "row": 1,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Dins Fire": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"dins",
+                        "tool_tip": "Din's Fire",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"dins",
+                        "text": "",
+                        "tool_tip": "Din's Fire",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+
+
+            },
+            "farores": {
+                "row": 2,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Farores Wind": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"farores",
+                        "tool_tip": "Farore's Wind",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"farores",
+                        "text": "",
+                        "tool_tip": "Farore's Wind",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "nayrus": {
+                "row": 3,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Nayrus Love": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"nayrus",
+                        "tool_tip": "Nayru's Love",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"nayrus",
+                        "text": "",
+                        "tool_tip": "Nayru's Love",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "fire_arrows": {
+                "row": 1,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Fire Arrows": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"fire_arrows",
+                        "tool_tip": "Fire Arrows",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"fire_arrows",
+                        "text": "",
+                        "tool_tip": "Fire Arrows",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "ice_arrows": {
+                "row": 2,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Ice Arrows": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"ice_arrows",
+                        "tool_tip": "Ice Arrows",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"ice_arrows",
+                        "text": "",
+                        "tool_tip": "Ice Arrows",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "light_arrows": {
+                "row": 3,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Light Arrows": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"light_arrows",
+                        "tool_tip": "Light Arrows",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"light_arrows",
+                        "text": "",
+                        "tool_tip": "Light Arrows",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "kokiri_sword": {
+                "row": 2,
+                "column": 7,
+                "starting_state": "missing",
+                "items":{
+                    "Kokiri Sword": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"kokiri_sword",
+                        "tool_tip": "Kokiri Sword",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"kokiri_sword",
+                        "text": "",
+                        "tool_tip": "Kokiri Sword",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "mirror_shield": {
+                "row": 1,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Mirror Shield": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"mirror_shield",
+                        "tool_tip": "Mirror Shield",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"mirror_shield",
+                        "text": "",
+                        "tool_tip": "Mirror Shield",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "goron_tunic": {
+                "row": 3,
+                "column": 7,
+                "starting_state": "missing",
+                "items":{
+                    "Goron Tunic": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"goron_tunic",
+                        "tool_tip": "Goron Tunic",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"goron_tunic",
+                        "text": "",
+                        "tool_tip": "Goron Tunic",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "zora_tunic": {
+                "row": 3,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Zora Tunic": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"zora_tunic",
+                        "tool_tip": "Zora Tunic",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"zora_tunic",
+                        "text": "",
+                        "tool_tip": "Zora Tunic",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "iron_boots": {
+                "row": 4,
+                "column": 7,
+                "starting_state": "missing",
+                "items":{
+                    "Iron Boots": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"iron_boots",
+                        "tool_tip": "Iron Boots",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"iron_boots",
+                        "text": "",
+                        "tool_tip": "Iron Boots",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "hover_boots": {
+                "row": 4,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Hover Boots": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"hover_boots",
+                        "tool_tip": "Hover Boots",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"hover_boots",
+                        "text": "",
+                        "tool_tip": "Hover Boots",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "gerudo_card": {
+                "row": 5,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Gerudo Membership Card": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"gerudo_card",
+                        "tool_tip": "Gerudo Membership Card",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"gerudo_card",
+                        "text": "",
+                        "tool_tip": "Gerudo Membership Card",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "zeldas_lullaby": {
+                "row": 5,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Zeldas Lullaby": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Zeldas Lullaby",
+                        "text_mode":"text",
+                        "text":"Zelda",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Zelda",
+                        "tool_tip": "Zeldas Lullaby",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "eponas_song": {
+                "row": 5,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Eponas Song": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Eponas Song",
+                        "text_mode":"text",
+                        "text":"Epona",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Epona",
+                        "tool_tip": "Eponas Song",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "sarias_song": {
+                "row": 5,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Sarias Song": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Sarias Song",
+                        "text_mode":"text",
+                        "text":"Saria",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Saria",
+                        "tool_tip": "Sarias Song",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "suns_song": {
+                "row": 5,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Suns Song": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Suns Song",
+                        "text_mode":"text",
+                        "text":"Sun",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Sun",
+                        "tool_tip": "Suns Song",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "song_of_time": {
+                "row": 5,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Song of Time": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Song of Time",
+                        "text_mode":"text",
+                        "text":"Time",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Time",
+                        "tool_tip": "Song of Time",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "song_of_storms": {
+                "row": 5,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Song of Storms": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"grey_note",
+                        "tool_tip": "Song of Storms",
+                        "text_mode":"text",
+                        "text":"Storms",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"grey_note",
+                        "text_mode":"text",
+                        "text":"Storms",
+                        "tool_tip": "Sont of Storms",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "minuet": {
+                "row": 6,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Minuet of Forest": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"minuet",
+                        "tool_tip": "Minuet of Forest",
+                        "text_mode":"text",
+                        "text":"Min",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"minuet",
+                        "text_mode":"text",
+                        "text":"Min",
+                        "tool_tip": "Minuet of Forest",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "bolero": {
+                "row": 6,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Bolero of Fire": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"bolero",
+                        "tool_tip": "Bolero of Fire",
+                        "text_mode":"text",
+                        "text":"Bol",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"bolero",
+                        "text_mode":"text",
+                        "text":"Bol",
+                        "tool_tip": "Bolero of Fire",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "serenade": {
+                "row": 6,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Serenade of Water": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"serenade",
+                        "tool_tip": "Serenade of Water",
+                        "text_mode":"text",
+                        "text":"Ser",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"serenade",
+                        "text_mode":"text",
+                        "text":"Ser",
+                        "tool_tip": "Serenade of Water",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "requiem": {
+                "row": 6,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Requiem of Spirit": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"requiem",
+                        "tool_tip": "Requiem of Spirit",
+                        "text_mode":"text",
+                        "text":"Req",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"requiem",
+                        "text_mode":"text",
+                        "text":"Req",
+                        "tool_tip": "Requiem of Spirit",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "nocturne": {
+                "row": 6,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Nocturne of Shadow": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"nocturne",
+                        "tool_tip": "Nocturne of Shadow",
+                        "text_mode":"text",
+                        "text":"Noc",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"nocturne",
+                        "text_mode":"text",
+                        "text":"Noc",
+                        "tool_tip": "Nocturne of Shadow",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "prelude": {
+                "row": 6,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Prelude of Light": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"prelude",
+                        "tool_tip": "Prelude of Light",
+                        "text_mode":"text",
+                        "text":"Pre",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"prelude",
+                        "text_mode":"text",
+                        "text":"Pre",
+                        "tool_tip": "Prelude of Light",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "gold_skulltula_token": {
+                "row": 6,
+                "column": 7,
+                "starting_state": "missing",
+                "items":{
+                    "Gold Skulltula Token": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"gold_skulltula_token",
+                        "tool_tip": "Gold Skulltula Tokens",
+                        "text_mode":"count",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"gold_skulltula_token",
+                        "text_mode":"count",
+                        "tool_tip": "Gold Skulltula Tokens",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "hearts": {
+                "row": 5,
+                "column": 7,
+                "starting_state": "missing",
+                "starting_count": 3,
+                "items":{
+                    "Heart Container": {
+                        "value": 1
+                    },
+                    "Piece of Heart (Treasure Chest Game)": {
+                        "value": 0.25
+                    },
+                    "Piece of Heart": {
+                        "value": 0.25
+                    },
+                    "Double Defense":{
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"heart_container",
+                        "tool_tip": "Full Hearts",
+                        "text_mode":"count",
+                        "rounding_mode":"down",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"heart_container",
+                        "rounding_mode":"down",
+                        "text_mode":"count",
+                        "tool_tip": "Full Hearts",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    },
+                    "double_defense":{
+                        "image":"heart_container",
+                        "rounding_mode":"down",
+                        "text_mode":"count",
+                        "tool_tip": "Full Hearts/Double Defense",
+                        "styles":["gold"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items": ["Double Defense"]
+                        }
+                    }
+                }
+            },
+            "deku_stick": {
+                "row": 1,
+                "column": 1,
+                "starting_state": "sticks_10",
+                "items":{
+                    "Deku Stick Capacity": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "sticks_10":{
+                        "image":"deku_stick",
+                        "tool_tip": "Deku Stick Capacity",
+                        "text_mode":"text",
+                        "text":"10",
+                        "styles":[],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "sticks_20":{
+                        "image":"deku_stick",
+                        "text_mode":"text",
+                        "text":"20",
+                        "tool_tip": "Deku Stick Capacity",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    },
+                    "sticks_30":{
+                        "image":"deku_stick",
+                        "text_mode":"text",
+                        "text":"30",
+                        "tool_tip": "Deku Stick Capacity",
+                        "styles":["maxed"],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "deku_nut": {
+                "row": 1,
+                "column": 2,
+                "starting_state": "nut_20",
+                "items":{
+                    "Deku Nut Capacity": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "nut_20":{
+                        "image":"deku_nut",
+                        "tool_tip": "Deku Nut Capacity",
+                        "text_mode":"text",
+                        "text":"20",
+                        "styles":[],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "nut_30":{
+                        "image":"deku_nut",
+                        "text_mode":"text",
+                        "text":"30",
+                        "tool_tip": "Deku Nut Capacity",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    },
+                    "nut_40":{
+                        "image":"deku_nut",
+                        "text_mode":"text",
+                        "text":"40",
+                        "tool_tip": "Deku Nut Capacity",
+                        "styles":["maxed"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "bow": {
+                "row": 1,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Bow": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"bow",
+                        "tool_tip": "Fairy Bow",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "bow_30":{
+                        "image":"bow",
+                        "tool_tip": "Fairy Bow",
+                        "text_mode":"text",
+                        "text":"30",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "bow_40":{
+                        "image":"bow",
+                        "text_mode":"text",
+                        "text":"40",
+                        "tool_tip": "Fairy Bow",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    },
+                    "bow_50":{
+                        "image":"bow",
+                        "text_mode":"text",
+                        "text":"50",
+                        "tool_tip": "Fairy Bow",
+                        "styles":["maxed"],
+                        "priority": 3,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 3
+                        }
+                    }
+                }
+            },
+            "slingshot": {
+                "row": 2,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Slingshot": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"slingshot",
+                        "tool_tip": "Slingshot",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "slingshot_30":{
+                        "image":"slingshot",
+                        "tool_tip": "Slingshot",
+                        "text_mode":"text",
+                        "text":"30",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "slingshot_40":{
+                        "image":"slingshot",
+                        "text_mode":"text",
+                        "text":"40",
+                        "tool_tip": "Slingshot",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    },
+                    "slingshot_50":{
+                        "image":"slingshot",
+                        "text_mode":"text",
+                        "text":"50",
+                        "tool_tip": "Slingshot",
+                        "styles":["maxed"],
+                        "priority": 3,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 3
+                        }
+                    }
+                }
+            },
+            "bomb_bag": {
+                "row": 1,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Bomb Bag": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"bombs",
+                        "tool_tip": "Bomb Bag",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "bombs_20":{
+                        "image":"bombs",
+                        "tool_tip": "Bomb Bag",
+                        "text_mode":"text",
+                        "text":"20",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "bombs_30":{
+                        "image":"bombs",
+                        "text_mode":"text",
+                        "text":"30",
+                        "tool_tip": "Bomb Bag",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    },
+                    "bombs_40":{
+                        "image":"bombs",
+                        "text_mode":"text",
+                        "text":"40",
+                        "tool_tip": "Bomb Bag",
+                        "styles":["maxed"],
+                        "priority": 3,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 3
+                        }
+                    }
+                }
+            },
+            "hookshot": {
+                "row": 2,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Progressive Hookshot": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"hookshot",
+                        "tool_tip": "Hookshot",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "hookshot":{
+                        "image":"hookshot",
+                        "tool_tip": "Hookshot",
+                        "text_mode":"text",
+                        "text":"H",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "longshot":{
+                        "image":"longshot",
+                        "text_mode":"text",
+                        "text":"L",
+                        "tool_tip": "Longshot",
+                        "styles":["maxed"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "ocarina": {
+                "row": 2,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Ocarina": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"fairy_ocarina",
+                        "tool_tip": "Ocarina",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "fairy_ocarina":{
+                        "image":"fairy_ocarina",
+                        "tool_tip": "Fairy Ocarina",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ocarina_of_time":{
+                        "image":"ocarina_of_time",
+                        "text_mode":"text",
+                        "text":"",
+                        "tool_tip": "Ocarina of Time",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "strength": {
+                "row": 4,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Progressive Strength Upgrade": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"goron_bracelet",
+                        "tool_tip": "Progressive Strength",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "goron_bracelet":{
+                        "image":"goron_bracelet",
+                        "tool_tip": "Goron Bracelet",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "silver_gauntlets":{
+                        "image":"silver_gauntlets",
+                        "text_mode":"text",
+                        "text":"",
+                        "tool_tip": "Silver Gauntlets",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }, 
+                    "gold_gauntlets":{
+                        "image":"gold_gauntlets",
+                        "text_mode":"text",
+                        "text":"",
+                        "tool_tip": "Gold Gauntlets",
+                        "styles":[],
+                        "priority": 3,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 3
+                        }
+                    }
+                }
+            },
+            "scale": {
+                "row": 4,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Progressive Scale": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"silver_scale",
+                        "tool_tip": "Progressive Scale",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "silver_scale":{
+                        "image":"silver_scale",
+                        "tool_tip": "Silver Scale",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "gold_scale":{
+                        "image":"gold_scale",
+                        "text_mode":"text",
+                        "text":"",
+                        "tool_tip": "Gold Scale",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "wallet": {
+                "row": 4,
+                "column": 4,
+                "starting_state": "missing",
+                "items":{
+                    "Progressive Wallet": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"adult_wallet",
+                        "tool_tip": "Progressive Wallet",
+                        "text_mode":"text",
+                        "text":"99",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "adult_wallet":{
+                        "image":"adult_wallet",
+                        "tool_tip": "Adult's Wallet",
+                        "text_mode":"text",
+                        "text":"200",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "giant_wallet":{
+                        "image":"giant_wallet",
+                        "text_mode":"text",
+                        "text":"500",
+                        "tool_tip": "Giant's Wallet",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }, 
+                    "tycoon_wallet":{
+                        "image":"giant_wallet",
+                        "text_mode":"text",
+                        "text":"999",
+                        "tool_tip": "Tycoon Wallet",
+                        "styles":["gold", "maxed"],
+                        "priority": 3,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 3
+                        }
+                    }
+                }
+            },
+            "magic": {
+                "row": 1,
+                "column": 7,
+                "starting_state": "missing",
+                "items":{
+                    "Magic Meter": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"magic_jar",
+                        "tool_tip": "Magic Meter",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "magic":{
+                        "image":"magic_jar",
+                        "tool_tip": "Magic Meter (half)",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "double_magic":{
+                        "image":"magic_jar",
+                        "text_mode":"text",
+                        "text":"x2",
+                        "tool_tip": "Magic Meter (full)",
+                        "styles":["maxed"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 2
+                        }
+                    }
+                }
+            },
+            "magic_beans": {
+                "row": 3,
+                "column": 3,
+                "starting_state": "missing",
+                "items":{
+                    "Magic Bean Pack": {
+                        "value": 10
+                    },
+                    "Magic Bean": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"magic_beans",
+                        "tool_tip": "Magic Beans",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "magic_beans":{
+                        "image":"magic_beans",
+                        "tool_tip": "Magic Beans",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "biggoron_sword": {
+                "row": 2,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Biggoron Sword": {
+                        "value": 0
+                    },
+                    "Giants Knife": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"goron_sword",
+                        "tool_tip": "Biggoron Sword/Giant's Knife",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "giants_knife":{
+                        "image":"giant_knife",
+                        "tool_tip": "Giant's Knife",
+                        "text_mode":"text",
+                        "text":"Knife",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"item",
+                            "items":["Giants Knife"]
+                        }
+                    },
+                    "biggoron_sword":{
+                        "image":"goron_sword",
+                        "tool_tip": "Biggoron Sword",
+                        "text_mode":"text",
+                        "text":"BGS",
+                        "styles":["maxed"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Biggoron Sword"]
+                        }
+                    }
+                }
+            },
+            "trifoce": {
+                "row": 6,
+                "column": 8,
+                "starting_state": "missing",
+                "items":{
+                    "Triforce Piece": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"triforce_piece",
+                        "tool_tip": "Triforce/Triforce Pieces",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "triforce_piece":{
+                        "image":"triforce_piece",
+                        "tool_tip": "Triforce Pieces",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "goal":{
+                        "image":"triforce",
+                        "tool_tip": "Triforce",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["maxed"],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":[]
+                        }
+                    }
+                }
+            },
+            "bottle": {
+                "row": 4,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Bottles": {
+                        "value": 1,
+                        "is_item_group":true
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"empty_bottle",
+                        "text": "",
+                        "tool_tip": "Bottles",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"empty_bottle",
+                        "text_mode":"count",
+                        "tool_tip": "Bottles",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    },
+                    "letter_bottle":{
+                        "image":"letter_bottle",
+                        "text_mode":"count",
+                        "tool_tip": "Ruto's Letter",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Rutos Letter"]
+                        }
+                    }
+                }
+
+
+            },
+            "adult_trade": {
+                "row": 4,
+                "column": 5,
+                "starting_state": "missing",
+                "items":{
+                    "Adult Trade Item": {
+                        "value": 0,
+                        "is_item_group":true
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"egg",
+                        "tool_tip": "Adult Trade Item",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "pocket_egg":{
+                        "image":"egg",
+                        "tool_tip": "Pocket Egg",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"item",
+                            "items":["Pocket Egg"]
+                        }
+                    },
+                    "pocket_cucco":{
+                        "image":"cucco",
+                        "tool_tip": "Pocket Cucco",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Pocket Cucco"]
+                        }
+                    },
+                    "cojiro":{
+                        "image":"cojiro",
+                        "tool_tip": "Cojiro",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 3,
+                        "condition":{
+                            "type":"item",
+                            "items":["Cojiro"]
+                        }
+                    },
+                    "odd_mushroom":{
+                        "image":"odd_mushroom",
+                        "tool_tip": "Odd Mushroom",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 4,
+                        "condition":{
+                            "type":"item",
+                            "items":["Odd Mushroom"]
+                        }
+                    },
+                    "odd_potion":{
+                        "image":"odd_potion",
+                        "tool_tip": "Odd Potion",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 5,
+                        "condition":{
+                            "type":"item",
+                            "items":["Odd Potion"]
+                        }
+                    },
+                    "poachers_saw":{
+                        "image":"poachers_saw",
+                        "tool_tip": "Poacher's Saw",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 6,
+                        "condition":{
+                            "type":"item",
+                            "items":["Poachers Saw"]
+                        }
+                    },
+                    "broken_sword":{
+                        "image":"broken_sword",
+                        "tool_tip": "Broken Sword",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 7,
+                        "condition":{
+                            "type":"item",
+                            "items":["Broken Sword"]
+                        }
+                    },
+                    "prescription":{
+                        "image":"prescription",
+                        "tool_tip": "Prescription",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 8,
+                        "condition":{
+                            "type":"item",
+                            "items":["Prescription"]
+                        }
+                    },
+                    "eyeball_frog":{
+                        "image":"eyeball_frog",
+                        "tool_tip": "Eyeball Frog",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 9,
+                        "condition":{
+                            "type":"item",
+                            "items":["Eyeball Frog"]
+                        }
+                    },
+                    "eyedrops":{
+                        "image":"eyedrops",
+                        "tool_tip": "Eyedrops",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 10,
+                        "condition":{
+                            "type":"item",
+                            "items":["Eyedrops"]
+                        }
+                    },
+                    "Claim Check":{
+                        "image":"claim_check",
+                        "tool_tip": "Claim Check",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 11,
+                        "condition":{
+                            "type":"item",
+                            "items":["Claim Check"]
+                        }
+                    }
+                }
+            },
+            "child_trade": {
+                "row": 4,
+                "column": 6,
+                "starting_state": "missing",
+                "items":{
+                    "Zeldas Letter": {
+                        "value": 0
+                    },
+                    "Weird Egg": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"egg",
+                        "tool_tip": "Child Trade Item",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "weird_egg":{
+                        "image":"egg",
+                        "tool_tip": "Weird Egg",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"item",
+                            "items":["Weird Egg"]
+                        }
+                    },
+                    "zeldas_letter":{
+                        "image":"zeldas_letter",
+                        "tool_tip": "Zeldas Letter",
+                        "text_mode":"text",
+                        "text":"",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Zeldas Letter"]
+                        }
+                    }
+                }
+            },
+            "botw_small_keys":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Bottom of the Well)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Bottom of the Well)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Bottom of the Well Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Bottom of the Well Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Bottom of the Well Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Bottom of the Well)"]
+                        }
+                    }
+                }
+            },
+            "hideout_small_keys":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Thieves Hideout)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Thieves Hideout)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Thieves Hideout Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Thieves Hideout Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Thieves Hideout Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Thieves Hideout)"]
+                        }
+                    }
+                }
+            },
+            "gtg_small_keys":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Gerudo Training Ground)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Gerudo Training Ground)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Gerudo Training Ground Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Gerudo Training Ground Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Gerudo Training Ground Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Gerudo Training Ground)"]
+                        }
+                    }
+                }
+            },
+            "forest_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Forest Temple)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Forest Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Forest Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "forest_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Forest Temple)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Forest Temple)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Forest Temple Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Forest Temple Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Forest Temple Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Forest Temple)"]
+                        }
+                    }
+                }
+            },
+            "fire_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Fire Temple)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Fire Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Fire Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "fire_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Fire Temple)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Fire Temple)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Fire Temple Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Fire Temple Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Fire Temple Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Fire Temple)"]
+                        }
+                    }
+                }
+            },
+            "water_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Water Temple)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Water Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Water Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "water_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Water Temple)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Water Temple)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Water Temple Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Water Temple Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Water Temple Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Water Temple)"]
+                        }
+                    }
+                }
+            },
+            "shadow_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Shadow Temple)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Shadow Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Shadow Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "shadow_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Shadow Temple)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Shadow Temple)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Shadow Temple Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Shadow Temple Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Shadow Temple Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Shadow Temple)"]
+                        }
+                    }
+                }
+            },
+            "spirit_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Spirit Temple)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Spirit Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Spirit Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "spirit_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Spirit Temple)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Spirit Temple)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Spirit Temple Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Spirit Temple Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Spirit Temple Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Spirit Temple)"]
+                        }
+                    }
+                }
+            },
+            "ganon_boss_key":{
+                "row": 1,
+                "column": 1,
+                "starting_state": "missing",
+                "items":{
+                    "Boss Key (Ganons Castle)": {
+                        "value": 1
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"boss_key",
+                        "tool_tip": "Ganon Boss Key",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"boss_key",
+                        "tool_tip": "Ganon Boss Key",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }
+                }
+            },
+            "ganon_small_keys":{
+                "row": 1,
+                "column": 2,
+                "starting_state": "missing",
+                "items":{
+                    "Small Key (Ganons Castle)": {
+                        "value": 1
+                    },
+                    "Small Key Ring (Ganons Castle)": {
+                        "value": 0
+                    }
+                },
+                "states":{
+                    "missing":{
+                        "image":"small_key",
+                        "tool_tip": "Ganon's Castle Small Keys",
+                        "styles":["missing"],
+                        "priority": 0,
+                        "condition":{
+                            "type":"always"
+                        }
+                    }, 
+                    "received":{
+                        "image":"small_key",
+                        "tool_tip": "Ganon's Castle Small Keys",
+                        "text_mode":"count",
+                        "styles":[],
+                        "priority": 1,
+                        "condition":{
+                            "type":"count",
+                            "greater_than_equal": 1
+                        }
+                    }, 
+                    "ring":{
+                        "image":"small_key",
+                        "tool_tip": "Ganon's Castle Small Keys",
+                        "text_mode":"text",
+                        "text":"✔",
+                        "styles":[],
+                        "priority": 2,
+                        "condition":{
+                            "type":"item",
+                            "items":["Small Key Ring (Ganons Castle)"]
+                        }
+                    }
+                }
+            }
+        },
+        "subsections":{
+            "forest_keys": {
+                "row": 7,
+                "column": 1,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["forest_boss_key", "forest_small_keys"],
+                "label":"Forest"
+            },
+            "fire_keys": {
+                "row": 7,
+                "column": 3,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["fire_boss_key", "fire_small_keys"],
+                "label":"Fire"
+            },
+            "water_keys": {
+                "row": 7,
+                "column": 5,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["water_boss_key", "water_small_keys"],
+                "label":"Water"
+            },
+            "shadow_keys": {
+                "row": 8,
+                "column": 1,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["shadow_boss_key", "shadow_small_keys"],
+                "label":"Shadow"
+            },
+            "spirit_keys": {
+                "row": 8,
+                "column": 3,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["spirit_boss_key", "spirit_small_keys"],
+                "label":"Spirit"
+            },
+            "ganons_castle_keys": {
+                "row": 8,
+                "column": 5,
+                "row_span": 1,
+                "column_span": 2, 
+                "slots":["ganon_boss_key", "ganon_small_keys"],
+                "label":"Ganon"
+            },
+            "botw_keys": {
+                "row": 7,
+                "column": 7,
+                "row_span": 1,
+                "column_span": 1, 
+                "slots":["botw_small_keys"],
+                "label":"BotW"
+            },
+            "gtg_keys": {
+                "row": 7,
+                "column": 8,
+                "row_span": 1,
+                "column_span": 1, 
+                "slots":["gtg_small_keys"],
+                "label":"GTG"
+            },
+            "hideout_keys": {
+                "row": 8,
+                "column": 7,
+                "row_span": 1,
+                "column_span": 1, 
+                "slots":["hideout_small_keys"],
+                "label":"Thieves"
+            }
+        },
+        "item_groups":{
+            "Adult Trade Item": [
+                "Broken Sword",
+                "Claim Check",
+                "Eyeball Frog",
+                "Eyedrops",
+                "Odd Mushroom",
+                "Odd Potion",
+                "Poachers Saw",
+                "Pocket Cucco",
+                "Pocket Egg",
+                "Prescription"
+            ],
+            "Bottles": [
+                "Bottle",
+                "Bottle with Big Poe",
+                "Bottle with Blue Fire",
+                "Bottle with Blue Potion",
+                "Bottle with Bugs",
+                "Bottle with Fairy",
+                "Bottle with Fish",
+                "Bottle with Green Potion",
+                "Bottle with Milk",
+                "Bottle with Poe",
+                "Bottle with Red Potion",
+                "Rutos Letter"
+            ],
+            "logic_bottles": [
+                "Bottle",
+                "Bottle with Blue Fire",
+                "Bottle with Blue Potion",
+                "Bottle with Bugs",
+                "Bottle with Fairy",
+                "Bottle with Fish",
+                "Bottle with Green Potion",
+                "Bottle with Milk",
+                "Bottle with Poe",
+                "Bottle with Red Potion",
+                "Deliver Letter",
+                "Sell Big Poe"
+            ]
+        }
+    }
+}
