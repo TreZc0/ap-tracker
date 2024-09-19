@@ -1,9 +1,12 @@
 // @ts-check
+// Builds a static tree about different areas in the game
+// TODO: Make this less specific to OOT
+
 import { getEntrancesInRegion } from "../entrances/entranceManager";
 import { getChecksInRegion } from "../regions/regionManager";
 
 /**
- * @typedef Section
+ * @typedef Group
  * @prop {Set<string>} checks
  * @prop {Set<String>} exits
  * @prop {string} name
@@ -11,11 +14,11 @@ import { getChecksInRegion } from "../regions/regionManager";
  */
 
 /**
- * @typedef SectionData
+ * @typedef GroupData
  * @prop {String[]} regions
  */
 
-/** @type {Map<String, Section>} */
+/** @type {Map<String, Group>} */
 let sections = new Map();
 
 /** @type {Map<String, String>} */
@@ -23,10 +26,10 @@ let regionToSection = new Map();
 
 /**
  * @param {String} sectionName
- * @param {SectionData} sectionData
- * @returns {Section}
+ * @param {GroupData} sectionData
+ * @returns {Group}
  */
-let loadSection = (sectionName, sectionData) => {
+let loadGroup = (sectionName, sectionData) => {
     let checks = new Set();
     let exits = new Set();
     let adoptable = false;
@@ -66,7 +69,7 @@ let getSectionWithRegion = (regionName) => {
 
 /**
  * Used to create a warning and not crash, do not use unless in an error state
- * @returns {Section}
+ * @returns {Group}
  */
 let createNullSection = () => {
     let checks = new Set();
@@ -88,13 +91,13 @@ let createNullSection = () => {
     };
 };
 
-let loadSections = (data) => {
+let loadGroups = (data) => {
     for (let key of Object.getOwnPropertyNames(data)) {
-        sections.set(key, loadSection(key, data[key]));
+        sections.set(key, loadGroup(key, data[key]));
     }
 };
 
-loadSections(require("../../data/OOT/Sections.json"));
+loadGroups(require("../../data/OOT/Sections.json"));
 console.log(sections);
 
 export { sections, createNullSection, getSectionWithRegion };

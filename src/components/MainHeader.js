@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { SlotContext, TrackerStateContext } from "../contexts";
+import { SlotContext, TrackerStateContext } from "../contexts/contexts";
 
 const MainHeader = ({ ...props }) => {
     const slot = useContext(SlotContext);

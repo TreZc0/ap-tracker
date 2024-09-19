@@ -9,31 +9,34 @@
  * @prop {String} [reverse]
  */
 
-/** @type {Map<*, () => void>} */
+/** @type {Map<String, Set<() => void>>} */
 let onChangeListeners = new Map();
 
 /**
- *
- * @param {*} key
- * @param {() => void} callback
+ * 
+ * @param {string} entrance 
  */
-let addEntranceChangeListener = (key, callback) => {
-    onChangeListeners.set(key, callback);
-};
+const getEntranceSubscriber = (entrance) => {
+    return (/** @type {() => void} */ listener) => {
+        let listeners = onChangeListeners.get(entrance) ?? new Set();
+        listeners.add(listener);
+        onChangeListeners.set(entrance, listeners);
+        return () => {
+            // clean up function
+            listeners.delete(listener);
+        }
+    }
+}
 
 /**
- *
- * @param {*} key
+ * 
+ * @param {String} entrance 
  */
-let removeEntranceChangeListener = (key) => {
-    onChangeListeners.delete(key);
-};
+const onChange = (entrance) => {
+    onChangeListeners.get(entrance)?.forEach(listener => listener());
+}
 
-let onChange = () => {
-    for (let callback of onChangeListeners.values()) {
-        callback();
-    }
-};
+
 
 // These tables take an entrance name (ex: A -> B) as the key,
 // and give a region (C) as the output, connecting Region A a to region C
@@ -155,16 +158,17 @@ let clearEntranceTable = (categories) => {
         for (let key of entranceTable.keys()) {
             entranceTable.set(key, null);
             reverseTable.delete(key);
+            onChange(key);
         }
     } else {
         for (let key of entranceTable.keys()) {
             if (categories.has(categoryTable.get(key))) {
                 entranceTable.set(key, null);
                 reverseTable.delete(key);
+                onChange(key);
             }
         }
     }
-    onChange();
 };
 
 /**
@@ -179,6 +183,7 @@ let resetEntranceTable = (categories) => {
             if (reverseKey) {
                 reverseTable.set(entrance, reverseKey);
             }
+            onChange(entrance);
         }
     } else {
         for (let entrance of entranceTable.keys()) {
@@ -190,9 +195,9 @@ let resetEntranceTable = (categories) => {
             if (reverseKey) {
                 reverseTable.set(entrance, reverseKey);
             }
+            onChange(entrance);
         }
     }
-    onChange();
 };
 
 /**
@@ -212,23 +217,26 @@ let setEntrance = (entrance, entranceRole, doReverse = true) => {
             reverseTable.set(entrance, reverseEntrance);
             reverseTable.set(reverseEntrance, entrance);
             setEntrance(reverseEntrance, reverseRole, false);
-        } else {
-            onChange();
         }
-    } else {
-        onChange();
     }
+    onChange(entrance);
+    
 };
 
+/**
+ * 
+ * @param {string} entrance 
+ * @param {boolean} doReverse 
+ */
 let resetEntrance = (entrance, doReverse = true) => {
     entranceTable.set(entrance, vanillaTable.get(entrance) || "");
     let reverseKey = vanillaReverseTable.get(entrance);
     if (reverseKey && doReverse) {
         reverseTable.set(entrance, reverseKey);
         resetEntrance(reverseKey, false);
-    } else {
-        onChange();
     }
+    onChange(entrance);
+    
 };
 
 /**
@@ -243,9 +251,9 @@ let clearEntrance = (entrance, doReverse = true) => {
     reverseTable.delete(entrance);
     if (doingReverse && reverse) {
         clearEntrance(reverse, false);
-    } else {
-        onChange();
     }
+    onChange(entrance);
+    
 };
 
 /**
@@ -371,7 +379,8 @@ let importString = (stringData) => {
     if (data.entranceTable && data.reverseTable) {
         entranceTable = data.entranceTable;
         reverseTable = data.reverseTable;
-        onChange();
+        entranceTable.forEach((_, key) =>  onChange(key));
+        reverseTable.forEach((_, key) =>  onChange(key));
         return true;
     }
 
@@ -383,8 +392,7 @@ loadMetaData(require("../../data/OOT/EntranceMetaData.json"));
 loadEntranceData(require("../../data/OOT/Entrances.json"));
 
 export {
-    addEntranceChangeListener,
-    removeEntranceChangeListener,
+    getEntranceSubscriber,
     setEntrance,
     resetEntrance,
     clearEntrance,
