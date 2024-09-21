@@ -489,9 +489,8 @@ const buildSectionUpdateTree = () => {
                 if(getEntranceAdoptablility(portalName)){
                     setChecks();
                     setCheckListeners();
-                    setEntranceListener();
                 }
-                
+                setEntranceListener();
             }
             let checkValues;
             ({checkReport: node.checkReport, checks: checkValues} = buildCheckReport());
@@ -528,9 +527,8 @@ const buildSectionUpdateTree = () => {
         }
 
         updateSectionStatus(portalName, {title: `${portalName} => ${areaKey ?? "???"}`, type: defaultType, theme: defaultTheme, children: [...node.children].map(child => child.sectionName)})
-
+        setEntranceListener();
         update();
-
         return node;
     }   
     /**
