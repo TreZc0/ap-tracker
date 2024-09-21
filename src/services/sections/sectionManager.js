@@ -1,6 +1,7 @@
 // @ts-check
 import CheckManager from "../checks/checkManager";
-import { sections as groups } from "./groups"
+import { getEntranceAdoptablility, getEntranceDestRegion, getEntranceSubscriber } from "../entrances/entranceManager";
+import { getSectionWithRegion, sections as groups } from "./groups"
 
 /** 
  * @typedef CheckReport
@@ -131,7 +132,7 @@ const testOptions = {
 
 const sectionDefaults = {
     title: "Untitled Section",
-    checkGroup: null,
+    areaKey: null,
     type: null,
     theme: "default",
     children: null,
@@ -182,7 +183,7 @@ const PORTAL_MODE = {
 /**
  * @typedef SectionDef
  * @prop {string} title
- * @prop {string | null} checkGroup
+ * @prop {string | null} areaKey
  * @prop {string | null} type
  * @prop {string} theme
  * @prop {string[] | null} children 
@@ -191,7 +192,7 @@ const PORTAL_MODE = {
 /**
  * @typedef SectionConfig
  * @prop {string} title
- * @prop {string | string[] | null} checkGroup
+ * @prop {string | string[] | null} areaKey
  * @prop {SectionType} type
  * @prop {SectionTheme} theme
  * @prop {String[] | null} children 
@@ -312,7 +313,7 @@ const readSectionConfig = (configData) => {
         let result = {
             title: category.title,
             children: [],
-            checkGroup: category.checkGroup,
+            areaKey: category.areaKey,
             theme: defaultTheme,
             type: defaultType,
         }
@@ -378,9 +379,6 @@ const readSectionConfig = (configData) => {
 * @prop {()=>void} remove
 * @prop {()=>void} update
 */
-const updateSectionData = (sectionName) => {
-    
-}
 
 
 
@@ -421,6 +419,120 @@ const addCheckToReport = (report, checkName) => {
 let updateTreeRoot = null;
 
 const buildSectionUpdateTree = () => {
+
+    const buildPortalNode = (portalName, parents=[], lineage=new Set()) => {
+        if(lineage.has(portalName)){
+            return null;
+        }
+
+        const listenerCleanUpCalls = new Set();
+
+        const cleanUpListeners = () => {
+            listenerCleanUpCalls.forEach(cleanUpCall => cleanUpCall())
+        }
+
+        /** @returns  */
+        const buildCheckReport = () => {
+            let checkReport = createNewCheckReport();
+            /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
+            let checks = new Map();
+            node.checks.forEach(check => checks.set(check, addCheckToReport(checkReport, check)));
+            node.children.forEach( child => addCheckReport(child.checkReport, checkReport));
+            return {checkReport, checks};
+        }
+
+        const setChecks = () => {
+            node.checks.clear();
+            let checkGroups = [];
+            if(typeof areaKey == "string"){
+                checkGroups.push(areaKey);
+            }else if(areaKey){
+                checkGroups = areaKey;
+            }
+            // Build a list of checks for the area
+            for(const groupName of checkGroups){
+                /** @type {String[]} */
+                let checks = [...groups.get(groupName)?.checks.values() ?? []] 
+                checks.forEach( check => node.checks.add(check));
+            }
+
+        }
+
+        const setCheckListeners = () => {
+            node.checks.forEach(checkName => {
+                let subscribe = CheckManager.getSubscribeCallback(checkName);
+                let cleanUpCall = subscribe(update);
+                listenerCleanUpCalls.add(cleanUpCall);
+            })
+        }
+
+        const setEntranceListener = () => {
+            let subscribe = getEntranceSubscriber(portalName);
+            let cleanUpCall = subscribe(update);
+            listenerCleanUpCalls.add(cleanUpCall);
+        }
+
+        const update = () => {
+            /*\
+            * @typedef Section
+            * @prop {string} title
+            * @prop {CheckReport} checkReport
+            * @prop {Map<string, import("../checks/checkManager").CheckStatus>} checks
+            * @prop {SectionType} type
+            * @prop {SectionTheme} theme
+            * @prop {String[] | null} children 
+            */
+            areaKey = getSectionWithRegion(getEntranceDestRegion(portalName)) ?? null;
+            if(areaKey !== processedAreaKey){
+                processedAreaKey = areaKey;
+                cleanUpListeners();
+                if(getEntranceAdoptablility(portalName)){
+                    setChecks();
+                    setCheckListeners();
+                    setEntranceListener();
+                }
+                
+            }
+            let checkValues;
+            ({checkReport: node.checkReport, checks: checkValues} = buildCheckReport());
+            parents.forEach(parent => parent.update());
+            updateSectionStatus(portalName, {title: `${portalName} => ${areaKey ?? "???"}`, checkReport: node.checkReport, checks: checkValues, children: [...node.children].map(child => child.sectionName)});
+        }
+
+        let remove = () => {
+            cleanUpListeners();
+            node.parents.forEach(parent => {parent.children.delete(node); parent.update();});
+            let children = [...node.children.values()];
+            children.forEach(child => {
+                child.parents.delete(node);
+                if(child.parents.size === 0){
+                    child.remove();
+                }
+            });
+        }
+        
+        let areaKey = getSectionWithRegion(getEntranceDestRegion(portalName)) ?? null;
+        let processedAreaKey = null;
+
+        /** @type {SectionUpdateTreeNode} */
+        const node = {
+            sectionName: portalName,
+            checks: new Set(),
+            checkReport: createNewCheckReport(),
+            type: defaultType,
+            children: new Set(),
+            parents: new Set(parents),
+            shouldFlatten: false,
+            remove,
+            update,
+        }
+
+        updateSectionStatus(portalName, {title: `${portalName} => ${areaKey ?? "???"}`, type: defaultType, theme: defaultTheme, children: [...node.children].map(child => child.sectionName)})
+
+        update();
+
+        return node;
+    }   
     /**
      * 
      * @param {String} sectionName 
@@ -498,10 +610,10 @@ const buildSectionUpdateTree = () => {
         
 
         let checkGroups = [];
-        if(typeof sectionConfig.checkGroup == "string"){
-            checkGroups.push(sectionConfig.checkGroup);
-        }else if(sectionConfig.checkGroup){
-            checkGroups = sectionConfig.checkGroup;
+        if(typeof sectionConfig.areaKey == "string"){
+            checkGroups.push(sectionConfig.areaKey);
+        }else if(sectionConfig.areaKey){
+            checkGroups = sectionConfig.areaKey;
         }
 
         // Build a list of checks for the area
@@ -526,6 +638,19 @@ const buildSectionUpdateTree = () => {
                 node.children.add(child);
             }
         })
+
+        // create entrances
+        for(const groupName of checkGroups){
+            const group = groups.get(groupName);
+            if(group){
+                group.exits.forEach((exit) => {
+                    let child = buildPortalNode(exit, [node], childLineage);
+                    if(child){
+                        node.children.add(child);
+                    }
+                })
+            }
+        }
         updateSectionStatus(sectionName, {title: sectionConfig.title, type: sectionConfig.type, theme: sectionConfig.theme, children: [...node.children].map(child => child.sectionName)})
         node.update();
         return node;

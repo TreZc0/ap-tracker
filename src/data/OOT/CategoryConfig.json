@@ -2,14 +2,14 @@
     "categories": {
         "root": {
             "title": "Total",
-            "checkGroup": null,
+            "areaKey": null,
             "type": null,
             "theme": "default",
             "children": ["overworld", "dungeons"]
         },
         "overworld": {
             "title": "Overworld",
-            "checkGroup": null,
+            "areaKey": null,
             "type": null,
             "theme": "default",
             "children": [
@@ -24,14 +24,14 @@
         },
         "hyrule": {
             "title": "Hyrule",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "default",
             "children": ["hyrule_field", "lon_lon_ranch", "lake_hylia"]
         },
         "market_r": {
             "title": "Market Area",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "default",
             "children": [
@@ -43,14 +43,14 @@
         },
         "forest": {
             "title": "Forest",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "forest",
             "children": ["kokiri_forest", "lost_woods", "sacred_forest_meadow"]
         },
         "death_mountain": {
             "title": "Death Mountain",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "fire",
             "children": [
@@ -61,21 +61,21 @@
         },
         "zora": {
             "title": "Zora",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "water",
             "children": ["zora_river", "zoras_domain", "zoras_fountain"]
         },
         "kakariko": {
             "title": "Kakariko",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "shadow",
             "children": ["kakariko_village", "graveyard"]
         },
         "desert": {
             "title": "Desert",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "overworld_region",
             "theme": "spirit",
             "children": [
@@ -87,7 +87,7 @@
         },
         "dungeons": {
             "title": "Dungeons",
-            "checkGroup": null,
+            "areaKey": null,
             "type": null,
             "theme": "default",
             "children": [
@@ -99,6 +99,8 @@
                 "fire_temple",
                 "water_temple",
                 "shadow_temple",
+                "spirit_temple",
+                "ice_cavern",
                 "gerudo_training_ground",
                 "theives_hideout",
                 "ganons_castle"
@@ -106,259 +108,266 @@
         },
         "hyrule_field": {
             "title": "Hyrule Field",
-            "checkGroup": "Hyrule Field",
+            "areaKey": "Hyrule Field",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "lon_lon_ranch": {
             "title": "Lon Lon Ranch",
-            "checkGroup": "Lon Lon Ranch",
+            "areaKey": "Lon Lon Ranch",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "castle_grounds": {
             "title": "Castle Grounds",
-            "checkGroup": "Castle Grounds",
+            "areaKey": "Castle Grounds",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "market": {
             "title": "Market",
-            "checkGroup": "Market",
+            "areaKey": "Market",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "market_entrance": {
             "title": "Market Entrance",
-            "checkGroup": "Market Entrance",
+            "areaKey": "Market Entrance",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "temple_of_time_entrance": {
             "title": "Temple of Time Entrance",
-            "checkGroup": "Temple of Time Entrance",
+            "areaKey": "ToT Entrance",
             "type": "overworld",
             "theme": "default",
             "children": null
         },
         "kokiri_forest": {
             "title": "Kokiri Forest",
-            "checkGroup": "Kokiri Forest",
+            "areaKey": "Kokiri Forest",
             "type": "overworld",
             "theme": "forest",
             "children": null
         },
         "lost_woods": {
             "title": "Lost Woods",
-            "checkGroup": "Lost Woods",
+            "areaKey": "Lost Woods",
             "type": "overworld",
             "theme": "forest",
             "children": null
         },
         "sacred_forest_meadow": {
             "title": "Sacred Forest Meadow",
-            "checkGroup": "Sacred Forest Meadow",
+            "areaKey": "Sacred Forest Meadow",
             "type": "overworld",
             "theme": "forest",
             "children": null
         },
         "death_mountain_trail": {
             "title": "Death Mountain Trail",
-            "checkGroup": "Death Mountain",
+            "areaKey": "Death Mountain",
             "type": "overworld",
             "theme": "fire",
             "children": null
         },
         "death_mountain_crater": {
             "title": "Death Mountain Crater",
-            "checkGroup": "Death Mountain Crater",
+            "areaKey": "Death Mountain Crater",
             "type": "overworld",
             "theme": "fire",
             "children": null
         },
         "goron_city": {
             "title": "Goron City",
-            "checkGroup": "Goron City",
+            "areaKey": "Goron City",
             "type": "overworld",
             "theme": "fire",
             "children": null
         },
         "zora_river": {
             "title": "Zora River",
-            "checkGroup": "Zora River",
+            "areaKey": "Zora River",
             "type": "overworld",
             "theme": "water",
             "children": null
         },
         "zoras_domain": {
             "title": "Zora's Domain",
-            "checkGroup": "Zoras Domain",
+            "areaKey": "Zoras Domain",
             "type": "overworld",
             "theme": "water",
             "children": null
         },
         "zoras_fountain": {
             "title": "Zora's Fountain",
-            "checkGroup": "Zoras Fountain",
+            "areaKey": "Zoras Fountain",
             "type": "overworld",
             "theme": "water",
             "children": null
         },
         "lake_hylia": {
             "title": "Lake Hylia",
-            "checkGroup": "Lake Hylia",
+            "areaKey": "Lake Hylia",
             "type": "overworld",
             "theme": "water",
             "children": null
         },
         "kakariko_village": {
             "title": "Kakariko Village",
-            "checkGroup": "Kakariko Village",
+            "areaKey": "Kakariko Village",
             "type": "overworld",
             "theme": "shadow",
             "children": null
         },
         "graveyard": {
             "title": "Graveyard",
-            "checkGroup": "Graveyard",
+            "areaKey": "Graveyard",
             "type": "overworld",
             "theme": "shadow",
             "children": null
         },
         "gerudo_valley": {
             "title": "Gerudo Valley",
-            "checkGroup": "Gerudo Valley",
+            "areaKey": "Gerudo Valley",
             "type": "overworld",
             "theme": "spirit",
             "children": null
         },
         "gerudo_fortress": {
             "title": "Gerudo Fortress",
-            "checkGroup": "Gerudo Fortress",
+            "areaKey": "Gerudo Fortress",
             "type": "overworld",
             "theme": "spirit",
             "children": null
         },
         "haunted_wasteland": {
             "title": "Haunted Wasteland",
-            "checkGroup": "Haunted Wasteland",
+            "areaKey": "Haunted Wasteland",
             "type": "overworld",
             "theme": "spirit",
             "children": null
         },
         "desert_colossus": {
             "title": "Desert Colossus",
-            "checkGroup": "Desert Colossus",
+            "areaKey": "Desert Colossus",
             "type": "overworld",
             "theme": "spirit",
             "children": null
         },
         "deku_tree": {
             "title": "Deku Tree",
-            "checkGroup": "Deku Tree",
+            "areaKey": "Deku Tree",
             "type": "dungeon",
             "theme": "forest",
             "children": null
         },
         "dodongos_cavern": {
             "title": "Dodongo's Cavern",
-            "checkGroup": "Dodongos Cavern",
+            "areaKey": "Dodongos Cavern",
             "type": "dungeon",
             "theme": "fire",
             "children": null
         },
         "jabu_jabus_belly": {
             "title": "Jabu Jabu's Belly",
-            "checkGroup": "Jabu Jabus Belley",
+            "areaKey": "Jabu Jabus Belly",
             "type": "dungeon",
             "theme": "water",
             "children": null
         },
         "bottom_of_the_well": {
             "title": "Bottom of the Well",
-            "checkGroup": "Bottom of the Well",
+            "areaKey": "Bottom of the Well",
             "type": "dungeon",
             "theme": "shadow",
             "children": null
         },
         "forest_temple": {
             "title": "Forest Temple",
-            "checkGroup": "Forest Temple",
+            "areaKey": "Forest Temple",
             "type": "dungeon",
             "theme": "forest",
             "children": null
         },
         "fire_temple": {
             "title": "Fire Temple",
-            "checkGroup": "Fire Temple",
+            "areaKey": "Fire Temple",
             "type": "dungeon",
             "theme": "fire",
             "children": null
         },
         "water_temple": {
             "title": "Water Temple",
-            "checkGroup": "Water Temple",
+            "areaKey": "Water Temple",
             "type": "dungeon",
             "theme": "water",
             "children": null
         },
         "shadow_temple": {
             "title": "Shadow Temple",
-            "checkGroup": "Shadow Temple",
+            "areaKey": "Shadow Temple",
             "type": "dungeon",
             "theme": "shadow",
             "children": null
         },
         "spirit_temple": {
             "title": "Spirit Temple",
-            "checkGroup": "Spirit Temple",
+            "areaKey": "Spirit Temple",
             "type": "dungeon",
             "theme": "spirit",
             "children": null
         },
+        "ice_cavern": {
+            "title": "Ice Cavern",
+            "areaKey": "Ice Cavern",
+            "type": "dungeon",
+            "theme": "water",
+            "children": null
+        },
         "gerudo_training_ground": {
             "title": "Gerudo Training Ground",
-            "checkGroup": "Gerudo Training Ground",
+            "areaKey": "Gerudo Training Ground",
             "type": "dungeon",
             "theme": "spirit",
             "children": null
         },
         "theives_hideout": {
             "title": "Theives' Hideout",
-            "checkGroup": "Theives Hideout",
+            "areaKey": "Theives Hideout",
             "type": "dungeon",
             "theme": "spirit",
             "children": null
         },
         "ganons_castle": {
             "title": "Ganon's Castle",
-            "checkGroup": "Ganons Castle",
+            "areaKey": "Ganons Castle",
             "type": "dungeon",
             "theme": "default",
             "children": null
         },
         "grottos": {
             "title": "Grottos & Graves",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "grotto_pool",
             "theme": "forest",
             "children": null
         },
-        "interirors": {
+        "interiors": {
             "title": "Interiors",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "interior_pool",
             "theme": "default",
             "children": null
         },
         "bosses": {
             "title": "Bosses",
-            "checkGroup": null,
+            "areaKey": null,
             "type": "boss_pool",
             "theme": "default",
             "children": null
@@ -513,6 +522,7 @@
         "fire": { "color": "#ff5050" },
         "spirit": { "color": "#ffcc66" },
         "shadow": { "color": "#9966ff" },
-        "default": { "color": "#000000" }
+        "default": { "color": "#000000" },
+        "grotto": {"color":"#964B00"}
     }
 }

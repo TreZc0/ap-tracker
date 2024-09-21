@@ -9,9 +9,7 @@ import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";
 // import OptionsScreen from "./components/OptionsScreen";
 import SectionView from "./components/sectionComponents/SectionView";
-// import { sectionConfig, sectionConfigData } from "./services/sections/sectionConfig";
 import { resetEntranceTable } from "./services/entrances/entranceManager";
-import { SectionConfigurationContext } from "./contexts/sectionContexts";
 
 const AppScreen = styled.div`
     position: absolute;
