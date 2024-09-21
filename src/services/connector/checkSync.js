@@ -14,6 +14,47 @@ let getLocationName = (client, id) => {
 };
 
 /**
+ * @param {import("archipelago.js").Client } client
+ * @param {import("archipelago.js").Hint} hint
+ */
+let hintToText = (client, hint) => {
+    let ownerString = `${client.players.alias(hint.receiving_player)}'s`;
+    if (hint.receiving_player === client.data.slot) {
+        ownerString = "Your";
+    }
+    let finderString = `${client.players.alias(hint.finding_player)}'s`;
+    if (hint.finding_player === client.data.slot) {
+        finderString = "your";
+    }
+
+    let itemString = client.items.name(
+        client.players.game(hint.receiving_player),
+        hint.item
+    );
+
+    let locationString = client.locations.name(
+        client.players.game(hint.finding_player),
+        hint.location
+    );
+
+    let entranceString = hint.entrance ? `(${hint.entrance})` : "";
+    return `${ownerString} ${itemString} is at ${locationString} in ${finderString} world. ${entranceString}`;
+};
+
+let loadHintData = (client) => {
+    for (let i = 0; i < client.hints.mine.length; i++) {
+        let hint = client.hints.mine[i];
+        if (hint.finding_player === client.data.slot) {
+            console.log(hintToText(client, hint));
+            CheckManager.updateCheckStatus(
+                getLocationName(client, hint.location),
+                { hint: hintToText(client, hint) }
+            );
+        }
+    }
+};
+
+/**
  *
  * @param {import("archipelago.js").Client} client
  */
@@ -48,6 +89,23 @@ const setupAPCheckSync = (client) => {
                     { checked: true }
                 );
             }
+        }
+    });
+
+    client.addListener(SERVER_PACKET_TYPE.SET_REPLY, (packet) => {
+        if (
+            packet.key === `_read_hints_${client.data.team}_${client.data.slot}`
+        ) {
+            loadHintData(client);
+        }
+    });
+
+    client.addListener(SERVER_PACKET_TYPE.RETRIEVED, (packet) => {
+        for (const key in packet.keys) {
+            if (key !== `_read_hints_${client.data.team}_${client.data.slot}`) {
+                continue;
+            }
+            loadHintData(client);
         }
     });
 };

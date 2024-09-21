@@ -38,7 +38,7 @@ const updateCheckStatus = (checkName, status) => {
         ...(checkData.get(checkName) ?? defaultCheckStatus),
         ...status,
     });
-    checkSubscribers.get(checkName)?.forEach((listner) => listner());
+    checkSubscribers.get(checkName)?.forEach((listener) => listener());
 };
 
 /**

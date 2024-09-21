@@ -10,18 +10,10 @@ body {
     font-size: medium;
 }
 
-.hinted *.section_title::before {
+.section_title.hinted::before {
     color: red;
     font-size: xx-large;
     content: "\00B7";
-}
-
-.section_title::after {
-    content: "▲";
-}
-
-.section_view.colapsed *.section_title::after {
-    content: "▼";
 }
 
 .section_view {
