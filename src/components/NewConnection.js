@@ -29,8 +29,8 @@ const NewConnection = ({ ...props }) => {
         port: "",
         slot: "",
         password: "",
-        // game: "Ocarina of Time",
-        game: "CrossCode",
+        game: "Ocarina of Time",
+        // game: "CrossCode",
     });
 
     const defaultChangeHandler = (event) => {
