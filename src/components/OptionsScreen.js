@@ -22,7 +22,7 @@ const OptionsScreen = () => {
                             <br />
                             <Checkbox label="Separate Dungeon Bosses" />
                             <br />
-                            <PrimaryButton>Back</PrimaryButton>
+                            {/* <PrimaryButton>Back</PrimaryButton> */}
                         </div>
                     ),
                 },

@@ -1,15 +1,21 @@
 // @ts-check
 // import './App.css';
-import React, { useSyncExternalStore } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import MainHeader from "./components/MainHeader";
 import StartScreen from "./components/StartScreen";
 import { TrackerStateContext } from "./contexts/contexts";
-import { connection } from "./services/connector/connector";
+import { SlotContext } from "./contexts/contexts";
+import { createConnector } from "./services/connector/connector";
 import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";
-// import OptionsScreen from "./components/OptionsScreen";
+import OptionsScreen from "./components/OptionsScreen";
 import SectionView from "./components/sectionComponents/SectionView";
-import { resetEntranceTable } from "./services/entrances/entranceManager";
+import { createEntranceManager } from "./services/entrances/entranceManager";
+import { createCheckManager } from "./services/checks/checkManager";
+import ServiceContext from "./contexts/serviceContext";
+import { createGroupManager } from "./services/sections/groupManager";
+import { createRegionManager } from "./services/regions/regionManager";
+import { createSectionManager } from "./services/sections/sectionManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -25,7 +31,19 @@ const AppScreen = styled.div`
     grid-template-columns: auto;
 `;
 
-resetEntranceTable();
+const checkManager = createCheckManager();
+const entranceManager = createEntranceManager();
+const connector = createConnector(checkManager);
+const regionManager = createRegionManager();
+const groupManager = createGroupManager(entranceManager, regionManager);
+const sectionManager = createSectionManager(
+    checkManager,
+    entranceManager,
+    groupManager
+);
+const connection = connector.connection;
+
+entranceManager.resetEntranceTable();
 
 function App() {
     const trackerConnectionState = useSyncExternalStore(
@@ -33,6 +51,12 @@ function App() {
         () => connection.status,
         () => connection.status
     );
+    const trackerSlotData = useSyncExternalStore(
+        connection.subscribe,
+        () => connection.slotInfo,
+        () => connection.slotInfo
+    );
+    const [optionWindowOpen, setOptionWindowOpen] = useState(false);
 
     return (
         <div className="App">
@@ -40,19 +64,35 @@ function App() {
                 <TrackerStateContext.Provider
                     value={{
                         connectionStatus: trackerConnectionState,
+                        slotData: trackerSlotData
                     }}
                 >
-
-                        <MainHeader />
-                        {new Set([
-                            CONNECTION_STATUS.disconnected,
-                            CONNECTION_STATUS.connecting,
-                        ]).has(trackerConnectionState) && <StartScreen />}
-                        {CONNECTION_STATUS.connected === trackerConnectionState && (
-                            <SectionView name="root" context={{}} />
+                    <ServiceContext.Provider
+                        value={{
+                            checkManager,
+                            entranceManager,
+                            connector,
+                            groupManager,
+                            sectionManager,
+                        }}
+                    >
+                        <MainHeader optionsCallback={() => {setOptionWindowOpen(!optionWindowOpen)}} />
+                        {optionWindowOpen && <OptionsScreen />}
+                        {!optionWindowOpen && (
+                            <>
+                                {new Set([
+                                    CONNECTION_STATUS.disconnected,
+                                    CONNECTION_STATUS.connecting,
+                                ]).has(trackerConnectionState) && (
+                                    <StartScreen />
+                                )}
+                                {CONNECTION_STATUS.connected ===
+                                    trackerConnectionState && (
+                                    <SectionView name="root" context={{}} />
+                                )}
+                            </>
                         )}
-                        {/* {<OptionsScreen />} */}
-
+                    </ServiceContext.Provider>
                 </TrackerStateContext.Provider>
             </AppScreen>
         </div>

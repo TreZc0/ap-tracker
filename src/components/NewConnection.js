@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+// @ts-check
+import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { PrimaryButton } from "./buttons";
 import { Input } from "./inputs";
-import { connectToAP } from "../services/connector/connector";
+import ServiceContext from "../contexts/serviceContext";
 
 const Container = styled.div`
     display: grid;
@@ -15,10 +16,11 @@ const Container = styled.div`
         "title"
         "host"
         "port"
+        "game"
         "slot"
         "password"
         "connect";
-    grid-template-rows: repeat(5, 2.5em) 4em;
+    grid-template-rows: repeat(6, 2.5em) 4em;
 `;
 
 const NewConnection = ({ ...props }) => {
@@ -27,7 +29,8 @@ const NewConnection = ({ ...props }) => {
         port: "",
         slot: "",
         password: "",
-        game: "Ocarina of Time",
+        // game: "Ocarina of Time",
+        game: "CrossCode",
     });
 
     const defaultChangeHandler = (event) => {
@@ -36,44 +39,69 @@ const NewConnection = ({ ...props }) => {
             [event.target.name]: event.target.value,
         });
     };
+    const serviceContext = useContext(ServiceContext);
+    const connector = serviceContext.connector;
+    let disabled = false;
+    if (!connector) {
+         disabled = true;
+    }
 
     return (
         <Container {...props}>
             <h2>New Connection</h2>
+            {/** The inpt forward ref is poorly typed in my jsdoc, raising errors */}
+            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="host"
                 value={connectionInfo.host}
                 onChange={defaultChangeHandler}
                 label="Host"
+                disabled={disabled}
             />
+            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="port"
                 value={connectionInfo.port}
                 onChange={defaultChangeHandler}
                 label="Port"
+                disabled={disabled}
             />
+            {/** @ts-ignore */}
+             <Input
+                type="text"
+                name="game"
+                value={connectionInfo.game}
+                onChange={defaultChangeHandler}
+                label="Game"
+                disabled={disabled}
+            />
+            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="slot"
                 value={connectionInfo.slot}
                 onChange={defaultChangeHandler}
                 label="Slot"
+                disabled={disabled}
             />
+            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="password"
                 value={connectionInfo.password}
                 onChange={defaultChangeHandler}
                 label="Password"
+                disabled={disabled}
             />
             <PrimaryButton
                 onClick={() => {
-                    connectToAP(connectionInfo)
+                    connector?.connectToAP(connectionInfo)
                         .then(console.log)
                         .catch(console.error);
                 }}
+                disabled={disabled}
             >
                 Connect
             </PrimaryButton>

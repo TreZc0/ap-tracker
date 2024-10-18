@@ -1,7 +1,7 @@
 // @ts-check
-import React, { useState, useSyncExternalStore } from "react";
+import React, { useContext, useState, useSyncExternalStore } from "react";
 import CheckView from "./CheckView";
-import SectionManager from "../../services/sections/sectionManager";
+import ServiceContext from "../../contexts/serviceContext";
 
 /**
  * @typedef Condition
@@ -21,10 +21,15 @@ import SectionManager from "../../services/sections/sectionManager";
 const SectionView = ({ name, context }) => {
     const isClosable = name !== "root";
     const [isOpen, setIsOpen] = useState(isClosable ? false : true);
+    const serviceContext = useContext(ServiceContext)
+    const sectionManager = serviceContext.sectionManager;
+    if(!sectionManager){
+        throw new Error("No group context provided");
+    }
     const section = useSyncExternalStore(
-        SectionManager.getSubscriberCallback(name),
-        () => SectionManager.getSectionStatus(name),
-        () => SectionManager.getSectionStatus(name)
+        sectionManager.getSubscriberCallback(name),
+        () => sectionManager.getSectionStatus(name),
+        () => sectionManager.getSectionStatus(name)
     );
     const style = {
         borderLeft: `1px dashed ${section?.theme.color ?? "Black"}`,

@@ -14,6 +14,19 @@ import { createContext } from "react";
  * @prop {number} [created]
  * @prop {number} [uuid]
  */
+/**
+ * @typedef SlotData
+ * @prop {string} [host]
+ * @prop {string} [port]
+ * @prop {string} [slotName]
+ * @prop {string} [game]
+ * @prop {string} [password]
+ * @prop {string} [alias]
+ * @prop {string} [seedHash]
+ * @prop {number} [lastPlayed]
+ * @prop {number} [created]
+ * @prop {number} [uuid]
+ */
 
 /** @type {React.Context<_SlotContext>} */
 const SlotContext = createContext({
@@ -27,6 +40,7 @@ const SlotContext = createContext({
 /**
  * @typedef _TrackerStateContext
  * @prop {string} connectionStatus
+ * @prop {SlotData} [slotData]
  */
 
 /** @type {React.Context<_TrackerStateContext>} */
@@ -35,7 +49,6 @@ const TrackerStateContext = createContext({
 });
 const GameContext = createContext(null);
 const InventoryContext = createContext(null);
-const SectionContext = createContext(null);
 
 const OptionContext = createContext(new Map());
 
@@ -44,6 +57,5 @@ export {
     GameContext,
     TrackerStateContext,
     InventoryContext,
-    SectionContext,
     OptionContext,
 };

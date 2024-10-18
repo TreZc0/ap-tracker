@@ -1,5 +1,5 @@
 // @ts-check
-
+// TODO make this less OOT specific
 /**
  * @typedef RegionData
  * @prop {String} region_name
@@ -12,33 +12,46 @@
  * @prop {boolean} [timePasses]
  */
 
-/** @type {Map<string, Set<String>>} */
-let regionChecks = new Map();
+/**
+ * @typedef RegionManager
+ * @prop {(region: string) => Set<string>} getChecksInRegion
+ */
 
 /**
  *
- * @param {string} region
- * @returns
+ * @returns {RegionManager}
  */
-let getChecksInRegion = (region) => {
-    return regionChecks.get(region) ?? new Set();
-};
+const createRegionManager = () => {
+    /** @type {Map<string, Set<String>>} */
+    let regionChecks = new Map();
 
-let loadRegions = (data) => {
-    for (let key of Object.getOwnPropertyNames(data)) {
-        for (let regionData of data[key]) {
-            const { region_name, locations } = regionData;
-            if (region_name && locations) {
-                let checks = regionChecks.get(region_name) ?? new Set();
-                for (let location in locations) {
-                    checks.add(location);
+    /**
+     *
+     * @param {string} region
+     * @returns
+     */
+    let getChecksInRegion = (region) => {
+        return regionChecks.get(region) ?? new Set();
+    };
+
+    let loadRegions = (data) => {
+        for (let key of Object.getOwnPropertyNames(data)) {
+            for (let regionData of data[key]) {
+                const { region_name, locations } = regionData;
+                if (region_name && locations) {
+                    let checks = regionChecks.get(region_name) ?? new Set();
+                    for (let location in locations) {
+                        checks.add(location);
+                    }
+                    regionChecks.set(region_name, checks);
                 }
-                regionChecks.set(region_name, checks);
             }
         }
-    }
+    };
+
+    loadRegions(require("../../games/OOT/World.json"));
+
+    return { getChecksInRegion };
 };
 
-loadRegions(require("../../data/OOT/World.json"));
-
-export { getChecksInRegion };
+export { createRegionManager };

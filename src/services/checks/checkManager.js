@@ -23,72 +23,85 @@ const defaultCheckStatus = {
     checked: false,
 };
 
-/** @type {Map<String, CheckStatus>} */
-const checkData = new Map();
-/** @type {Map<String, Set<()=>void>>} */
-const checkSubscribers = new Map();
-
 /**
- *
- * @param {string} checkName
- * @param {CheckStatusUpdate} status
+ * @typedef CheckManager
+ * @prop {(checkName: string, status: CheckStatusUpdate) => void} updateCheckStatus
+ * @prop {() => void} deleteAllChecks
+ * @prop {(checkName: string) => void} deleteCheck
+ * @prop {(checkName: string) => CheckStatus} getCheckStatus
+ * @prop {(checkName: string) => (listener: () => void) => () => void} getSubscriberCallback
  */
-const updateCheckStatus = (checkName, status) => {
-    checkData.set(checkName, {
-        ...(checkData.get(checkName) ?? defaultCheckStatus),
-        ...status,
-    });
-    checkSubscribers.get(checkName)?.forEach((listener) => listener());
-};
-
 /**
- *
- * @param {String} checkName
- * @returns {CheckStatus}
+ * 
+ * @returns {CheckManager}
  */
-const getCheckStatus = (checkName) => {
-    return checkData.get(checkName) ?? defaultCheckStatus;
-};
+const createCheckManager = () => {
+    /** @type {Map<String, CheckStatus>} */
+    const checkData = new Map();
+    /** @type {Map<String, Set<()=>void>>} */
+    const checkSubscribers = new Map();
 
-/**
- *
- * @param {string} checkName
- */
-const deleteCheck = (checkName) => {
-    checkData.delete(checkName);
-    checkSubscribers.get(checkName)?.forEach((listener) => listener());
-};
+    /**
+     *
+     * @param {string} checkName
+     * @param {CheckStatusUpdate} status
+     */
+    const updateCheckStatus = (checkName, status) => {
+        checkData.set(checkName, {
+            ...(checkData.get(checkName) ?? defaultCheckStatus),
+            ...status,
+        });
+        checkSubscribers.get(checkName)?.forEach((listener) => listener());
+    };
 
-const deleteAllChecks = () => {
-    let names = [...checkData.keys()];
-    names.map((name) => deleteCheck(name));
-};
+    /**
+     *
+     * @param {String} checkName
+     * @returns {CheckStatus}
+     */
+    const getCheckStatus = (checkName) => {
+        return checkData.get(checkName) ?? defaultCheckStatus;
+    };
 
-/**
- * Returns a function that can be called to subscribe to a specific check, used for syncing state with react.
- * @param {string} checkName
- * @returns
- */
-const getSubscribeCallback = (checkName) => {
-    return (/** @type {()=>void} */ listener) => {
-        if (!checkSubscribers.has(checkName)) {
-            checkSubscribers.set(checkName, new Set());
-        }
-        checkSubscribers.get(checkName)?.add(listener);
-        // return a function to clean up the subscription
-        return () => {
-            checkSubscribers.get(checkName)?.delete(listener);
+    /**
+     *
+     * @param {string} checkName
+     */
+    const deleteCheck = (checkName) => {
+        checkData.delete(checkName);
+        checkSubscribers.get(checkName)?.forEach((listener) => listener());
+    };
+
+    const deleteAllChecks = () => {
+        let names = [...checkData.keys()];
+        names.map((name) => deleteCheck(name));
+    };
+
+    /**
+     * Returns a function that can be called to subscribe to a specific check, used for syncing state with react.
+     * @param {string} checkName
+     * @returns
+     */
+    const getSubscriberCallback = (checkName) => {
+        return (/** @type {()=>void} */ listener) => {
+            if (!checkSubscribers.has(checkName)) {
+                checkSubscribers.set(checkName, new Set());
+            }
+            checkSubscribers.get(checkName)?.add(listener);
+            // return a function to clean up the subscription
+            return () => {
+                checkSubscribers.get(checkName)?.delete(listener);
+            };
         };
     };
+    const CheckManager = {
+        updateCheckStatus,
+        deleteAllChecks,
+        deleteCheck,
+        getCheckStatus,
+        getSubscriberCallback,
+    };
+    return CheckManager
 };
 
-const CheckManager = {
-    updateCheckStatus,
-    deleteAllChecks,
-    deleteCheck,
-    getCheckStatus,
-    getSubscribeCallback,
-    defaultCheckStatus,
-};
-
-export default CheckManager;
+export { createCheckManager, defaultCheckStatus };
