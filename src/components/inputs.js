@@ -2,10 +2,10 @@
 import React, { forwardRef } from "react";
 
 /** @type {React.ForwardedRef<*>} */
-const Input = forwardRef(({ label, ...props }, ref) => {
+const Input = forwardRef(({ label, style, ...props }, ref) => {
     return (
         <>
-            <div style={{ display: "inline-block", textAlign: "left" }}>
+            <div style={{...style, display: "inline-block", textAlign: "left" }}>
                 {label && (
                     <label
                         style={{

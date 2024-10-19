@@ -1,8 +1,8 @@
 // @ts-check
 import React from "react";
 import SplitScreen from "./SplitScreen";
-import NewConnection from "./NewConnection";
-import SavedConnections from "./SavedConnections";
+import NewConnection from "./connectionComponents/NewConnection";
+import SavedConnections from "./connectionComponents/SavedConnections";
 
 const StartScreen = ({ className = "" }) => {
     return (

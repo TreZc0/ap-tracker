@@ -2,7 +2,7 @@
 import React from "react";
 import { Checkbox } from "./inputs";
 import SplitScreen from "./SplitScreen";
-import { PrimaryButton } from "./buttons";
+// import { PrimaryButton } from "./buttons";
 
 const OptionsScreen = () => {
     return (

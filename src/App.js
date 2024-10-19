@@ -4,7 +4,6 @@ import React, { useState, useSyncExternalStore } from "react";
 import MainHeader from "./components/MainHeader";
 import StartScreen from "./components/StartScreen";
 import { TrackerStateContext } from "./contexts/contexts";
-import { SlotContext } from "./contexts/contexts";
 import { createConnector } from "./services/connector/connector";
 import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";

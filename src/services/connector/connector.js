@@ -2,6 +2,7 @@
 import { Client, ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
+import SavedConnectionManager from "../savedConnections/savedConnectionManager";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -132,7 +133,31 @@ const createConnector = (checkManager) => {
                 connection.status = CONNECTION_STATUS.connected;
                 connection.slotInfo = {...connection.slotInfo, slotName:client.players.name(packet.slot) , alias: client.players.alias(packet.slot)}
                 setAPLocations(client, checkManager);
-    
+                /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
+                let savedConnectionInfo = {
+                    seed: client.data.seed,
+                    host: connectionInfo.hostname,
+                    slot: connectionInfo.name,
+                    port: connectionInfo.port,
+                    game: connectionInfo.game,
+                    playerAlias: client.players.alias(packet.slot),
+                }
+                let possibleMatches = SavedConnectionManager.getExistingConnections(savedConnectionInfo);
+
+                if (possibleMatches.size > 0){
+                    // Update exisitng entry
+                    let chosenConnection = [...possibleMatches.values()][0];
+                    chosenConnection.lastUsedTime = Date.now();
+                    chosenConnection.host = savedConnectionInfo.host;
+                    chosenConnection.port = savedConnectionInfo.port;
+                    chosenConnection.playerAlias = savedConnectionInfo.playerAlias;
+                    SavedConnectionManager.saveConnectionData(chosenConnection);
+                } else {
+                    // Create a new entry
+                    let newConnectionData = SavedConnectionManager.createNewSavedConnection(savedConnectionInfo);
+                    SavedConnectionManager.saveConnectionData(newConnectionData);
+                }
+
                 return CONNECTION_MESSAGES.connectionSuccess({
                     playerAlias: client.players.alias(packet.slot),
                 });

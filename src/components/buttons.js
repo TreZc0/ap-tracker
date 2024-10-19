@@ -5,7 +5,10 @@ import { textPrimary, primary, secondary, danger } from "../constants/colors";
 const BaseButton = styled.button`
     border: none;
     border-radius: 2px;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem
+        ${(props) =>
+            // @ts-ignore
+            props.$small ? "0.5rem" : "1.5rem"};
     margin: 0.25rem 0.75rem;
     box-shadow: 0px 2px 4px black;
     cursor: pointer;

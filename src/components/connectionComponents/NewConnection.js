@@ -1,9 +1,9 @@
 // @ts-check
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
-import { PrimaryButton } from "./buttons";
-import { Input } from "./inputs";
-import ServiceContext from "../contexts/serviceContext";
+import { PrimaryButton } from "../buttons";
+import { Input } from "../inputs";
+import ServiceContext from "../../contexts/serviceContext";
 
 const Container = styled.div`
     display: grid;
