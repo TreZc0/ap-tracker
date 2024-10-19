@@ -1,23 +1,29 @@
 // @ts-check
 import React from "react";
 import styled from "styled-components";
-import { secondary, tertiary } from "../../constants/colors";
+import { primary, secondary, textPrimary } from "../../constants/colors";
 
 const SavedConnectionContainer = styled.div`
     box-sizing: border-box;
     width: 25vw;
-    cursor: ${(props) =>
-        // @ts-ignore
-        props.$disabled ? "not-allowed" : "pointer"};
-    opacity: ${(props) =>
-        // @ts-ignore
-        props.$disabled ? 0.5 : 1};
+    color: ${textPrimary};
+    cursor: pointer;
     background-color: ${(props) =>
         // @ts-ignore
-        props.$selected ? secondary : tertiary};
+        props.$selected ? primary : secondary};
     border-radius: 5px;
-    margin: 0.5rem;
+    margin: 0.25rem 0.75rem;
+    box-shadow: 0px 2px 4px black;
     padding: 0.5rem;
+
+    &:hover {
+        box-shadow: 0px 1px 4px black;
+    }
+
+    &[disabled] {
+        opacity: 0.5;
+        box-shadow: 0px 0px 0px black;
+    }
 `;
 
 const SavedConnection = ({
@@ -38,7 +44,7 @@ const SavedConnection = ({
         <SavedConnectionContainer
             // @ts-ignore don't know how to jsdoc it properly
             $selected={selected}
-            $disabled={disabled}
+            disabled={disabled}
             onClick={() => onClick(connectionId)}
         >
             <div>{name}</div>

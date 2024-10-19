@@ -7,11 +7,13 @@ import SavedConnectionManager from "../../services/savedConnections/savedConnect
 
 const DialogContainer = styled.dialog`
     position: absolute;
-    padding: 1rem;
+    padding: 2rem;
     background-color: white;
+    border: 0px solid black;
+    box-shadow: 0px 2px 4px black;
     border-radius: 5px;
-    ::backdrop {
-        background: rgba(0, 0, 0, 0.5);
+    &::backdrop {
+        background: rgba(0, 0, 0, 0.7);
     }
 `;
 

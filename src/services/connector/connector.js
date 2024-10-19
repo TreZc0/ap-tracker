@@ -124,7 +124,7 @@ const createConnector = (checkManager) => {
             game,
             items_handling: ITEMS_HANDLING_FLAGS.REMOTE_ALL,
             password,
-            tags: ["Tracker"],
+            tags: ["Tracker", "Checklist"],
         };
     
         return client
@@ -165,7 +165,7 @@ const createConnector = (checkManager) => {
             .catch((e) => {
                 connection.status = CONNECTION_STATUS.disconnected;
                 connection.slotInfo = {...connection.slotInfo, name:"", alias:""}
-                return CONNECTION_MESSAGES.connectionFailed({
+                throw CONNECTION_MESSAGES.connectionFailed({
                     host,
                     port,
                     slot,

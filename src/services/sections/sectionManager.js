@@ -625,7 +625,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             let update = () => {
-                /*\
+                /**
                  * @typedef Section
                  * @prop {string} title
                  * @prop {CheckReport} checkReport

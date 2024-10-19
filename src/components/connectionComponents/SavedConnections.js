@@ -75,8 +75,8 @@ const SavedConnections = ({ ...props }) => {
                 {sortedConnections.map((connection) => <SavedConnection key={connection.connectionId} {...connection} disabled={disabled} selected={connection.connectionId === selectedConnection?.connectionId} onClick={selectId}/>)}
             </div>
             <span>
-                <PrimaryButton onClick={connect}>Connect</PrimaryButton>
-                <SecondaryButton onClick={openEditor}>Edit</SecondaryButton>
+                <PrimaryButton onClick={connect} disabled={!selectedConnection && true}>Connect</PrimaryButton>
+                <SecondaryButton onClick={openEditor} disabled={!selectedConnection && true} >Edit</SecondaryButton>
             </span>
             <EditConnectionDiaolog open={editorOpen} onClose={closeEditor} connection={selectedConnection}/>
         </Container>

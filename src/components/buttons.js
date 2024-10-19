@@ -22,6 +22,12 @@ const BaseButton = styled.button`
     &:active {
         box-shadow: 0px 0px 4px black;
     }
+
+    &:disabled {
+        opacity: 0.5;
+        box-shadow: 0px 0px 0px black;
+        cursor: not-allowed;
+    }
 `;
 
 const PrimaryButton = styled(BaseButton)`
