@@ -119,10 +119,10 @@ const PORTAL_MODE = {
 /**
  * @typedef SectionTypeDef
  * @prop {boolean | SectionCondition} show_when
- * @prop {"entrance_pool" | "portal" | "standard"} type
- * @prop {boolean | SectionCondition} flatten_when
- * @prop {boolean | SectionCondition} show_entry_when
- * @prop {string[] | null} portal_categories
+ * @prop {"entrance_pool" | "portal" | "standard" | string} type
+ * @prop {boolean | SectionCondition} [flatten_when]
+ * @prop {boolean | SectionCondition} [show_entry_when]
+ * @prop {string[] | null} [portal_categories]
  */
 
 /**
@@ -150,6 +150,14 @@ const PORTAL_MODE = {
  * @prop {SectionType} type
  * @prop {SectionTheme} theme
  * @prop {String[] | null} children
+ */
+
+/**
+ * @typedef SectionConfigData
+ * @prop {Object.<String, SectionDef>} categories
+ * @prop {*} options
+ * @prop {Object.<string, SectionTypeDef>} types
+ * @prop {Object.<string, SectionThemeDef>} themes
  */
 
 /**
@@ -215,8 +223,9 @@ const evaluateCondition = (condition, context) => {
  */
 
 /**
- * @typedef SectionMangager
+ * @typedef SectionManager
  * @prop {(sectionName: string, section: any) => void} updateSectionStatus
+ * @prop {(configData: SectionConfigData) => void} setConfiguration
  * @prop {() => void} deleteAllSections
  * @prop {(sectionName: string) => void} deleteSection
  * @prop {(sectionName: string) => Section | null} getSectionStatus
@@ -224,10 +233,10 @@ const evaluateCondition = (condition, context) => {
  */
 
 /**
- * 
- * @param {import("../checks/checkManager").CheckManager} checkManager 
- * @param {import("../entrances/entranceManager").EntranceManager} entranceManager 
- * @param {import("./groupManager").GroupManager} groupManager 
+ *
+ * @param {import("../checks/checkManager").CheckManager} checkManager
+ * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
+ * @param {import("./groupManager").GroupManager} groupManager
  * @returns {SectionManager}
  */
 const createSectionManager = (checkManager, entranceManager, groupManager) => {
@@ -255,9 +264,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
     };
 
     /**
-     * 
-     * @param {string} sectionName 
-     * @param {*} section 
+     *
+     * @param {string} sectionName
+     * @param {*} section
      */
     const updateSectionStatus = (sectionName, section) => {
         sectionData.set(sectionName, {
@@ -298,7 +307,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
     // Builds a tree from the section config data that can be compiled into hard categories with options and state
     /**
      *
-     * @param {*} configData
+     * @param {SectionConfigData} configData
      * @returns
      */
     const readSectionConfig = (configData) => {
@@ -316,6 +325,15 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 ...typeDefaults,
                 ...type,
             };
+            if (
+                !new Set(["standard", "entrance_pool", "portal"]).has(
+                    fullType.type
+                )
+            ) {
+                throw new Error(`Failed to understand type: ${fullType.type}`);
+            }
+            // @ts-ignore Due to how JSON is loaded, the union type must allow strings
+            // this function doesn't like that idea, hence the above check and the ts-ignore
             sectionTypes.set(name, fullType);
         };
 
@@ -397,7 +415,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             return result;
         };
 
-        if (configData["types"]) {
+        if (configData.types) {
             for (let typeName of Object.keys(configData.types)) {
                 readType(typeName, configData.types[typeName]);
             }
@@ -405,7 +423,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             console.warn("No 'types' property found in configuration data");
         }
 
-        if (configData["themes"]) {
+        if (configData.themes) {
             for (let themeName of Object.keys(configData.themes)) {
                 readTheme(themeName, configData.themes[themeName]);
             }
@@ -495,7 +513,8 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             const setEntranceListener = () => {
-                let subscribe = entranceManager.getEntranceSubscriber(portalName);
+                let subscribe =
+                    entranceManager.getEntranceSubscriber(portalName);
                 let cleanUpCall = subscribe(update);
                 listenerCleanUpCalls.add(cleanUpCall);
             };
@@ -511,8 +530,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                  * @prop {String[] | null} children
                  */
                 areaKey =
-                    groupManager.getGroupWithRegion(entranceManager.getEntranceDestRegion(portalName)) ??
-                    null;
+                    groupManager.getGroupWithRegion(
+                        entranceManager.getEntranceDestRegion(portalName)
+                    ) ?? null;
                 if (areaKey !== processedAreaKey) {
                     processedAreaKey = areaKey;
                     cleanUpListeners();
@@ -552,7 +572,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             let areaKey =
-                groupManager.getGroupWithRegion(entranceManager.getEntranceDestRegion(portalName)) ?? null;
+                groupManager.getGroupWithRegion(
+                    entranceManager.getEntranceDestRegion(portalName)
+                ) ?? null;
             let processedAreaKey = null;
 
             /** @type {SectionUpdateTreeNode} */
@@ -736,23 +758,25 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         return buildSectionUpdateTreeNode("root");
     };
 
+    /**
+     *
+     * @param {SectionConfigData} rawSectionConfigData
+     */
+    const setConfiguration = (rawSectionConfigData) => {
+        deleteAllSections();
+        updateTreeRoot?.remove();
+        readSectionConfig(rawSectionConfigData);
+        updateTreeRoot = buildSectionUpdateTree();
+    };
+
     const SectionManager = {
         updateSectionStatus,
         deleteAllSections,
         deleteSection,
         getSectionStatus,
         getSubscriberCallback,
+        setConfiguration,
     };
-
-    const setConfiguration = () => {
-        deleteAllSections();
-        updateTreeRoot?.remove();
-        const rawSectionConfigData = require("../../games/OOT/CategoryConfig.json");
-        readSectionConfig(rawSectionConfigData);
-        updateTreeRoot = buildSectionUpdateTree();
-    };
-
-    setConfiguration();
 
     return SectionManager;
 };

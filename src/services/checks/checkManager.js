@@ -30,9 +30,10 @@ const defaultCheckStatus = {
  * @prop {(checkName: string) => void} deleteCheck
  * @prop {(checkName: string) => CheckStatus} getCheckStatus
  * @prop {(checkName: string) => (listener: () => void) => () => void} getSubscriberCallback
+ * @prop {() => Set<String>} getAllExistingChecks
  */
 /**
- * 
+ *
  * @returns {CheckManager}
  */
 const createCheckManager = () => {
@@ -77,6 +78,16 @@ const createCheckManager = () => {
         names.map((name) => deleteCheck(name));
     };
 
+    /** Gets a list of all checks that exist in the tracker */
+    const getAllExistingChecks = () => {
+        let checks = new Set();
+        checkData.forEach((status, checkName) => {
+            if (status.exists) {
+                checks.add(checkName);
+            }
+        });
+        return checks;
+    };
     /**
      * Returns a function that can be called to subscribe to a specific check, used for syncing state with react.
      * @param {string} checkName
@@ -100,8 +111,9 @@ const createCheckManager = () => {
         deleteCheck,
         getCheckStatus,
         getSubscriberCallback,
+        getAllExistingChecks,
     };
-    return CheckManager
+    return CheckManager;
 };
 
 export { createCheckManager, defaultCheckStatus };

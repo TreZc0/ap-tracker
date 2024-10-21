@@ -11,21 +11,24 @@
 
 /**
  * @typedef EntranceManager
- * @prop {(entrance: string) => (listener: () => void) => () => void} getEntranceSubscriber
- * @prop {(entrance: string, entranceRole: string, doReverse?: boolean | undefined) => void} setEntrance
- * @prop {(entrance: string, doReverse?: boolean) => void} resetEntrance
- * @prop {(entrance: string, doReverse?: boolean) => void} clearEntrance
- * @prop {(categories?: Set<string | undefined> | undefined) => void} resetEntranceTable
- * @prop {(categories?: Set<string | undefined> | undefined) => void} clearEntranceTable
- * @prop {(stringData: any) => boolean} importString
- * @prop {() => string} exportToString
- * @prop {(name: string) => string | null} getEntranceVanillaDestRegion
- * @prop {(name: string) => string | null} getEntranceDestRegion
- * @prop {(regionName: string) => Set<string>} getEntrancesInRegion
- * @prop {(entrance: string) => string | null} getEntranceCategory
- * @prop {(category: string) => Set<string>} getEntrancesInCategory
- * @prop {(categories: Set<string>) => Set<any>} getEntrancesInCategories
- * @prop {(entrance: string) => boolean} getEntranceAdoptablility
+ * @prop {(entrance: string) => (listener: () => void) => () => void} getEntranceSubscriber Returns a function than can have a callback passed in and returns a clean up call.
+ * @prop {(entrance: string, entranceRole: string, doReverse?: boolean | undefined) => void} setEntrance Sets the provided entrance to the role of an other entrance
+ * @prop {(entrance: string, doReverse?: boolean) => void} resetEntrance Sets a provided entrance to its vanilla state
+ * @prop {(entrance: string, doReverse?: boolean) => void} clearEntrance Sets a provided entrance to no longer be set
+ * @prop {(categories?: Set<string | undefined> | undefined) => void} resetEntranceTable Sets all entrances to vanilla, if a set of categories is provided, only those will be reset.
+ * @prop {(categories?: Set<string | undefined> | undefined) => void} clearEntranceTable Sets all entrances to lead to null, if a set of categories is provided, only those will be un set.
+ * @prop {(data: string[]) => void} setAdoptableEntrances Sets the list of categories that can be "adopted" by a section
+ * @prop {(data: {[x: string]: string}) => void} setReverseCategoryMap Sets the reverse category map for ease of automatically classifying reverse entrances
+ * @prop {(entranceData: EntranceData) => void} addEntrance Adds an entrance to the entrance table
+ * @prop {(stringData: any) => boolean} importString Imports and sets the entrance table state
+ * @prop {() => string} exportToString Exports the entrance table state
+ * @prop {(name: string) => string | null} getEntranceVanillaDestRegion Gets a given entrance's vanilla destination
+ * @prop {(name: string) => string | null} getEntranceDestRegion Gets a given entrance's current destination
+ * @prop {(regionName: string) => Set<string>} getEntrancesInRegion Gets the entrances contained in a region
+ * @prop {(entrance: string) => string | null} getEntranceCategory Gets the category of an entrance
+ * @prop {(category: string) => Set<string>} getEntrancesInCategory Gets a list of entrances with a given category
+ * @prop {(categories: Set<string>) => Set<any>} getEntrancesInCategories Gets a list of entrances with a given set of categories
+ * @prop {(entrance: string) => boolean} getEntranceAdoptablility Gets the adoptability of given entrance
  */
 
 /**
@@ -102,6 +105,7 @@ const createEntranceManager = () => {
         return name.split(" -> ");
     };
 
+    // TODO, make this less OOT specific
     /**
      * @param {EntranceData} entranceData
      */
@@ -153,28 +157,28 @@ const createEntranceManager = () => {
         }
     };
 
-    let loadEntranceData = async (data) => {
-        if (data["Entrances"]) {
-            for (let i = 0; i < data["Entrances"].length; i++) {
-                let entranceData = data["Entrances"][i];
-                addEntrance(entranceData);
-            }
-        } else {
-            throw new Error("File was missng 'Entrances' property");
-        }
-    };
-
-    let loadMetaData = (data) => {
+    /**
+     * Configures the reverse category map
+     * @param {Object.<string, string>} data 
+     */
+    const setReverseCategoryMap = (data) => {
         for (let category of Object.getOwnPropertyNames(
-            data["ReverseCategoryMap"]
+            data
         )) {
             reverseCategoryMap.set(
                 category,
-                data["ReverseCategoryMap"][category]
+                data[category]
             );
         }
-        adoptableEntrances = new Set(data["AdoptableTypes"]);
-    };
+    }
+
+    /**
+     * Sets the categories of entrances considered adoptable
+     * @param {string[]} data 
+     */
+    const setAdoptableEntrances = (data) => {
+        adoptableEntrances = new Set(data);
+    }
 
     /**
      * Clears entries from table
@@ -410,18 +414,18 @@ const createEntranceManager = () => {
         return false;
     };
 
-    loadMetaData(require("../../games/OOT/EntranceMetaData.json"));
-    loadEntranceData(require("../../games/OOT/Entrances.json"));
-
     return {
         getEntranceSubscriber,
         setEntrance,
         resetEntrance,
         clearEntrance,
+        addEntrance,
         resetEntranceTable,
         clearEntranceTable,
         importString,
         exportToString,
+        setAdoptableEntrances,
+        setReverseCategoryMap,
         getEntranceVanillaDestRegion,
         getEntranceDestRegion,
         getEntrancesInRegion,

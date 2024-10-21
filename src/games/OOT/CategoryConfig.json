@@ -463,6 +463,7 @@
         },
         "grotto": {
             "type": "portal",
+            "show_when": true,
             "show_entry_when": {
                 "state": "parent.type",
                 "is": "entrance_pool"
@@ -476,6 +477,7 @@
         },
         "interior": {
             "type": "portal",
+            "show_when": true,
             "show_entry_when": {
                 "state": "parent.type",
                 "is": "entrance_pool"
@@ -489,6 +491,7 @@
         },
         "boss": {
             "type": "portal",
+            "show_when": true,
             "show_entry_when": {
                 "state": "parent.type",
                 "is": "entrance_pool"

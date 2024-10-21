@@ -3,6 +3,7 @@ import { Client, ITEMS_HANDLING_FLAGS } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
+import { TrackerBuilder } from "../../games/TrackerBuilder";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -15,24 +16,34 @@ const CONNECTION_STATUS = {
  * @typedef Connector
  * @prop {({ host, port, slot, game, password }:{host:string, port: string|number, slot: string, game: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
  * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client<import("archipelago.js").SlotData>;}} connection
- * 
+ *
  */
 
 /**
- * 
- * @param {import("../checks/checkManager").CheckManager} checkManager 
+ *
+ * @param {import("../checks/checkManager").CheckManager} checkManager
+ * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
+ * @param {import("../regions/regionManager").RegionManager} regionManager
+ * @param {import("../sections/groupManager").GroupManager} groupManager
+ * @param {import("../sections/sectionManager").SectionManager} sectionManager
  */
-const createConnector = (checkManager) => {
+const createConnector = (
+    checkManager,
+    entranceManager,
+    regionManager,
+    groupManager,
+    sectionManager
+) => {
     const client = new Client();
     window.addEventListener("beforeunload", () => {
         client.disconnect();
     });
-    
+
     setupAPCheckSync(client, checkManager);
-    
+
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo = {slotName: "", alias:""}
+        let slotInfo = { slotName: "", alias: "" };
         /** @type {Set<()=>void>} */
         let listeners = new Set();
         const subscribe = (/** @type {() => void} */ listener) => {
@@ -71,7 +82,7 @@ const createConnector = (checkManager) => {
             },
         };
     })();
-    
+
     const connectToAP = async ({ host, port, slot, game, password }) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
@@ -85,14 +96,14 @@ const createConnector = (checkManager) => {
                 });
             }
         }
-    
+
         // verify
         if (host.trim().length === 0) {
             throw CONNECTION_MESSAGES.generalError({
                 message: "Please specify a host address",
             });
         }
-    
+
         if (
             port.trim().length === 0 ||
             !(0 <= parseInt(port) && parseInt(port) <= 65535)
@@ -101,21 +112,21 @@ const createConnector = (checkManager) => {
                 message: "Invalid port number",
             });
         }
-    
+
         if (slot.trim().length === 0) {
             throw CONNECTION_MESSAGES.generalError({
                 message: "Please specify a slot name",
             });
         }
-    
+
         if (game.trim().length === 0) {
             throw CONNECTION_MESSAGES.generalError({
                 message: "Please specify a game",
             });
         }
-    
+
         connection.status = CONNECTION_STATUS.connecting;
-    
+
         /** @type {import("archipelago.js").ConnectionInformation} */
         const connectionInfo = {
             hostname: host,
@@ -126,12 +137,16 @@ const createConnector = (checkManager) => {
             password,
             tags: ["Tracker", "Checklist"],
         };
-    
+
         return client
             .connect(connectionInfo)
             .then((packet) => {
                 connection.status = CONNECTION_STATUS.connected;
-                connection.slotInfo = {...connection.slotInfo, slotName:client.players.name(packet.slot) , alias: client.players.alias(packet.slot)}
+                connection.slotInfo = {
+                    ...connection.slotInfo,
+                    slotName: client.players.name(packet.slot),
+                    alias: client.players.alias(packet.slot),
+                };
                 setAPLocations(client, checkManager);
                 /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
                 let savedConnectionInfo = {
@@ -141,22 +156,41 @@ const createConnector = (checkManager) => {
                     port: connectionInfo.port,
                     game: connectionInfo.game,
                     playerAlias: client.players.alias(packet.slot),
-                }
-                let possibleMatches = SavedConnectionManager.getExistingConnections(savedConnectionInfo);
+                };
+                let possibleMatches =
+                    SavedConnectionManager.getExistingConnections(
+                        savedConnectionInfo
+                    );
 
-                if (possibleMatches.size > 0){
+                if (possibleMatches.size > 0) {
                     // Update exisitng entry
                     let chosenConnection = [...possibleMatches.values()][0];
                     chosenConnection.lastUsedTime = Date.now();
                     chosenConnection.host = savedConnectionInfo.host;
                     chosenConnection.port = savedConnectionInfo.port;
-                    chosenConnection.playerAlias = savedConnectionInfo.playerAlias;
+                    chosenConnection.playerAlias =
+                        savedConnectionInfo.playerAlias;
                     SavedConnectionManager.saveConnectionData(chosenConnection);
                 } else {
                     // Create a new entry
-                    let newConnectionData = SavedConnectionManager.createNewSavedConnection(savedConnectionInfo);
-                    SavedConnectionManager.saveConnectionData(newConnectionData);
+                    let newConnectionData =
+                        SavedConnectionManager.createNewSavedConnection(
+                            savedConnectionInfo
+                        );
+                    SavedConnectionManager.saveConnectionData(
+                        newConnectionData
+                    );
                 }
+
+                TrackerBuilder(
+                    connectionInfo.game,
+                    checkManager,
+                    entranceManager,
+                    regionManager,
+                    groupManager,
+                    sectionManager,
+                    {}
+                );
 
                 return CONNECTION_MESSAGES.connectionSuccess({
                     playerAlias: client.players.alias(packet.slot),
@@ -164,7 +198,11 @@ const createConnector = (checkManager) => {
             })
             .catch((e) => {
                 connection.status = CONNECTION_STATUS.disconnected;
-                connection.slotInfo = {...connection.slotInfo, name:"", alias:""}
+                connection.slotInfo = {
+                    ...connection.slotInfo,
+                    name: "",
+                    alias: "",
+                };
                 throw CONNECTION_MESSAGES.connectionFailed({
                     host,
                     port,
@@ -174,9 +212,7 @@ const createConnector = (checkManager) => {
                 });
             });
     };
-    return {connectToAP, connection}
-}
-
-
+    return { connectToAP, connection };
+};
 
 export { CONNECTION_STATUS, createConnector };

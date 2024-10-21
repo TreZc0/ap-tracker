@@ -19,6 +19,7 @@
  * @typedef GroupManager
  * @prop { Map<string, Group>} groups
  * @prop {() => Group} createNullGroup
+ * @prop {(data: {[x: string]: GroupData}) => void} loadGroups
  * @prop {(regionName: any) => string | null} getGroupWithRegion
  * 
  */
@@ -37,16 +38,16 @@ let createGroupManager = (entranceManager, regionManager) => {
     let regionToSection = new Map();
 
     /**
-     * @param {String} sectionName
-     * @param {GroupData} sectionData
+     * @param {String} groupName
+     * @param {GroupData} groupData
      * @returns {Group}
      */
-    let loadGroup = (sectionName, sectionData) => {
+    let loadGroup = (groupName, groupData) => {
         let checks = new Set();
         let exits = new Set();
         let adoptable = false;
 
-        for (let region of sectionData.regions) {
+        for (let region of groupData.regions) {
             regionManager
                 .getChecksInRegion(region)
                 .forEach((check) => checks.add(check));
@@ -57,10 +58,10 @@ let createGroupManager = (entranceManager, regionManager) => {
                 console.warn(
                     `${region} is in more than one section: ${regionToSection.get(
                         region
-                    )} and ${sectionName}`
+                    )} and ${groupName}`
                 );
             }
-            regionToSection.set(region, sectionName);
+            regionToSection.set(region, groupName);
         }
 
         return {
@@ -74,7 +75,7 @@ let createGroupManager = (entranceManager, regionManager) => {
                 return adoptable;
             },
             get name() {
-                return sectionName;
+                return groupName;
             },
         };
     };
@@ -107,15 +108,18 @@ let createGroupManager = (entranceManager, regionManager) => {
         };
     };
 
-    let loadGroups = (data) => {
+    /**
+     * 
+     * @param {Object.<string, GroupData>} data 
+     */
+    const loadGroups = (data) => {
         for (let key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
-    };
+        console.log("Loaded groups:", groups);
 
-    loadGroups(require("../../games/OOT/Sections.json"));
-    console.log(groups);
-    return { groups, createNullGroup, getGroupWithRegion };
+    };
+    return { groups, loadGroups, createNullGroup, getGroupWithRegion };
 };
 
 export { createGroupManager };

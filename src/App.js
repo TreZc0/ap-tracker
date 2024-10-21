@@ -32,7 +32,6 @@ const AppScreen = styled.div`
 
 const checkManager = createCheckManager();
 const entranceManager = createEntranceManager();
-const connector = createConnector(checkManager);
 const regionManager = createRegionManager();
 const groupManager = createGroupManager(entranceManager, regionManager);
 const sectionManager = createSectionManager(
@@ -40,9 +39,14 @@ const sectionManager = createSectionManager(
     entranceManager,
     groupManager
 );
+const connector = createConnector(
+    checkManager,
+    entranceManager,
+    regionManager,
+    groupManager,
+    sectionManager
+);
 const connection = connector.connection;
-
-entranceManager.resetEntranceTable();
 
 function App() {
     const trackerConnectionState = useSyncExternalStore(
@@ -63,7 +67,7 @@ function App() {
                 <TrackerStateContext.Provider
                     value={{
                         connectionStatus: trackerConnectionState,
-                        slotData: trackerSlotData
+                        slotData: trackerSlotData,
                     }}
                 >
                     <ServiceContext.Provider
@@ -75,7 +79,11 @@ function App() {
                             sectionManager,
                         }}
                     >
-                        <MainHeader optionsCallback={() => {setOptionWindowOpen(!optionWindowOpen)}} />
+                        <MainHeader
+                            optionsCallback={() => {
+                                setOptionWindowOpen(!optionWindowOpen);
+                            }}
+                        />
                         {optionWindowOpen && <OptionsScreen />}
                         {!optionWindowOpen && (
                             <>

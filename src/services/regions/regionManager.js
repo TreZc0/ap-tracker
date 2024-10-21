@@ -15,6 +15,7 @@
 /**
  * @typedef RegionManager
  * @prop {(region: string) => Set<string>} getChecksInRegion
+ * @prop {(data: {[x: string]: RegionData[]}) => void} loadRegions
  */
 
 /**
@@ -34,6 +35,10 @@ const createRegionManager = () => {
         return regionChecks.get(region) ?? new Set();
     };
 
+    /**
+     * 
+     * @param {Object.<string, RegionData[]>} data 
+     */
     let loadRegions = (data) => {
         for (let key of Object.getOwnPropertyNames(data)) {
             for (let regionData of data[key]) {
@@ -49,9 +54,7 @@ const createRegionManager = () => {
         }
     };
 
-    loadRegions(require("../../games/OOT/World.json"));
-
-    return { getChecksInRegion };
+    return { getChecksInRegion, loadRegions };
 };
 
 export { createRegionManager };
