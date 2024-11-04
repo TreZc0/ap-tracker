@@ -9,7 +9,7 @@
  * @prop {string} game
  * @prop {string} [password]
  * @prop {string} [playerAlias]
-*/
+ */
 
 /**
  * @typedef SavedConnection
@@ -25,7 +25,8 @@
  * @prop {number} lastUsedTime
  * @prop {number} createdTime
  * @prop {number} version
- * @prop {{}} settings
+ * @prop {*} settings
+ * @prop {*} saveData
  */
 
 /** @type {Set<()=>void>} */
@@ -57,8 +58,12 @@ const loadSavedConnectionData = () => {
      */
     let connectionData = connectionDataString
         ? JSON.parse(connectionDataString)
-        : { connections: {}, version: SAVED_CONNECTION_VERSION, modified: Date.now() };
-    
+        : {
+              connections: {},
+              version: SAVED_CONNECTION_VERSION,
+              modified: Date.now(),
+          };
+
     // Load and convert from ap-oot tracker
     if (connectionData.version === 1) {
         let connecitonIds = Object.getOwnPropertyNames(
@@ -77,43 +82,52 @@ const loadSavedConnectionData = () => {
         connectionData.version = 2;
     }
     // React requires the same object to be returned if nothing has changed
-    if (cachedConnectionData && cachedConnectionData.modified === connectionData.modified){
+    if (
+        cachedConnectionData &&
+        cachedConnectionData.modified === connectionData.modified
+    ) {
         return cachedConnectionData;
     }
     cachedConnectionData = connectionData;
     return connectionData;
 };
 /**
- * 
- * @param {{connections:Object.<string, SavedConnection>, version:number, modified:number}} saveData 
+ *
+ * @param {{connections:Object.<string, SavedConnection>, version:number, modified:number}} saveData
  */
 const save = (saveData) => {
     saveData.modified = Date.now();
     localStorage.setItem(CONNECTION_ITEM_NAME, JSON.stringify(saveData));
     connectionListeners.forEach((listener) => listener());
-}
+};
 
 /**
- * 
- * @param {SavedConnection} data 
+ *
+ * @param {SavedConnection} data
  */
 const saveConnectionData = (data) => {
     let currentSaveData = loadSavedConnectionData();
-    if (!data.connectionId){
-        data.connectionId = `${data.seed}-${data.slot}-${new Date().toUTCString()}`;
-        console.warn(`Data with no connection id was trying to be saved, added id of ${data.connectionId}`)
+    if (!data.connectionId) {
+        data.connectionId = `${data.seed}-${
+            data.slot
+        }-${new Date().toUTCString()}`;
+        console.warn(
+            `Data with no connection id was trying to be saved, added id of ${data.connectionId}`
+        );
     }
     currentSaveData.connections[data.connectionId] = data;
     save(currentSaveData);
-}
+};
 
 /**
- * 
- * @param {SavedConnectionInfo} data 
+ *
+ * @param {SavedConnectionInfo} data
  * @returns {SavedConnection}
  */
 const createNewSavedConnection = (data) => {
-    const connectionId = `${data.seed}-${data.slot}-${new Date().toUTCString()}`;
+    const connectionId = `${data.seed}-${
+        data.slot
+    }-${new Date().toUTCString()}`;
     return {
         connectionId,
         seed: data.seed,
@@ -128,8 +142,9 @@ const createNewSavedConnection = (data) => {
         createdTime: Date.now(),
         version: SAVED_CONNECTION_VERSION,
         settings: {},
+        saveData: {},
     };
-}
+};
 
 /**
  * @param {SavedConnectionInfo} data
@@ -138,18 +153,19 @@ const getExistingConnections = (data) => {
     const currentSaveData = loadSavedConnectionData();
     /** @type {Set<SavedConnection>} */
     const existingConnections = new Set();
-    let connecitonIds = Object.getOwnPropertyNames(
-        currentSaveData.connections
-    );
-    
-    for (const id of connecitonIds){
+    let connecitonIds = Object.getOwnPropertyNames(currentSaveData.connections);
+
+    for (const id of connecitonIds) {
         const connection = currentSaveData.connections[id];
-        if (connection.seed === data.seed && connection.slot.toString() === data.slot.toString()){
+        if (
+            connection.seed === data.seed &&
+            connection.slot.toString() === data.slot.toString()
+        ) {
             existingConnections.add(connection);
         }
     }
     return existingConnections;
-}
+};
 
 /**
  * Gets information that can be passed to the connector to connect to archipelago out of a SavedConnection
@@ -163,18 +179,39 @@ const getConnectionInfo = (data) => {
         slot: data.slot,
         game: data.game,
         password: data.password ?? "",
-    }
-}
+    };
+};
 
 /**
- * 
- * @param {string} id 
+ *
+ * @param {string} id
  */
 const deleteConnection = (id) => {
     const currentSaveData = loadSavedConnectionData();
     delete currentSaveData.connections[id];
     save(currentSaveData);
-}
+};
+
+/**
+ *
+ * @param {string} id Id of the connection
+ * @returns
+ */
+const getConnectionSaveData = (id) => {
+    const currentSaveData = loadSavedConnectionData();
+    return currentSaveData.connections[id]?.saveData;
+};
+
+/**
+ *
+ * @param {string} id Id of the connection
+ * @returns
+ */
+const updateConnectionSaveData = (id, newSaveData) => {
+    const currentSaveData = loadSavedConnectionData();
+    currentSaveData.connections[id].saveData = newSaveData;
+    save(currentSaveData);
+};
 
 const SavedConnectionManager = {
     createNewSavedConnection,
@@ -184,6 +221,8 @@ const SavedConnectionManager = {
     loadSavedConnectionData,
     deleteConnection,
     getSubscriberCallback,
+    getConnectionSaveData,
+    updateConnectionSaveData,
 };
 
 export default SavedConnectionManager;

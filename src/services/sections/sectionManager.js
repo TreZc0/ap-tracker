@@ -448,8 +448,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 report.checked.add(checkName);
             } else if (status.ignored) {
                 report.ignored.add(checkName);
-            } else if (status.hint) {
-                report.hinted.add(checkName);
             }
         }
         return status;

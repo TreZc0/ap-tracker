@@ -3,7 +3,7 @@
 /**
  * @typedef CheckStatus
  * @prop {boolean} exists
- * @prop {String | null} hint
+ * @prop {import("../tags/tagManager").Tag[]} tags
  * @prop {boolean} ignored
  * @prop {boolean} checked
  */
@@ -11,14 +11,14 @@
 /**
  * @typedef CheckStatusUpdate
  * @prop {boolean} [exists]
- * @prop {String | null} [hint]
+ * @prop {import("../tags/tagManager").Tag[]} [tags]
  * @prop {boolean} [ignored]
  * @prop {boolean} [checked]
  */
 
 const defaultCheckStatus = {
     exists: false,
-    hint: null,
+    tags: [],
     ignored: false,
     checked: false,
 };

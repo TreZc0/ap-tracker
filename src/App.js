@@ -15,6 +15,7 @@ import ServiceContext from "./contexts/serviceContext";
 import { createGroupManager } from "./services/sections/groupManager";
 import { createRegionManager } from "./services/regions/regionManager";
 import { createSectionManager } from "./services/sections/sectionManager";
+import { createTagManager } from "./services/tags/tagManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -39,12 +40,14 @@ const sectionManager = createSectionManager(
     entranceManager,
     groupManager
 );
+const tagManager = createTagManager(checkManager);
 const connector = createConnector(
     checkManager,
     entranceManager,
     regionManager,
     groupManager,
-    sectionManager
+    sectionManager,
+    tagManager
 );
 const connection = connector.connection;
 
@@ -77,6 +80,7 @@ function App() {
                             connector,
                             groupManager,
                             sectionManager,
+                            tagManager,
                         }}
                     >
                         <MainHeader

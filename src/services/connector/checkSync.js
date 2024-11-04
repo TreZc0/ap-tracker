@@ -40,19 +40,23 @@ let hintToText = (client, hint) => {
     return `${ownerString} ${itemString} is at ${locationString} in ${finderString} world. ${entranceString}`;
 };
 /**
- * 
- * @param {*} client 
- * @param {import("../checks/checkManager").CheckManager} checkManager 
+ *
+ * @param {*} client
+ * @param {String} connectionId
+ * @param {import("../tags/tagManager").TagManager} tagManager
  */
-let loadHintData = (client, checkManager) => {
+let loadHintData = (client, connectionId, tagManager) => {
     for (let i = 0; i < client.hints.mine.length; i++) {
         let hint = client.hints.mine[i];
         if (hint.finding_player === client.data.slot) {
             console.log(hintToText(client, hint));
-            checkManager.updateCheckStatus(
-                getLocationName(client, hint.location),
-                { hint: hintToText(client, hint) }
-            );
+            const tag = tagManager.createTag();
+            tag.checkName = getLocationName(client, hint.location);
+            tag.typeID = "hint";
+            tag.text = hintToText(client, hint);
+            tag.tagID = `hint-${hint.location}`;
+            tag.saveId = connectionId;
+            tagManager.saveTag(tag);
         }
     }
 };
@@ -82,8 +86,10 @@ const setAPLocations = (client, checkManager) => {
  *
  * @param {import("archipelago.js").Client} client
  * @param {import("../checks/checkManager").CheckManager} checkManager
+ * @param {string} connectionId
+ * @param {import("../tags/tagManager").TagManager} tagManager
  */
-const setupAPCheckSync = (client, checkManager) => {
+const setupAPCheckSync = (client, checkManager, connectionId, tagManager) => {
     client.addListener(SERVER_PACKET_TYPE.ROOM_UPDATE, (packet) => {
         console.log("Room update: ", packet);
 
@@ -101,7 +107,7 @@ const setupAPCheckSync = (client, checkManager) => {
         if (
             packet.key === `_read_hints_${client.data.team}_${client.data.slot}`
         ) {
-            loadHintData(client, checkManager);
+            loadHintData(client, connectionId, tagManager);
         }
     });
 
@@ -110,7 +116,7 @@ const setupAPCheckSync = (client, checkManager) => {
             if (key !== `_read_hints_${client.data.team}_${client.data.slot}`) {
                 continue;
             }
-            loadHintData(client, checkManager);
+            loadHintData(client, connectionId, tagManager);
         }
     });
 };

@@ -26,24 +26,24 @@ const CONNECTION_STATUS = {
  * @param {import("../regions/regionManager").RegionManager} regionManager
  * @param {import("../sections/groupManager").GroupManager} groupManager
  * @param {import("../sections/sectionManager").SectionManager} sectionManager
+ * @param {import("../tags/tagManager").TagManager} tagManager
  */
 const createConnector = (
     checkManager,
     entranceManager,
     regionManager,
     groupManager,
-    sectionManager
+    sectionManager,
+    tagManager
 ) => {
     const client = new Client();
     window.addEventListener("beforeunload", () => {
         client.disconnect();
     });
 
-    setupAPCheckSync(client, checkManager);
-
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo = { slotName: "", alias: "" };
+        let slotInfo = { slotName: "", alias: "", connectionId: "" };
         /** @type {Set<()=>void>} */
         let listeners = new Set();
         const subscribe = (/** @type {() => void} */ listener) => {
@@ -147,7 +147,7 @@ const createConnector = (
                     slotName: client.players.name(packet.slot),
                     alias: client.players.alias(packet.slot),
                 };
-                setAPLocations(client, checkManager);
+
                 /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
                 let savedConnectionInfo = {
                     seed: client.data.seed,
@@ -171,6 +171,10 @@ const createConnector = (
                     chosenConnection.playerAlias =
                         savedConnectionInfo.playerAlias;
                     SavedConnectionManager.saveConnectionData(chosenConnection);
+                    connection.slotInfo = {
+                        ...connection.slotInfo,
+                        connectionId: chosenConnection.connectionId,
+                    };
                 } else {
                     // Create a new entry
                     let newConnectionData =
@@ -180,7 +184,18 @@ const createConnector = (
                     SavedConnectionManager.saveConnectionData(
                         newConnectionData
                     );
+                    connection.slotInfo = {
+                        ...connection.slotInfo,
+                        connectionId: newConnectionData.connectionId,
+                    };
                 }
+                setupAPCheckSync(
+                    client,
+                    checkManager,
+                    connection.slotInfo.connectionId,
+                    tagManager
+                );
+                setAPLocations(client, checkManager);
 
                 TrackerBuilder(
                     connectionInfo.game,

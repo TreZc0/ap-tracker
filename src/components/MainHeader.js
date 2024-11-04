@@ -2,6 +2,7 @@
 import React, { useContext } from "react";
 import { TrackerStateContext } from "../contexts/contexts";
 import { SecondaryButton } from "./buttons";
+import Icon from "./icons/icons";
 
 const MainHeader = ({ optionsCallback, ...props }) => {
     const trackerState = useContext(TrackerStateContext);
@@ -21,7 +22,7 @@ const MainHeader = ({ optionsCallback, ...props }) => {
                 $small
                 onClick={optionsCallback}
             >
-                Options
+                <Icon type="settings" />
             </SecondaryButton>
         </div>
     );
