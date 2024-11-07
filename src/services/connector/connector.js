@@ -1,5 +1,5 @@
 // @ts-check
-import { Client, ITEMS_HANDLING_FLAGS } from "archipelago.js";
+import { API, Client } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
@@ -15,7 +15,7 @@ const CONNECTION_STATUS = {
 /**
  * @typedef Connector
  * @prop {({ host, port, slot, game, password }:{host:string, port: string|number, slot: string, game: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
- * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client<import("archipelago.js").SlotData>;}} connection
+ * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;}} connection
  *
  */
 
@@ -37,9 +37,6 @@ const createConnector = (
     tagManager
 ) => {
     const client = new Client();
-    window.addEventListener("beforeunload", () => {
-        client.disconnect();
-    });
 
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
@@ -127,35 +124,28 @@ const createConnector = (
 
         connection.status = CONNECTION_STATUS.connecting;
 
-        /** @type {import("archipelago.js").ConnectionInformation} */
-        const connectionInfo = {
-            hostname: host,
-            port: parseInt(port),
-            name: slot,
-            game,
-            items_handling: ITEMS_HANDLING_FLAGS.REMOTE_ALL,
-            password,
-            tags: ["Tracker", "Checklist"],
-        };
-
         return client
-            .connect(connectionInfo)
+            .login(`${host}:${port}`, slot, game, {
+                tags: ["Tracker", "Checklist"],
+                password,
+                items: API.itemsHandlingFlags.all,
+            })
             .then((packet) => {
                 connection.status = CONNECTION_STATUS.connected;
                 connection.slotInfo = {
                     ...connection.slotInfo,
-                    slotName: client.players.name(packet.slot),
-                    alias: client.players.alias(packet.slot),
+                    slotName: slot,
+                    alias: client.players.self.alias,
                 };
 
                 /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
                 let savedConnectionInfo = {
-                    seed: client.data.seed,
-                    host: connectionInfo.hostname,
-                    slot: connectionInfo.name,
-                    port: connectionInfo.port,
-                    game: connectionInfo.game,
-                    playerAlias: client.players.alias(packet.slot),
+                    seed: client.room.seedName,
+                    host,
+                    slot,
+                    port,
+                    game,
+                    playerAlias: client.players.self.alias,
                 };
                 let possibleMatches =
                     SavedConnectionManager.getExistingConnections(
@@ -198,7 +188,7 @@ const createConnector = (
                 setAPLocations(client, checkManager);
 
                 TrackerBuilder(
-                    connectionInfo.game,
+                    game,
                     checkManager,
                     entranceManager,
                     regionManager,
@@ -208,7 +198,7 @@ const createConnector = (
                 );
 
                 return CONNECTION_MESSAGES.connectionSuccess({
-                    playerAlias: client.players.alias(packet.slot),
+                    playerAlias: client.players.self.alias,
                 });
             })
             .catch((e) => {
