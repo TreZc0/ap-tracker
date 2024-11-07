@@ -47,19 +47,18 @@ let addHint = (client, hint, connectionId, tagManager) => {
  */
 const setAPLocations = (client, checkManager) => {
     checkManager.deleteAllChecks();
-    for (let locationId of client.room.allLocations) {
+    client.room.allLocations.forEach((locationId) =>
         checkManager.updateCheckStatus(
             client.package.lookupLocationName(client.game, locationId),
             { exists: true }
-        );
-    }
-
-    for (let locationId of client.room.checkedLocations) {
+        )
+    );
+    client.room.checkedLocations.forEach((locationId) =>
         checkManager.updateCheckStatus(
             client.package.lookupLocationName(client.game, locationId),
             { checked: true }
-        );
-    }
+        )
+    );
 };
 /**
  *
@@ -78,12 +77,15 @@ const setupAPCheckSync = (client, checkManager, connectionId, tagManager) => {
         );
     });
 
-    client.items.on("hintsInitialized", (hints) =>
-        hints.forEach((hint) => addHint(client, hint, connectionId, tagManager))
-    );
-    client.items.on("hintReceived", (hint) =>
-        addHint(client, hint, connectionId, tagManager)
-    );
+    client.items
+        .on("hintsInitialized", (hints) =>
+            hints.forEach((hint) =>
+                addHint(client, hint, connectionId, tagManager)
+            )
+        )
+        .on("hintReceived", (hint) =>
+            addHint(client, hint, connectionId, tagManager)
+        );
 };
 
 export { setAPLocations, setupAPCheckSync };
