@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://drawesome4333.github.io/ap-tracker",
   "dependencies": {
-    "archipelago.js": "^2.0.0-rc6",
+    "archipelago.js": "^2.0.2",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
