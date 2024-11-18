@@ -2,6 +2,7 @@
 import React, { useContext, useState, useSyncExternalStore } from "react";
 import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
+import Icon from "../icons/icons";
 
 /**
  * @typedef Condition
@@ -21,9 +22,10 @@ import ServiceContext from "../../contexts/serviceContext";
 const SectionView = ({ name, context }) => {
     const isClosable = name !== "root";
     const [isOpen, setIsOpen] = useState(isClosable ? false : true);
-    const serviceContext = useContext(ServiceContext)
+    const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
-    if(!sectionManager){
+    const tagMangaer = serviceContext.tagManager;
+    if (!sectionManager) {
         throw new Error("No group context provided");
     }
     const section = useSyncExternalStore(
@@ -46,7 +48,7 @@ const SectionView = ({ name, context }) => {
         <div style={style}>
             <h3
                 style={{ cursor: isClosable ? "pointer" : "default" }}
-                className={section?.checkReport.hinted.size ? "hinted section_title" : "section_title"}
+                className={"section_title"}
                 onClick={() => {
                     if (isClosable) {
                         setIsOpen(!isOpen);
@@ -58,7 +60,32 @@ const SectionView = ({ name, context }) => {
                     {clearedCheckCount}
                     {"/"}
                     {totalCheckCount}
-                </i>
+                </i>{" "}
+                {[...(section?.checkReport.tagCounts ?? [])].map(
+                    ([id, values]) => {
+                        const counterType = tagMangaer?.getCounter(id);
+                        return (
+                            <i
+                                key={id}
+                                style={{ color: counterType?.color }}
+                                title={counterType?.displayName}
+                            >
+                                {counterType?.icon && (
+                                    <Icon
+                                        fontSize="14px"
+                                        type={counterType.icon}
+                                    />
+                                )}
+                                {values.size}
+                                {counterType?.showTotal &&
+                                    `/${
+                                        section?.checkReport.tagTotals.get(id)
+                                            ?.size ?? 0
+                                    }`}
+                            </i>
+                        );
+                    }
+                )}
                 {isClosable ? (isOpen ? " ▲ " : " ▼ ") : ""}
             </h3>
             {isOpen && (

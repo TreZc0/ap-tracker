@@ -1,11 +1,14 @@
 // @ts-check
 
+import { CounterMode } from "../tags/tagManager";
+
 /**
  * @typedef CheckReport
  * @prop {Set<String>} exist
  * @prop {Set<String>} checked
- * @prop {Set<String>} hinted
  * @prop {Set<String>} ignored
+ * @prop {Map<String, Set<String>>} tagCounts
+ * @prop {Map<String, Set<String>>} tagTotals
  */
 
 /** @returns {CheckReport} */
@@ -13,8 +16,9 @@ const createNewCheckReport = () => {
     return {
         exist: new Set(),
         checked: new Set(),
-        hinted: new Set(),
         ignored: new Set(),
+        tagCounts: new Map(),
+        tagTotals: new Map(),
     };
 };
 
@@ -28,10 +32,21 @@ const addCheckReport = (sourceReport, destinationReport) => {
     sourceReport.checked.forEach((check) =>
         destinationReport.checked.add(check)
     );
-    sourceReport.hinted.forEach((check) => destinationReport.hinted.add(check));
     sourceReport.ignored.forEach((check) =>
         destinationReport.ignored.add(check)
     );
+    sourceReport.tagCounts.forEach((soureCounter, counterName) => {
+        let destinationCounter =
+            destinationReport.tagCounts.get(counterName) ?? new Set();
+        soureCounter.forEach((check) => destinationCounter.add(check));
+        destinationReport.tagCounts.set(counterName, destinationCounter);
+    });
+    sourceReport.tagTotals.forEach((soureCounter, counterName) => {
+        let destinationCounter =
+            destinationReport.tagCounts.get(counterName) ?? new Set();
+        soureCounter.forEach((check) => destinationCounter.add(check));
+        destinationReport.tagTotals.set(counterName, destinationCounter);
+    });
 };
 
 /** @type {SectionType} */
@@ -449,6 +464,38 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             } else if (status.ignored) {
                 report.ignored.add(checkName);
             }
+
+            status.tags.forEach((tag) => {
+                const counter = tag.counter;
+                if (counter) {
+                    let counterTotal =
+                        report.tagTotals.get(counter.id) ?? new Set();
+                    let counterCount =
+                        report.tagCounts.get(counter.id) ?? new Set();
+                    counterTotal.add(checkName);
+
+                    switch (counter.countMode) {
+                        case CounterMode.countChecked: {
+                            if (status.checked) {
+                                counterCount.add(checkName);
+                            }
+                            break;
+                        }
+                        case CounterMode.countUnchecked: {
+                            if (!status.checked) {
+                                counterCount.add(checkName);
+                            }
+                            break;
+                        }
+                        default: {
+                            counterCount.add(checkName);
+                            break;
+                        }
+                    }
+                    report.tagTotals.set(counter.id, counterTotal);
+                    report.tagCounts.set(counter.id, counterCount);
+                }
+            });
         }
         return status;
     };

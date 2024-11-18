@@ -30,13 +30,13 @@ let hintToText = (client, hint) => {
 let addHint = (client, hint, connectionId, tagManager) => {
     if (hint.item.sender.slot === client.players.self.slot) {
         console.log(hintToText(client, hint));
-        const tag = tagManager.createTag();
-        tag.checkName = hint.item.locationName;
-        tag.typeID = "hint";
-        tag.text = hintToText(client, hint);
-        tag.tagID = `hint-${hint.item.locationName}`;
-        tag.saveId = connectionId;
-        tagManager.saveTag(tag);
+        const tagData = tagManager.createTagData();
+        tagData.checkName = hint.item.locationName;
+        tagData.typeId = "hint";
+        tagData.text = hintToText(client, hint);
+        tagData.tagId = `hint-${hint.item.locationName}`;
+        tagData.saveId = connectionId;
+        tagManager.saveTag(tagData);
     }
 };
 

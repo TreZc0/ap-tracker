@@ -6,7 +6,7 @@ const CheckView = ({ check }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
     const checkManager = serviceContext.checkManager;
-    if (!checkManager){
+    if (!checkManager) {
         throw new Error("No check manager provided");
     }
     const status = useSyncExternalStore(
@@ -25,14 +25,14 @@ const CheckView = ({ check }) => {
     let iconType = status.checked ? "check_small" : "check_indeterminate_small";
     let iconColor = "black";
     let tagTextColor = "black";
-    if(status.tags.length > 0 && serviceContext.tagManager){
-        let selectedTag = status.tags[0]
-        let selectedTagType = serviceContext.tagManager.getTagType(selectedTag.typeID);
-        for(let i = 1; i < status.tags.length; i++){
+    if (status.tags.length > 0 && serviceContext.tagManager) {
+        let selectedTag = status.tags[0];
+        let selectedTagType = selectedTag.type;
+        for (let i = 1; i < status.tags.length; i++) {
             const tag = status.tags[i];
-            const tagType = serviceContext.tagManager.getTagType(tag.typeID);
+            const tagType = tag.type;
             // TODO add checks for if the tag is still active or not
-            if (tagType.priority > selectedTagType.priority){
+            if (tagType.priority > selectedTagType.priority) {
                 selectedTag = tag;
                 selectedTagType = tagType;
             }
@@ -50,9 +50,31 @@ const CheckView = ({ check }) => {
                     }}
                     className={[...classes].join(" ")}
                 >
-                    {<Icon fontSize='14px' type={iconType} style={{color:iconColor}}/>}
+                    {
+                        <Icon
+                            fontSize="14px"
+                            type={iconType}
+                            style={{ color: iconColor }}
+                        />
+                    }
                     {check}
-                    {showDetails && status.tags.map((tag) => <div key={tag.tagID} style={{marginLeft:"1rem", color:tagTextColor}}><Icon fontSize='14px' type={iconType} style={{color:iconColor}}/>{tag.text}</div>)}
+                    {showDetails &&
+                        status.tags.map((tag) => (
+                            <div
+                                key={tag.tagId}
+                                style={{
+                                    marginLeft: "1rem",
+                                    color: tagTextColor,
+                                }}
+                            >
+                                <Icon
+                                    fontSize="14px"
+                                    type={iconType}
+                                    style={{ color: iconColor }}
+                                />
+                                {tag.text}
+                            </div>
+                        ))}
                 </div>
             )}
         </>
