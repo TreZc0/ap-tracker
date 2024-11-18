@@ -12,7 +12,6 @@ import SavedConnectionManager from "../savedConnections/savedConnectionManager";
  * @prop {string} icon Which icon to use for this tag
  * @prop {number} priority When multiple tags are on a location, the one with the highest priority will show
  * @prop {string} [tagCounterId] If it exists, it will add an aditional counter that deincrements with the tag locations that are marked as collected
- * @prop {string} [saveId] If it exists, this tag only applies to a specific save file - not used
  * @prop {boolean} [internalUseOnly] if true, tag may not be modified by user
  */
 
@@ -23,7 +22,6 @@ import SavedConnectionManager from "../savedConnections/savedConnectionManager";
  * @prop {string} [text]
  * @prop {string} [checkName]
  * @prop {TagCounter} [counter]
- * @prop {string} saveId
  */
 
 /**
@@ -32,7 +30,6 @@ import SavedConnectionManager from "../savedConnections/savedConnectionManager";
  * @prop {string} [tagId]
  * @prop {string} [text]
  * @prop {string} [checkName]
- * @prop {string} saveId
  */
 
 /**
@@ -112,7 +109,7 @@ const TAG_ITEM_NAME = "archipelagoTrackerTagData";
 /**
  * @typedef TagManager
  * @prop {(saveId: string, tagId: string) => void} removeTag
- * @prop {(tag: TagData) => void} saveTag
+ * @prop {(tag: TagData, saveId: string) => void} saveTag
  * @prop {() => void} createTagType
  * @prop {() => void} deleteTagType
  * @prop {(typeID: string) => TagType} getTagType
@@ -141,7 +138,6 @@ const createTagManager = (checkManager) => {
             tagId: tagData.tagId,
             text: tagData.text,
             checkName: tagData.checkName,
-            saveId: tagData.saveId,
             counter: type.tagCounterId
                 ? getCounter(type.tagCounterId)
                 : undefined,
@@ -150,11 +146,12 @@ const createTagManager = (checkManager) => {
     };
     /**
      * @param {TagData} tagData
+     * @param {string} saveId
      */
-    const saveTag = (tagData) => {
+    const saveTag = (tagData, saveId) => {
         let tag = buildTag(tagData);
         let saveData = SavedConnectionManager.getConnectionSaveData(
-            tagData.saveId
+            saveId
         );
         if (!saveData) {
             saveData = {};
@@ -167,7 +164,7 @@ const createTagManager = (checkManager) => {
         }
         saveData.tagData[tagData.tagId] = tagData;
         SavedConnectionManager.updateConnectionSaveData(
-            tagData.saveId,
+            saveId,
             saveData
         );
 
@@ -234,7 +231,6 @@ const createTagManager = (checkManager) => {
     const createTagData = () => {
         return {
             typeId: "",
-            saveId: "",
         };
     };
     /**
@@ -245,7 +241,6 @@ const createTagManager = (checkManager) => {
         return {
             typeId: tag.type.id,
             tagId: tag.tagId,
-            saveId: tag.saveId,
             text: tag.text,
             checkName: tag.checkName,
         };

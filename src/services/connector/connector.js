@@ -80,6 +80,13 @@ const createConnector = (
         };
     })();
 
+    setupAPCheckSync(
+        client,
+        checkManager,
+        tagManager,
+        connection
+    );
+
     const connectToAP = async ({ host, port, slot, game, password }) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
@@ -138,6 +145,12 @@ const createConnector = (
                     alias: client.players.self.alias,
                 };
 
+                client.socket.on("disconnected", () => {
+                    connection.status = CONNECTION_STATUS.disconnected;
+                    console.log("Disconnected")
+                    // TODO add show error to user
+                })
+
                 /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
                 let savedConnectionInfo = {
                     seed: client.room.seedName,
@@ -179,12 +192,6 @@ const createConnector = (
                         connectionId: newConnectionData.connectionId,
                     };
                 }
-                setupAPCheckSync(
-                    client,
-                    checkManager,
-                    connection.slotInfo.connectionId,
-                    tagManager
-                );
                 setAPLocations(client, checkManager);
 
                 TrackerBuilder(

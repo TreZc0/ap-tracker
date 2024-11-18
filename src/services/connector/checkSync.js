@@ -24,10 +24,10 @@ let hintToText = (client, hint) => {
  *
  * @param {import("archipelago.js").Client} client
  * @param {import("archipelago.js").Hint} hint
- * @param {String} connectionId
  * @param {import("../tags/tagManager").TagManager} tagManager
+ * @param {string} saveId
  */
-let addHint = (client, hint, connectionId, tagManager) => {
+let addHint = (client, hint, tagManager, saveId) => {
     if (hint.item.sender.slot === client.players.self.slot) {
         console.log(hintToText(client, hint));
         const tagData = tagManager.createTagData();
@@ -35,8 +35,7 @@ let addHint = (client, hint, connectionId, tagManager) => {
         tagData.typeId = "hint";
         tagData.text = hintToText(client, hint);
         tagData.tagId = `hint-${hint.item.locationName}`;
-        tagData.saveId = connectionId;
-        tagManager.saveTag(tagData);
+        tagManager.saveTag(tagData, saveId);
     }
 };
 
@@ -64,10 +63,10 @@ const setAPLocations = (client, checkManager) => {
  *
  * @param {import("archipelago.js").Client} client
  * @param {import("../checks/checkManager").CheckManager} checkManager
- * @param {string} connectionId
  * @param {import("../tags/tagManager").TagManager} tagManager
+ * @param {{slotInfo:{connectionId: string}}} connection
  */
-const setupAPCheckSync = (client, checkManager, connectionId, tagManager) => {
+const setupAPCheckSync = (client, checkManager, tagManager, connection) => {
     client.room.on("locationsChecked", (locationIds) => {
         locationIds.forEach((id) =>
             checkManager.updateCheckStatus(
@@ -80,11 +79,11 @@ const setupAPCheckSync = (client, checkManager, connectionId, tagManager) => {
     client.items
         .on("hintsInitialized", (hints) =>
             hints.forEach((hint) =>
-                addHint(client, hint, connectionId, tagManager)
+                addHint(client, hint, tagManager, connection.slotInfo.connectionId)
             )
         )
         .on("hintReceived", (hint) =>
-            addHint(client, hint, connectionId, tagManager)
+            addHint(client, hint, tagManager,  connection.slotInfo.connectionId)
         );
 };
 
