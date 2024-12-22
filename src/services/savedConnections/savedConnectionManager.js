@@ -64,23 +64,30 @@ const loadSavedConnectionData = () => {
               modified: Date.now(),
           };
 
-    // Load and convert from ap-oot tracker
-    if (connectionData.version === 1) {
-        let connectionIds = Object.getOwnPropertyNames(
-            connectionData.connections
-        );
-        for (const id of connectionIds) {
-            const connection = connectionData.connections[id];
-            connectionData.connections[id] = {
-                ...connectionData.connections[id],
-                connectionId: connection["id"],
-                createdTime: connection["lastConnectionTime"], // was never updated in ap-oot tracker
-                lastUsedTime: connection["lastConnectionTime"],
-                version: SAVED_CONNECTION_VERSION,
-            };
-        }
-        connectionData.version = 2;
+    let connectionIds = Object.getOwnPropertyNames(connectionData.connections);
+    for (const id of connectionIds) {
+        const connection = connectionData.connections[id];
+
+        // Load and convert from ap-oot tracker
+
+        connectionData.connections[id] = {
+            ...connectionData.connections[id],
+            connectionId:
+                connection.connectionId ??
+                connection["id"] ??
+                new Date().getTime(),
+            createdTime:
+                connection.createdTime ??
+                connection["lastConnectionTime"] ??
+                new Date().getTime(),
+            lastUsedTime:
+                connection.lastUsedTime ??
+                connection["lastConnectionTime"] ??
+                new Date().getTime(),
+            version: SAVED_CONNECTION_VERSION,
+        };
     }
+    connectionData.version = 2;
     // React requires the same object to be returned if nothing has changed
     if (
         cachedConnectionData &&
@@ -108,9 +115,7 @@ const save = (saveData) => {
 const saveConnectionData = (data) => {
     let currentSaveData = loadSavedConnectionData();
     if (!data.connectionId) {
-        data.connectionId = `${data.seed}-${
-            data.slot
-        }-${new Date().toUTCString()}`;
+        data.connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
         console.warn(
             `Data with no connection id was trying to be saved, added id of ${data.connectionId}`
         );
@@ -125,9 +130,7 @@ const saveConnectionData = (data) => {
  * @returns {SavedConnection}
  */
 const createNewSavedConnection = (data) => {
-    const connectionId = `${data.seed}-${
-        data.slot
-    }-${new Date().toUTCString()}`;
+    const connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
     return {
         connectionId,
         seed: data.seed,

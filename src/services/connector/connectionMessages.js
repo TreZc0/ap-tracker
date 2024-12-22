@@ -20,7 +20,7 @@ const CONNECTION_MESSAGES = {
     }),
     connectionSuccess: ({ playerAlias }) => ({
         type: "success",
-        message: `Succesfully connected as ${playerAlias}`,
+        message: `Successfully connected as ${playerAlias}`,
     }),
     connectionFailed: ({ host, port, slot, game, error }) => {
         let help = `${
@@ -28,7 +28,7 @@ const CONNECTION_MESSAGES = {
                 ? "You can restart the server on archipelago.gg by reloading the room page."
                 : "Check with the server host for server status."
         }`;
-        let message = `Failed to connect to server ${host}:${port}. Check conneciton details and ensure the server is running. ${help}`;
+        let message = `Failed to connect to server ${host}:${port}. Check connection details and ensure the server is running. ${help}`;
 
         if (typeof error[0] === "string") {
             let e = error[0];
