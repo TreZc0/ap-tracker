@@ -24,17 +24,15 @@ const Container = styled.div`
 `;
 
 const NewConnection = ({ ...props }) => {
-    const [connectionInfo, setconnectionInfo] = useState({
+    const [connectionInfo, setConnectionInfo] = useState({
         host: "archipelago.gg",
         port: "",
         slot: "",
         password: "",
-        game: "Ocarina of Time",
-        // game: "CrossCode",
     });
 
     const defaultChangeHandler = (event) => {
-        setconnectionInfo({
+        setConnectionInfo({
             ...connectionInfo,
             [event.target.name]: event.target.value,
         });
@@ -49,7 +47,7 @@ const NewConnection = ({ ...props }) => {
     return (
         <Container {...props}>
             <h2>New Connection</h2>
-            {/** The inpt forward ref is poorly typed in my jsdoc, raising errors */}
+            {/** The input forward ref is poorly typed in my jsdoc, raising errors */}
             {/** @ts-ignore */}
             <Input
                 type="text"
@@ -66,15 +64,6 @@ const NewConnection = ({ ...props }) => {
                 value={connectionInfo.port}
                 onChange={defaultChangeHandler}
                 label="Port"
-                disabled={disabled}
-            />
-            {/** @ts-ignore */}
-             <Input
-                type="text"
-                name="game"
-                value={connectionInfo.game}
-                onChange={defaultChangeHandler}
-                label="Game"
                 disabled={disabled}
             />
             {/** @ts-ignore */}

@@ -35,16 +35,16 @@ const addCheckReport = (sourceReport, destinationReport) => {
     sourceReport.ignored.forEach((check) =>
         destinationReport.ignored.add(check)
     );
-    sourceReport.tagCounts.forEach((soureCounter, counterName) => {
+    sourceReport.tagCounts.forEach((sourceCounter, counterName) => {
         let destinationCounter =
             destinationReport.tagCounts.get(counterName) ?? new Set();
-        soureCounter.forEach((check) => destinationCounter.add(check));
+        sourceCounter.forEach((check) => destinationCounter.add(check));
         destinationReport.tagCounts.set(counterName, destinationCounter);
     });
-    sourceReport.tagTotals.forEach((soureCounter, counterName) => {
+    sourceReport.tagTotals.forEach((sourceCounter, counterName) => {
         let destinationCounter =
             destinationReport.tagCounts.get(counterName) ?? new Set();
-        soureCounter.forEach((check) => destinationCounter.add(check));
+        sourceCounter.forEach((check) => destinationCounter.add(check));
         destinationReport.tagTotals.set(counterName, destinationCounter);
     });
 };
@@ -121,7 +121,7 @@ const themeDefaults = {
 };
 
 /**
- * Enum for how portals are displayed on a seciton
+ * Enum for how portals are displayed on a section
  * @readonly
  * @enum {number}
  */
@@ -288,7 +288,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             ...(sectionData.get(sectionName) ?? defaultSectionStatus),
             ...section,
         });
-        sectionSubscribers.get(sectionName)?.forEach((listner) => listner());
+        sectionSubscribers.get(sectionName)?.forEach((listener) => listener());
     };
 
     /**
@@ -373,7 +373,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         const readCategory = (categoryName, parents = new Set()) => {
             if (parents.has(categoryName)) {
                 console.warn(
-                    `Circular dependency detected, ${categoryName} had a decendent that was itself. Parents: \n${[
+                    `Circular dependency detected, ${categoryName} had a descendant that was itself. Parents: \n${[
                         ...parents.values(),
                     ].join("\n")}`
                 );
@@ -581,7 +581,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 if (areaKey !== processedAreaKey) {
                     processedAreaKey = areaKey;
                     cleanUpListeners();
-                    if (entranceManager.getEntranceAdoptablility(portalName)) {
+                    if (entranceManager.getEntranceAdoptability(portalName)) {
                         setChecks();
                         setCheckListeners();
                     }

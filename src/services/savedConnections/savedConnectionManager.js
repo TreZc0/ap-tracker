@@ -4,7 +4,7 @@
  * @typedef SavedConnectionInfo
  * @prop {string} seed
  * @prop {string} host
- * @prop {number} port
+ * @prop {string} port
  * @prop {string} slot
  * @prop {string} game
  * @prop {string} [password]
@@ -17,7 +17,7 @@
  * @prop {string} name
  * @prop {string} seed
  * @prop {string} host
- * @prop {number} port
+ * @prop {string} port
  * @prop {string} slot
  * @prop {string} game
  * @prop {string} [password]
@@ -66,10 +66,10 @@ const loadSavedConnectionData = () => {
 
     // Load and convert from ap-oot tracker
     if (connectionData.version === 1) {
-        let connecitonIds = Object.getOwnPropertyNames(
+        let connectionIds = Object.getOwnPropertyNames(
             connectionData.connections
         );
-        for (const id of connecitonIds) {
+        for (const id of connectionIds) {
             const connection = connectionData.connections[id];
             connectionData.connections[id] = {
                 ...connectionData.connections[id],
@@ -153,9 +153,9 @@ const getExistingConnections = (data) => {
     const currentSaveData = loadSavedConnectionData();
     /** @type {Set<SavedConnection>} */
     const existingConnections = new Set();
-    let connecitonIds = Object.getOwnPropertyNames(currentSaveData.connections);
+    let connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
 
-    for (const id of connecitonIds) {
+    for (const id of connectionIds) {
         const connection = currentSaveData.connections[id];
         if (
             connection.seed === data.seed &&

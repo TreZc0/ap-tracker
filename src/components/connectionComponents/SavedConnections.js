@@ -7,7 +7,7 @@ import ServiceContext from "../../contexts/serviceContext";
 import _ from 'lodash'
 import { TrackerStateContext } from "../../contexts/contexts";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
-import EditConnectionDiaolog from "./EditConnection";
+import EditConnectionDialog from "./EditConnection";
 const Container = styled.div`
     display: grid;
     align-items: end;
@@ -53,7 +53,7 @@ const SavedConnections = ({ ...props }) => {
     const connect = () => {
         if(selectedConnection){
             let connectionInfo = SavedConnectionManager.getConnectionInfo(selectedConnection);
-            connector.connectToAP(connectionInfo).then(console.log).catch(console.error);// TODO, error handeling
+            connector.connectToAP(connectionInfo).then(console.log).catch(console.error);// TODO, error handling
         }
     }
 
@@ -78,7 +78,7 @@ const SavedConnections = ({ ...props }) => {
                 <PrimaryButton onClick={connect} disabled={!selectedConnection && true}>Connect</PrimaryButton>
                 <SecondaryButton onClick={openEditor} disabled={!selectedConnection && true} >Edit</SecondaryButton>
             </span>
-            <EditConnectionDiaolog open={editorOpen} onClose={closeEditor} connection={selectedConnection}/>
+            <EditConnectionDialog open={editorOpen} onClose={closeEditor} connection={selectedConnection}/>
         </Container>
     );
 };

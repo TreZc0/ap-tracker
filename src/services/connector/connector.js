@@ -14,7 +14,7 @@ const CONNECTION_STATUS = {
 
 /**
  * @typedef Connector
- * @prop {({ host, port, slot, game, password }:{host:string, port: string|number, slot: string, game: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
+ * @prop {({ host, port, slot, password }:{host:string, port: string, slot: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
  * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;}} connection
  *
  */
@@ -37,7 +37,8 @@ const createConnector = (
     tagManager
 ) => {
     const client = new Client();
-
+    // @ts-ignore
+    window.APClient = client;
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
         let slotInfo = { slotName: "", alias: "", connectionId: "" };
@@ -87,7 +88,16 @@ const createConnector = (
         connection
     );
 
-    const connectToAP = async ({ host, port, slot, game, password }) => {
+    /**
+     * 
+     * @param {Object} info 
+     * @param {string} info.host The Host to connect to
+     * @param {string} info.port The port to connect to
+     * @param {string} info.slot The name of the player slot to connect to
+     * @param {string|undefined} info.password The password to use to connect
+     * @returns 
+     */
+    const connectToAP = async ({ host, port, slot, password }) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
                 throw CONNECTION_MESSAGES.alreadyConnected();
@@ -108,31 +118,16 @@ const createConnector = (
             });
         }
 
-        if (
-            port.trim().length === 0 ||
-            !(0 <= parseInt(port) && parseInt(port) <= 65535)
-        ) {
-            throw CONNECTION_MESSAGES.generalError({
-                message: "Invalid port number",
-            });
-        }
-
         if (slot.trim().length === 0) {
             throw CONNECTION_MESSAGES.generalError({
                 message: "Please specify a slot name",
             });
         }
 
-        if (game.trim().length === 0) {
-            throw CONNECTION_MESSAGES.generalError({
-                message: "Please specify a game",
-            });
-        }
-
         connection.status = CONNECTION_STATUS.connecting;
 
         return client
-            .login(`${host}:${port}`, slot, game, {
+            .login(`${host}:${port}`, slot, undefined, {
                 tags: ["Tracker", "Checklist"],
                 password,
                 items: API.itemsHandlingFlags.all,
@@ -157,7 +152,7 @@ const createConnector = (
                     host,
                     slot,
                     port,
-                    game,
+                    game: client.players.self.game,
                     playerAlias: client.players.self.alias,
                 };
                 let possibleMatches =
@@ -166,7 +161,7 @@ const createConnector = (
                     );
 
                 if (possibleMatches.size > 0) {
-                    // Update exisitng entry
+                    // Update existing entry
                     let chosenConnection = [...possibleMatches.values()][0];
                     chosenConnection.lastUsedTime = Date.now();
                     chosenConnection.host = savedConnectionInfo.host;
@@ -195,7 +190,7 @@ const createConnector = (
                 setAPLocations(client, checkManager);
 
                 TrackerBuilder(
-                    game,
+                    savedConnectionInfo.game,
                     checkManager,
                     entranceManager,
                     regionManager,
@@ -219,7 +214,7 @@ const createConnector = (
                     host,
                     port,
                     slot,
-                    game,
+                    game:"",
                     error: e,
                 });
             });

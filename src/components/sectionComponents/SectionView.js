@@ -24,7 +24,7 @@ const SectionView = ({ name, context }) => {
     const [isOpen, setIsOpen] = useState(isClosable ? false : true);
     const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
-    const tagMangaer = serviceContext.tagManager;
+    const tagManager = serviceContext.tagManager;
     if (!sectionManager) {
         throw new Error("No group context provided");
     }
@@ -63,7 +63,7 @@ const SectionView = ({ name, context }) => {
                 </i>{" "}
                 {[...(section?.checkReport.tagCounts ?? [])].map(
                     ([id, values]) => {
-                        const counterType = tagMangaer?.getCounter(id);
+                        const counterType = tagManager?.getCounter(id);
                         return (
                             <i
                                 key={id}

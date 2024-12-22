@@ -36,7 +36,7 @@ const ContentContainer = styled.div`
     grid-template-columns: repeat(3, 5em);
 `;
 
-const EditConnectionDiaolog = ({ connection, onClose, open, ...props }) => {
+const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
     /** @type {React.ForwardedRef<HTMLDialogElement | null>} */
     const dialog = useRef(null);
     const [data, setData] = useState(connection);
@@ -157,4 +157,4 @@ const EditConnectionDiaolog = ({ connection, onClose, open, ...props }) => {
     );
 };
 
-export default EditConnectionDiaolog;
+export default EditConnectionDialog;

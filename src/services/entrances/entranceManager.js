@@ -28,7 +28,7 @@
  * @prop {(entrance: string) => string | null} getEntranceCategory Gets the category of an entrance
  * @prop {(category: string) => Set<string>} getEntrancesInCategory Gets a list of entrances with a given category
  * @prop {(categories: Set<string>) => Set<any>} getEntrancesInCategories Gets a list of entrances with a given set of categories
- * @prop {(entrance: string) => boolean} getEntranceAdoptablility Gets the adoptability of given entrance
+ * @prop {(entrance: string) => boolean} getEntranceAdoptability Gets the adoptability of given entrance
  */
 
 /**
@@ -203,7 +203,7 @@ const createEntranceManager = () => {
     };
 
     /**
-     * Sets entries to vanila
+     * Sets entries to vanilla
      * @param {Set<string|undefined>} [categories] If set, only entrances in these categories will be reset
      */
     let resetEntranceTable = (categories) => {
@@ -349,7 +349,7 @@ const createEntranceManager = () => {
      * @param {String} entrance
      * @returns
      */
-    let getEntranceAdoptablility = (entrance) => {
+    let getEntranceAdoptability = (entrance) => {
         let category = categoryTable.get(entrance);
         if (category && adoptableEntrances.has(category)) {
             return true;
@@ -432,7 +432,7 @@ const createEntranceManager = () => {
         getEntranceCategory,
         getEntrancesInCategory,
         getEntrancesInCategories,
-        getEntranceAdoptablility,
+        getEntranceAdoptability,
     };
 };
 

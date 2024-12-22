@@ -11,7 +11,7 @@ import SavedConnectionManager from "../savedConnections/savedConnectionManager";
  * @prop {boolean} considerChecked If true, tag will count as collected when added
  * @prop {string} icon Which icon to use for this tag
  * @prop {number} priority When multiple tags are on a location, the one with the highest priority will show
- * @prop {string} [tagCounterId] If it exists, it will add an aditional counter that deincrements with the tag locations that are marked as collected
+ * @prop {string} [tagCounterId] If it exists, it will add an additional counter that decrements with the tag locations that are marked as collected
  * @prop {boolean} [internalUseOnly] if true, tag may not be modified by user
  */
 
