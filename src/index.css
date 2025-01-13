@@ -13,32 +13,11 @@ body {
 
 
 .section_title {
-    cursor: pointer;
     border-bottom: 1px solid black;
     width: 50%;
     font-size: medium;
 }
 
-.section_title.hinted::before {
-    color: red;
-    font-size: xx-large;
-    content: "\00B7";
-}
-
-.section_view {
-    border-left: 1px dashed gray;
-    padding-left: 1em;
-}
-
-.section_view.colapsed .section_content {
-    display: none;
-}
-
-.section_view.checked {
-    color: grey;
-    text-decoration: line-through;
-    font-weight: lighter;
-}
 .section_check {
     color: black;
     font-size: medium;
@@ -52,29 +31,3 @@ body {
     font-weight: lighter;
 }
 
-
-.section_check.ignored::before {
-    content: " ◌ ";
-}
-
-.section_check.hinted {
-    color: red;
-}
-.section_check.hinted::before {
-    color: red;
-    content: " ⚑ ";
-}
-
-.section_check.hinted.checked::before {
-    color: grey;
-}
-
-.section_check > .hint {
-    margin-left: 1rem;
-    font-style: italic;
-    color: coral;
-}
-
-.hint.hidden {
-    display: none;
-}
