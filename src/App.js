@@ -16,6 +16,7 @@ import { createGroupManager } from "./services/sections/groupManager";
 import { createRegionManager } from "./services/regions/regionManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
+import { createOptionManager } from "./services/options/optionManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -34,6 +35,8 @@ const AppScreen = styled.div`
 const checkManager = createCheckManager();
 const entranceManager = createEntranceManager();
 const regionManager = createRegionManager();
+const optionManager = createOptionManager();
+optionManager.loadScope("global");
 const groupManager = createGroupManager(entranceManager, regionManager);
 const sectionManager = createSectionManager(
     checkManager,
@@ -81,6 +84,7 @@ function App() {
                             groupManager,
                             sectionManager,
                             tagManager,
+                            optionManager,
                         }}
                     >
                         <MainHeader

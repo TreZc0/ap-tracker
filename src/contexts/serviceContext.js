@@ -9,6 +9,7 @@ import { createContext } from "react";
  * @prop {import("../services/connector/connector").Connector} [connector]
  * @prop {import("../services/sections/sectionManager").SectionManager} [sectionManager]
  * @prop {import("../services/tags/tagManager").TagManager} [tagManager]
+ * @prop {import("../services/options/optionManager").OptionManager} [optionManager]
  */
 /** @type {React.Context<_ServiceContext>} */
 const ServiceContext = createContext({})

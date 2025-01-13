@@ -3,6 +3,7 @@ import React, { useContext, useState, useSyncExternalStore } from "react";
 import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
+import useOption from "../../hooks/optionHook";
 
 /**
  * @typedef Condition
@@ -16,17 +17,24 @@ import Icon from "../icons/icons";
 
 /**
  *
- * @param {{name: String, context: *}} param0
+ * @param {Object} options
+ * @param {string} options.name
+ * @param {*} options.context
+ * @param {boolean} [options.startOpen]
  * @returns
  */
-const SectionView = ({ name, context }) => {
+const SectionView = ({ name, context, startOpen }) => {
     const isClosable = name !== "root";
-    const [isOpen, setIsOpen] = useState(isClosable ? false : true);
+    const [isOpen, setIsOpen] = useState(isClosable ? (startOpen ?? false) : true);
     const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
     const tagManager = serviceContext.tagManager;
+    const optionManager = serviceContext.optionManager;
     if (!sectionManager) {
         throw new Error("No group context provided");
+    }
+    if (!optionManager) {
+        throw new Error("No option manager provided");
     }
     const section = useSyncExternalStore(
         sectionManager.getSubscriberCallback(name),
@@ -37,12 +45,19 @@ const SectionView = ({ name, context }) => {
         borderLeft: `1px dashed ${section?.theme.color ?? "Black"}`,
         paddingLeft: "0.5em",
         marginLeft: "0.5em",
+        minWidth: "30em",
     };
 
     const clearedCheckCount =
         (section?.checkReport.checked.size ?? 0) +
         (section?.checkReport.ignored.size ?? 0);
     const totalCheckCount = section?.checkReport.exist.size ?? 0;
+    const checkedLocationBehavior_ = useOption(
+        optionManager,
+        "checkedLocationBehavior",
+        "global"
+    );
+    const checkedLocationBehavior = checkedLocationBehavior_ ?? "nothing";
 
     return (
         <div style={style}>
@@ -94,20 +109,23 @@ const SectionView = ({ name, context }) => {
                         {[...(section?.checks.keys() ?? [])].map(
                             (check) =>
                                 check &&
-                                !section?.checks.get(check)?.checked && (
+                                (!section?.checks.get(check)?.checked ||
+                                    checkedLocationBehavior === "nothing") && (
                                     <CheckView check={check} key={check} />
                                 )
                         )}
                     </div>
-                    <div>
-                        {[...(section?.checks.keys() ?? [])].map(
-                            (check) =>
-                                check &&
-                                section?.checks.get(check)?.checked && (
-                                    <CheckView check={check} key={check} />
-                                )
-                        )}
-                    </div>
+                    {checkedLocationBehavior === "separate" && (
+                        <div>
+                            {[...(section?.checks.keys() ?? [])].map(
+                                (check) =>
+                                    check &&
+                                    section?.checks.get(check)?.checked && (
+                                        <CheckView check={check} key={check} />
+                                    )
+                            )}
+                        </div>
+                    )}
                     {section?.children &&
                         section.children.map(
                             (child) =>
@@ -116,6 +134,7 @@ const SectionView = ({ name, context }) => {
                                         name={child}
                                         context={context}
                                         key={child}
+                                        startOpen={startOpen}
                                     />
                                 )
                         )}

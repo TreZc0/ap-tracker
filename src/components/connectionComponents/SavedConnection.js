@@ -33,6 +33,7 @@ const SavedConnection = ({
     slot,
     host,
     port,
+    game,
     createdTime,
     lastUsedTime,
     selected,
@@ -48,25 +49,12 @@ const SavedConnection = ({
             onClick={() => onClick(connectionId)}
         >
             <div>{name}</div>
-            <div>{playerAlias}</div>
+            <div>{playerAlias} - {game}</div>
             <div>
                 {slot}@{host}:{port}
             </div>
             <div>
                 <i>
-                    Created:{" "}
-                    {new Date(createdTime).toLocaleTimeString([], {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                    })}
-                </i>
-            </div>
-            <div>
-                <i>
-                    Last Used:{" "}
                     {new Date(lastUsedTime).toLocaleTimeString([], {
                         year: "numeric",
                         month: "numeric",
