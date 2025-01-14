@@ -188,16 +188,23 @@ const createConnector = (
                     };
                 }
                 setAPLocations(client, checkManager);
-
-                TrackerBuilder(
+                client.storage.fetchLocationNameGroups(client.game)
+                .then(a => a[`_read_location_name_groups_${client.game}`])
+                .then(groups => {
+                    TrackerBuilder(
                     savedConnectionInfo.game,
                     checkManager,
                     entranceManager,
                     regionManager,
                     groupManager,
                     sectionManager,
-                    {}
-                );
+                    {},
+                    // @ts-ignore, there is a typing error on Archipelago.js
+                    groups
+                )
+            })
+                ;
+                
 
                 return CONNECTION_MESSAGES.connectionSuccess({
                     playerAlias: client.players.self.alias,

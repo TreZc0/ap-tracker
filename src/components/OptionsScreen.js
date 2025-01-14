@@ -6,7 +6,6 @@ import SectionView from "./sectionComponents/SectionView";
 import useOption from "../hooks/optionHook";
 import { createCheckManager } from "../services/checks/checkManager";
 import { createEntranceManager } from "../services/entrances/entranceManager";
-import { createRegionManager } from "../services/regions/regionManager";
 import { createGroupManager } from "../services/sections/groupManager";
 import { createSectionManager } from "../services/sections/sectionManager";
 import { createTagManager } from "../services/tags/tagManager";
@@ -14,11 +13,7 @@ import { createTagManager } from "../services/tags/tagManager";
 
 const mockCheckManager = createCheckManager();
 const mockEntranceManager = createEntranceManager();
-const mockRegionManager = createRegionManager();
-const mockGroupManager = createGroupManager(
-    mockEntranceManager,
-    mockRegionManager
-);
+const mockGroupManager = createGroupManager(mockEntranceManager);
 const mockSectionManager = createSectionManager(
     mockCheckManager,
     mockEntranceManager,
@@ -48,47 +43,15 @@ mockCheckManager.updateCheckStatus("Location 8", {
 });
 mockCheckManager.updateCheckStatus("Location 9", { exists: true });
 
-mockRegionManager.loadRegions({
-    all: [
-        {
-            region_name: "one",
-            locations: {
-                "Location 1": "",
-            },
-        },
-        {
-            region_name: "prime",
-            locations: {
-                "Location 2": "",
-                "Location 3": "",
-                "Location 5": "",
-                "Location 7": "",
-            },
-        },
-        {
-            region_name: "composite",
-            locations: {
-                "Location 4": "",
-                "Location 6": "",
-                "Location 8": "",
-                "Location 9": "",
-            },
-        },
-    ],
-});
-
 mockGroupManager.loadGroups({
-    all: {
-        regions: ["one", "prime", "composite"],
-    },
     one: {
-        regions: ["one"],
+        checks: ["Location 1"],
     },
     prime: {
-        regions: ["prime"],
+        checks: ["Location 2", "Location 3", "Location 5", "Location 7"],
     },
     composite: {
-        regions: ["composite"],
+        checks: ["Location 4", "Location 6", "Location 8", "Location 9"],
     },
 });
 
@@ -97,34 +60,33 @@ mockSectionManager.setConfiguration({
         root: {
             title: "Numbers",
             type: null,
-            areaKey: null,
+            groupKey: null,
             theme: "default",
             children: ["one", "primes", "composites"],
         },
         one: {
             title: "One",
             type: null,
-            areaKey: "one",
+            groupKey: "one",
             theme: "default",
             children: null,
         },
         primes: {
             title: "Primes",
             type: null,
-            areaKey: "prime",
+            groupKey: "prime",
             theme: "default",
             children: null,
         },
         composites: {
             title: "Composites",
             type: null,
-            areaKey: "composite",
+            groupKey: "composite",
             theme: "default",
             children: null,
         },
     },
     options: {},
-    types: {},
     themes: {
         default: { color: "#000000" },
     },
@@ -171,9 +133,17 @@ const OptionsScreen = () => {
                                         name: "options",
                                         content: (
                                             <>
-                                            <label htmlFor={"checked_location_behavior"}>Checked Location Behavior: </label>
+                                                <label
+                                                    htmlFor={
+                                                        "checked_location_behavior"
+                                                    }
+                                                >
+                                                    Checked Location Behavior:{" "}
+                                                </label>
                                                 <select
-                                                    id={"checked_location_behavior"}
+                                                    id={
+                                                        "checked_location_behavior"
+                                                    }
                                                     value={
                                                         checkedLocationBehavior ??
                                                         "nothing"

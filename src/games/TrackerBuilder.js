@@ -22,7 +22,7 @@ import { buildGenericGame } from "./generic/genericGame.js";
 
 /** @type {Object.<string, () => Game>} */
 const games = {
-    "Ocarina of Time": () => require("./OOT/oot.js").default,
+    // "Ocarina of Time": () => require("./OOT/oot.js").default,
 };
 
 const gameList = new Set(Object.getOwnPropertyNames(games));
@@ -36,6 +36,7 @@ const gameList = new Set(Object.getOwnPropertyNames(games));
  * @param {import("../services/sections/groupManager").GroupManager} groupManager
  * @param {import("../services/sections/sectionManager").SectionManager} sectionManager
  * @param {*} slotData
+ * @param {Object.<string, string[]>} groups
  */
 const TrackerBuilder = (
     gameName,
@@ -44,13 +45,14 @@ const TrackerBuilder = (
     regionManager,
     groupManager,
     sectionManager,
-    slotData
+    slotData,
+    groups
 ) => {
     let game = null;
     if (gameList.has(gameName)) {
         game = games[gameName]();
     } else {
-        game = buildGenericGame(gameName, checkManager);
+        game = buildGenericGame(gameName, checkManager, groups);
     }
     game.buildTracker(
         checkManager,

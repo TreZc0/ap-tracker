@@ -49,15 +49,6 @@ const addCheckReport = (sourceReport, destinationReport) => {
     });
 };
 
-/** @type {SectionType} */
-const defaultType = {
-    show_when: true,
-    type: "standard",
-    flatten_when: false,
-    show_entry_when: false,
-    portal_categories: null,
-};
-
 const defaultTheme = {
     color: "black",
 };
@@ -68,7 +59,6 @@ const defaultSectionStatus = {
     checks: new Map(),
     checkReport: createNewCheckReport(),
     theme: defaultTheme,
-    type: defaultType,
     children: null,
 };
 
@@ -82,38 +72,12 @@ const defaultSectionStatus = {
  * @prop {SectionCondition} [not]
  */
 
-const testOptions = {
-    er: {
-        overworld: true,
-        grotto: true,
-        interior: true,
-        dungeon: true,
-        boss: true,
-    },
-    grouping: {
-        grottos: true,
-        overworld: true,
-        interiors: true,
-        dungeons: true,
-        bosses: true,
-        regions: true,
-    },
-};
-
 const sectionDefaults = {
     title: "Untitled Section",
-    areaKey: null,
+    groupKey: null,
     type: null,
     theme: "default",
     children: null,
-};
-
-const typeDefaults = {
-    show_when: true,
-    type: "standard",
-    flatten_when: false,
-    show_entry_when: false,
-    portal_categories: null,
 };
 
 const themeDefaults = {
@@ -121,39 +85,15 @@ const themeDefaults = {
 };
 
 /**
- * Enum for how portals are displayed on a section
- * @readonly
- * @enum {number}
- */
-const PORTAL_MODE = {
-    None: 0,
-    Editable: 1,
-    ReadOnly: 2,
-};
-
-/**
  * @typedef SectionTypeDef
  * @prop {boolean | SectionCondition} show_when
- * @prop {"entrance_pool" | "portal" | "standard" | string} type
- * @prop {boolean | SectionCondition} [flatten_when]
- * @prop {boolean | SectionCondition} [show_entry_when]
  * @prop {string[] | null} [portal_categories]
- */
-
-/**
- * @typedef SectionType
- * @prop {boolean | SectionCondition} show_when
- * @prop {"entrance_pool" | "portal" | "standard"} type
- * @prop {boolean | SectionCondition} flatten_when
- * @prop {boolean | SectionCondition} show_entry_when
- * @prop {string[] | null} portal_categories
  */
 
 /**
  * @typedef SectionDef
  * @prop {string} title
- * @prop {string | null} areaKey
- * @prop {string | null} type
+ * @prop {string | null} groupKey
  * @prop {string} theme
  * @prop {string[] | null} children
  */
@@ -161,8 +101,7 @@ const PORTAL_MODE = {
 /**
  * @typedef SectionConfig
  * @prop {string} title
- * @prop {string | string[] | null} areaKey
- * @prop {SectionType} type
+ * @prop {string | string[] | null} groupKey
  * @prop {SectionTheme} theme
  * @prop {String[] | null} children
  */
@@ -171,7 +110,6 @@ const PORTAL_MODE = {
  * @typedef SectionConfigData
  * @prop {Object.<String, SectionDef>} categories
  * @prop {*} options
- * @prop {Object.<string, SectionTypeDef>} types
  * @prop {Object.<string, SectionThemeDef>} themes
  */
 
@@ -180,7 +118,7 @@ const PORTAL_MODE = {
  * @prop {string} title
  * @prop {CheckReport} checkReport
  * @prop {Map<string, import("../checks/checkManager").CheckStatus>} checks
- * @prop {SectionType} type
+ * @prop {*} [portals]
  * @prop {SectionTheme} theme
  * @prop {String[] | null} children
  */
@@ -195,41 +133,12 @@ const PORTAL_MODE = {
  * @prop {string} color
  */
 
-/**
- *
- * @param {SectionCondition | Boolean} condition
- * @param {*} context
- * @returns {Boolean}
- */
-const evaluateCondition = (condition, context) => {
-    if (typeof condition === "boolean") {
-        return condition;
-    }
-    if (condition.not) {
-        return !evaluateCondition(condition.not, context);
-    }
-    let result = false;
-    if (condition.state) {
-        let path = condition.state.split(".");
-        let value = path.reduce((state, part) => state[part] ?? {}, context);
-        result = value === condition.is;
-    }
-    if (condition.or) {
-        result ||= evaluateCondition(condition.or, context);
-    }
-    if (condition.and) {
-        result &&= evaluateCondition(condition.and, context);
-    }
-
-    return result;
-};
 
 /**
  * @typedef SectionUpdateTreeNode
  * @prop {string} sectionName
  * @prop {Set<String>} checks
  * @prop {CheckReport} checkReport
- * @prop {SectionType} type
  * @prop {boolean} shouldFlatten
  * @prop {Set<SectionUpdateTreeNode>} children
  * @prop {Set<SectionUpdateTreeNode>} parents
@@ -326,31 +235,8 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
      * @returns
      */
     const readSectionConfig = (configData) => {
-        /** @type {Map<String, SectionType>} */
-        const sectionTypes = new Map();
         /** @type {Map<String, SectionTheme>} */
         const sectionThemes = new Map();
-        /**
-         * Doesn't do much at the moment, reads types into section types
-         * @param {string} name
-         * @param {SectionTypeDef} type
-         */
-        const readType = (name, type) => {
-            const fullType = {
-                ...typeDefaults,
-                ...type,
-            };
-            if (
-                !new Set(["standard", "entrance_pool", "portal"]).has(
-                    fullType.type
-                )
-            ) {
-                throw new Error(`Failed to understand type: ${fullType.type}`);
-            }
-            // @ts-ignore Due to how JSON is loaded, the union type must allow strings
-            // this function doesn't like that idea, hence the above check and the ts-ignore
-            sectionTypes.set(name, fullType);
-        };
 
         /**
          * Doesn't do much at the moment, reads types into section types
@@ -392,20 +278,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             let result = {
                 title: category.title,
                 children: [],
-                areaKey: category.areaKey,
+                groupKey: category.groupKey,
                 theme: defaultTheme,
-                type: defaultType,
             };
-
-            if (category.type) {
-                let type = sectionTypes.get(category.type);
-                if (!type) {
-                    throw new Error(
-                        `Failed to find type ${category.type} for ${category.title}`
-                    );
-                }
-                result.type = type;
-            }
 
             if (category.theme) {
                 let theme = sectionThemes.get(category.theme);
@@ -429,14 +304,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             sectionConfigData.set(categoryName, result);
             return result;
         };
-
-        if (configData.types) {
-            for (let typeName of Object.keys(configData.types)) {
-                readType(typeName, configData.types[typeName]);
-            }
-        } else {
-            console.warn("No 'types' property found in configuration data");
-        }
 
         if (configData.themes) {
             for (let themeName of Object.keys(configData.themes)) {
@@ -533,10 +400,10 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             const setChecks = () => {
                 node.checks.clear();
                 let checkGroups = [];
-                if (typeof areaKey == "string") {
-                    checkGroups.push(areaKey);
-                } else if (areaKey) {
-                    checkGroups = areaKey;
+                if (typeof groupKey == "string") {
+                    checkGroups.push(groupKey);
+                } else if (groupKey) {
+                    checkGroups = groupKey;
                 }
                 // Build a list of checks for the area
                 for (const groupName of checkGroups) {
@@ -574,12 +441,12 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                  * @prop {SectionTheme} theme
                  * @prop {String[] | null} children
                  */
-                areaKey =
-                    groupManager.getGroupWithRegion(
-                        entranceManager.getEntranceDestRegion(portalName)
-                    ) ?? null;
-                if (areaKey !== processedAreaKey) {
-                    processedAreaKey = areaKey;
+                groupKey = null;
+                    // groupManager.getGroupWithRegion(
+                    //     entranceManager.getEntranceDestRegion(portalName)
+                    // ) ?? null;
+                if (groupKey !== processedAreaKey) {
+                    processedAreaKey = groupKey;
                     cleanUpListeners();
                     if (entranceManager.getEntranceAdoptability(portalName)) {
                         setChecks();
@@ -592,7 +459,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                     buildCheckReport());
                 parents.forEach((parent) => parent.update());
                 updateSectionStatus(portalName, {
-                    title: `${portalName} => ${areaKey ?? "???"}`,
+                    title: `${portalName} => ${groupKey ?? "???"}`,
                     checkReport: node.checkReport,
                     checks: checkValues,
                     children: [...node.children].map(
@@ -616,10 +483,10 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 });
             };
 
-            let areaKey =
-                groupManager.getGroupWithRegion(
-                    entranceManager.getEntranceDestRegion(portalName)
-                ) ?? null;
+            let groupKey = null;
+                // groupManager.getGroupWithRegion(
+                //     entranceManager.getEntranceDestRegion(portalName)
+                // ) ?? null;
             let processedAreaKey = null;
 
             /** @type {SectionUpdateTreeNode} */
@@ -627,7 +494,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 sectionName: portalName,
                 checks: new Set(),
                 checkReport: createNewCheckReport(),
-                type: defaultType,
                 children: new Set(),
                 parents: new Set(parents),
                 shouldFlatten: false,
@@ -636,8 +502,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             updateSectionStatus(portalName, {
-                title: `${portalName} => ${areaKey ?? "???"}`,
-                type: defaultType,
+                title: `${portalName} => ${groupKey ?? "???"}`,
                 theme: defaultTheme,
                 children: [...node.children].map((child) => child.sectionName),
             });
@@ -692,15 +557,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             let update = () => {
-                /**
-                 * @typedef Section
-                 * @prop {string} title
-                 * @prop {CheckReport} checkReport
-                 * @prop {Map<string, import("../checks/checkManager").CheckStatus>} checks
-                 * @prop {SectionType} type
-                 * @prop {SectionTheme} theme
-                 * @prop {String[] | null} children
-                 */
                 let checkValues;
                 ({ checkReport: node.checkReport, checks: checkValues } =
                     buildCheckReport());
@@ -734,7 +590,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 sectionName,
                 checks: new Set(),
                 checkReport: createNewCheckReport(),
-                type: sectionConfig.type,
                 children: new Set(),
                 parents: new Set(parents),
                 shouldFlatten: false,
@@ -743,10 +598,10 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             let checkGroups = [];
-            if (typeof sectionConfig.areaKey == "string") {
-                checkGroups.push(sectionConfig.areaKey);
-            } else if (sectionConfig.areaKey) {
-                checkGroups = sectionConfig.areaKey;
+            if (typeof sectionConfig.groupKey == "string") {
+                checkGroups.push(sectionConfig.groupKey);
+            } else if (sectionConfig.groupKey) {
+                checkGroups = sectionConfig.groupKey;
             }
 
             // Build a list of checks for the area
@@ -792,7 +647,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             }
             updateSectionStatus(sectionName, {
                 title: sectionConfig.title,
-                type: sectionConfig.type,
                 theme: sectionConfig.theme,
                 children: [...node.children].map((child) => child.sectionName),
             });

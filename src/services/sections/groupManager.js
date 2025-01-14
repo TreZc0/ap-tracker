@@ -12,7 +12,8 @@
 
 /**
  * @typedef GroupData
- * @prop {String[]} regions
+ * @prop {String[]} checks
+ * @prop {String[]} [portals]
  */
 
 /**
@@ -20,22 +21,19 @@
  * @prop { Map<string, Group>} groups
  * @prop {() => Group} createNullGroup
  * @prop {(data: {[x: string]: GroupData}) => void} loadGroups
- * @prop {(regionName: any) => string | null} getGroupWithRegion
- * 
  */
 
 /**
  *
  * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
- * @param {import("../regions/regionManager").RegionManager} regionManager
  * @returns {GroupManager}
  */
-let createGroupManager = (entranceManager, regionManager) => {
+let createGroupManager = (entranceManager) => {
     /** @type {Map<String, Group>} */
     let groups = new Map();
 
     /** @type {Map<String, String>} */
-    let regionToSection = new Map();
+    let checkToGroup = new Map();
 
     /**
      * @param {String} groupName
@@ -47,23 +45,20 @@ let createGroupManager = (entranceManager, regionManager) => {
         let exits = new Set();
         let adoptable = false;
 
-        for (let region of groupData.regions) {
-            regionManager
-                .getChecksInRegion(region)
-                .forEach((check) => checks.add(check));
-            entranceManager
-                .getEntrancesInRegion(region)
-                .forEach((entrance) => exits.add(entrance));
-            if (regionToSection.has(region)) {
+        for (let check of groupData.checks) {
+            checks.add(check);
+            // entranceManager
+            //     .getEntrancesInRegion(region)
+            //     .forEach((entrance) => exits.add(entrance));
+            if (checkToGroup.has(check)) {
                 console.warn(
-                    `${region} is in more than one section: ${regionToSection.get(
-                        region
+                    `${check} is in more than one section: ${checkToGroup.get(
+                        check
                     )} and ${groupName}`
                 );
             }
-            regionToSection.set(region, groupName);
+            checkToGroup.set(check, groupName);
         }
-
         return {
             get checks() {
                 return checks;
@@ -78,10 +73,6 @@ let createGroupManager = (entranceManager, regionManager) => {
                 return groupName;
             },
         };
-    };
-
-    let getGroupWithRegion = (regionName) => {
-        return regionToSection.get(regionName) ?? null;
     };
 
     /**
@@ -103,23 +94,22 @@ let createGroupManager = (entranceManager, regionManager) => {
                 return false;
             },
             get name() {
-                return "<Section Not Found>";
+                return "<Group Not Found>";
             },
         };
     };
 
     /**
-     * 
-     * @param {Object.<string, GroupData>} data 
+     *
+     * @param {Object.<string, GroupData>} data
      */
     const loadGroups = (data) => {
         for (let key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
         console.log("Loaded groups:", groups);
-
     };
-    return { groups, loadGroups, createNullGroup, getGroupWithRegion };
+    return { groups, loadGroups, createNullGroup };
 };
 
 export { createGroupManager };
