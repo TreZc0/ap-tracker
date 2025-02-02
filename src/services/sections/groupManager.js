@@ -51,11 +51,11 @@ let createGroupManager = (entranceManager) => {
             //     .getEntrancesInRegion(region)
             //     .forEach((entrance) => exits.add(entrance));
             if (checkToGroup.has(check)) {
-                console.warn(
-                    `${check} is in more than one section: ${checkToGroup.get(
-                        check
-                    )} and ${groupName}`
-                );
+                // console.warn(
+                //     `${check} is in more than one section: ${checkToGroup.get(
+                //         check
+                //     )} and ${groupName}`
+                // );
             }
             checkToGroup.set(check, groupName);
         }

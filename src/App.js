@@ -37,7 +37,7 @@ const entranceManager = createEntranceManager();
 const regionManager = createRegionManager();
 const optionManager = createOptionManager();
 optionManager.loadScope("global");
-const groupManager = createGroupManager(entranceManager, regionManager);
+const groupManager = createGroupManager(entranceManager);
 const sectionManager = createSectionManager(
     checkManager,
     entranceManager,

@@ -71,8 +71,11 @@ const SavedConnections = ({ ...props }) => {
     return (
         <Container {...props}>
             <h2>Saved Connections</h2>
-            <div style={{overflowY:"scroll", height:"15em"}}>
-                {sortedConnections.map((connection) => <SavedConnection key={connection.connectionId} {...connection} disabled={disabled} selected={connection.connectionId === selectedConnection?.connectionId} onClick={selectId}/>)}
+            <div style={{overflowY:"auto", height:"15em"}}>
+                {sortedConnections.length > 0 ? <>
+                    {sortedConnections.map((connection) => <SavedConnection key={connection.connectionId} {...connection} disabled={disabled} selected={connection.connectionId === selectedConnection?.connectionId} onClick={selectId}/>)}
+                </>:<div style={{padding:"1em", color:"gray"}}><i>Create a new connection and it will appear here</i></div>}
+                
             </div>
             <span>
                 <PrimaryButton onClick={connect} disabled={!selectedConnection && true}>Connect</PrimaryButton>
