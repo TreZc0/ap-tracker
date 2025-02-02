@@ -1,5 +1,3 @@
-// @ts-check
-
 import _ from "lodash";
 
 /**
@@ -33,32 +31,24 @@ const buildGenericGame = (gameName, checkManager, groups) => {
         options: {},
         themes: {
             default: { color: "#000000" },
+            theme1: { color: "#FF0000" },
+            theme2: { color: "#00AA00" },
+            theme3: { color: "#0000FF" },
+            theme4: { color: "#AAAA00" },
+            theme5: { color: "#FF00FF" },
+            theme6: { color: "#0000FF" },
         },
     };
+    const themeNames = [
+        "theme1",
+        "theme2",
+        "theme3",
+        "theme4",
+        "theme5",
+        "theme6",
+    ];
 
-    // for (let groupName of Object.getOwnPropertyNames(groups)) {
-    //     if (groupName === "Everywhere") {
-    //         continue;
-    //     }
-    //     groupSets_.set(groupName, new Set(groups[groupName]));
-    //     let checks = groups[groupName];
-    //     checks.forEach((check) => {
-    //         unclassifiedLocations.delete(check);
-    //     });
-    //     groupData[groupName] = {
-    //         checks,
-    //     };
-    //     categoryConfig.categories[groupName] = {
-    //         title: groupName,
-    //         groupKey: groupName,
-    //         theme: "default",
-    //         children: null,
-    //     };
-    //     categoryConfig.categories.root.children.push(groupName);
-    // }
-
-    // test analysis
-    const DEBUG_GROUP_CLASSIFICATION = true;
+    const DEBUG_GROUP_CLASSIFICATION = false;
     /** @type {Map<string, Set<string>>} */
     let checkMembership = new Map();
     /** @type {Map<string, Set<string>>} */
@@ -103,21 +93,29 @@ const buildGenericGame = (gameName, checkManager, groups) => {
             }
             if (group.isSubsetOf(otherGroup)) {
                 // if both groups are equivalent, pick one to be the parent
-                if(group.size === otherGroup.size){
-                    if(groupName.length > otherGroupName.length || (groupName.length === otherGroupName.length && groupName > otherGroupName )){
+                if (group.size === otherGroup.size) {
+                    if (
+                        groupName.length > otherGroupName.length ||
+                        (groupName.length === otherGroupName.length &&
+                            groupName > otherGroupName)
+                    ) {
                         parentGroups.add(otherGroupName);
                     }
-                }else{
+                } else {
                     parentGroups.add(otherGroupName);
                 }
             }
             if (group.isSupersetOf(otherGroup)) {
                 // if both groups are equivalent, pick one to be the child
-                if(group.size === otherGroup.size){
-                    if(groupName.length < otherGroupName.length || (groupName.length === otherGroupName.length && groupName < otherGroupName )){
+                if (group.size === otherGroup.size) {
+                    if (
+                        groupName.length < otherGroupName.length ||
+                        (groupName.length === otherGroupName.length &&
+                            groupName < otherGroupName)
+                    ) {
                         childGroups.add(otherGroupName);
                     }
-                }else{
+                } else {
                     childGroups.add(otherGroupName);
                 }
             }
@@ -141,18 +139,13 @@ const buildGenericGame = (gameName, checkManager, groups) => {
             }
         }
 
-        if (parentGroups.size > 0 && DEBUG_GROUP_CLASSIFICATION) {
-            // console.log(
-            //     `${groupName} is a child of ${[...parentGroups.values()]}`
-            // );
-        }
         if (isKeyGroup) {
-            if(DEBUG_GROUP_CLASSIFICATION){
+            if (DEBUG_GROUP_CLASSIFICATION) {
                 console.log(`${groupName} may be a key group`);
             }
             keyLocationGroups.add(groupName);
         } else {
-            if(DEBUG_GROUP_CLASSIFICATION){
+            if (DEBUG_GROUP_CLASSIFICATION) {
                 console.log(`${groupName} may be a meta group`);
             }
             possibleMetaLocationGroups.add(groupName);
@@ -180,20 +173,22 @@ const buildGenericGame = (gameName, checkManager, groups) => {
             continue;
         }
     }
-    possibleMetaLocationGroups.difference(metaLocationGroups).forEach((groupName) => {
-        keyLocationGroups.add(groupName);
-        if(DEBUG_GROUP_CLASSIFICATION){
-            console.log(`${groupName} was converted to a key group`);
-        }
-    });
+    possibleMetaLocationGroups
+        .difference(metaLocationGroups)
+        .forEach((groupName) => {
+            keyLocationGroups.add(groupName);
+            if (DEBUG_GROUP_CLASSIFICATION) {
+                console.log(`${groupName} was converted to a key group`);
+            }
+        });
 
     // Resolve edge cases where a meta group may be identified as a key group if it contains a key group that is a complete subset of itself
     // This is done by computing overlaps with other groups and classifying the groups with the most conflicts as meta
     // A conflict between 2 groups cannot be solved easily, so we will not try to resolve those conflicts
     const computeKeyGroupConflicts = () => {
+        /** @type {Map<string, Set<string>>} */
         const conflictGroups = new Map();
         for (let groupName of [...keyLocationGroups.values()]) {
-            
             /** @type {Set<string>} */
             let localConflicts = new Set();
             for (let otherGroupName of keyLocationGroups) {
@@ -205,33 +200,33 @@ const buildGenericGame = (gameName, checkManager, groups) => {
                 conflictGroups.set(groupName, localConflicts);
             }
         }
-        if(DEBUG_GROUP_CLASSIFICATION){
-            console.log(conflictGroups)
+        if (DEBUG_GROUP_CLASSIFICATION) {
+            console.log(conflictGroups);
         }
-        return _.sortBy([...conflictGroups.entries()], ([x, y]) => -y.size);
-    }
-    
+        return _.sortBy([...conflictGroups.entries()], ([_, y]) => -y.size);
+    };
+
     let orderedConflicts = computeKeyGroupConflicts();
     console.log(orderedConflicts);
-    while(orderedConflicts.length > 0){
+    while (orderedConflicts.length > 0) {
         let [groupName, conflicts] = orderedConflicts[0];
-        if(conflicts.size < 2){
-            if(DEBUG_GROUP_CLASSIFICATION){
+        if (conflicts.size <= 1) {
+            if (DEBUG_GROUP_CLASSIFICATION) {
                 console.log("Skipping remaining conflicts");
             }
             break;
         }
-        
+
         keyLocationGroups.delete(groupName);
         metaLocationGroups.add(groupName);
-        if(DEBUG_GROUP_CLASSIFICATION){
+        if (DEBUG_GROUP_CLASSIFICATION) {
             console.log(`Determined ${groupName} was not a key group`);
         }
         orderedConflicts = computeKeyGroupConflicts();
     }
-    
-    if(DEBUG_GROUP_CLASSIFICATION){
-        console.log("Final Results:");
+
+    if (DEBUG_GROUP_CLASSIFICATION) {
+        console.log("Classification Results:");
         console.log("Key Location Groups:", keyLocationGroups);
         console.log("Meta Location Groups:", metaLocationGroups);
     }
@@ -240,49 +235,86 @@ const buildGenericGame = (gameName, checkManager, groups) => {
     /** @type {Map<string, Set<string>>} */
     const finalGroups = new Map();
     groupSets.forEach((value, key) => finalGroups.set(key, value));
+    /** @type {Map<string, Set<string>>} */
+    const locationGroupToFinalGroups = new Map();
+    groupSets.forEach((value, key) =>
+        locationGroupToFinalGroups.set(key, new Set([key]))
+    );
 
-    const DEBUG_PARENT_GROUP_ORGANIZATION = true;
+    const DEBUG_PARENT_GROUP_ORGANIZATION = false;
     /** @type {Map<string, Set<string>>} */
     const childTable = new Map();
     /** @type {Set<string>} */
     const roots = new Set();
-    for(let groupName of keyLocationGroups){
-        let possibleParents = (possibleParentGroups.get(groupName) ?? new Set()).difference(metaLocationGroups);
-        if(possibleParents.size === 0){
+    for (let groupName of keyLocationGroups) {
+        let possibleParents = (
+            possibleParentGroups.get(groupName) ?? new Set()
+        ).difference(metaLocationGroups);
+        if (possibleParents.size === 0) {
             roots.add(groupName);
-            if(DEBUG_PARENT_GROUP_ORGANIZATION){
+            if (DEBUG_PARENT_GROUP_ORGANIZATION) {
                 console.log(`Added ${groupName} to root`);
             }
-        }else{
-            let parent = _.sortBy([...possibleParents.values()], (x) => groupSets.get(x)?.size ?? Infinity)[0];
+        } else {
+            let parent = _.sortBy(
+                [...possibleParents.values()],
+                (x) => groupSets.get(x)?.size ?? Infinity
+            )[0];
             let siblings = childTable.get(parent) ?? new Set();
             siblings.add(groupName);
             childTable.set(parent, siblings);
-            finalGroups.set(parent, finalGroups.get(parent).difference(finalGroups.get(groupName)));
-            if(DEBUG_PARENT_GROUP_ORGANIZATION){
+            // remove checks from parent
+            finalGroups.set(
+                parent,
+                finalGroups.get(parent).difference(finalGroups.get(groupName))
+            );
+            if (DEBUG_PARENT_GROUP_ORGANIZATION) {
                 console.log(`Added ${groupName} as a child of ${parent}`);
             }
         }
     }
-    
-    if(DEBUG_PARENT_GROUP_ORGANIZATION) {
+
+    if (DEBUG_PARENT_GROUP_ORGANIZATION) {
         console.log("Parenting results: ", childTable);
     }
 
-    // break key location groups into meta sub groups.
- 
-    
-    // groupSets.forEach((value, key) => finalGroups.set(key, value));
-
-    /** @type {Map<string, Set<string>>} */
-    const locationGroupToFinalGroups = new Map();
-    groupSets.forEach((value, key) => locationGroupToFinalGroups.set(key, new Set([key])));
-
+    // same for meta groups for now, will make it better later
+    if (metaLocationGroups.size > 0) {
+        for (let groupName of metaLocationGroups) {
+            let possibleParents = (
+                possibleParentGroups.get(groupName) ?? new Set()
+            ).difference(keyLocationGroups);
+            if (possibleParents.size === 0) {
+                roots.add(groupName);
+                if (DEBUG_PARENT_GROUP_ORGANIZATION) {
+                    console.log(`Added ${groupName} to root`);
+                }
+            } else {
+                let parent = _.sortBy(
+                    [...possibleParents.values()],
+                    (x) => groupSets.get(x)?.size ?? Infinity
+                )[0];
+                let siblings = childTable.get(parent) ?? new Set();
+                siblings.add(groupName);
+                childTable.set(parent, siblings);
+                // remove checks from parent
+                finalGroups.set(
+                    parent,
+                    finalGroups
+                        .get(parent)
+                        .difference(finalGroups.get(groupName))
+                );
+                if (DEBUG_PARENT_GROUP_ORGANIZATION) {
+                    console.log(`Added ${groupName} as a child of ${parent}`);
+                }
+            }
+        }
+    }
 
     // build group tree
-    for(let [groupName, checks] of finalGroups.entries()){
+    for (let [groupName, checks] of finalGroups.entries()) {
         groupData[groupName] = {
-            checks: [...checks.values()]
+            checks: [...checks.values()],
         };
     }
 
@@ -292,25 +324,32 @@ const buildGenericGame = (gameName, checkManager, groups) => {
         let childList = [];
         children.forEach((childName) => {
             let allNames = locationGroupToFinalGroups.get(childName);
-            allNames.forEach(x => childList.push(x));
+            allNames.forEach((x) => childList.push(x));
         });
         return childList;
-    }
+    };
 
     // place nodes in tree
-    for(let groupName of keyLocationGroups){
+    let themeCounter = 0;
+    for (let groupName of keyLocationGroups.union(metaLocationGroups)) {
         categoryConfig.categories[groupName] = {
             title: groupName,
-            theme: "default",
+            theme: keyLocationGroups.has(groupName)
+                ? themeNames[themeCounter++ % themeNames.length]
+                : "default",
             children: getChildList(groupName),
             groupKey: groupName,
-        }
-        if(roots.has(groupName)){
+        };
+        if (roots.has(groupName)) {
             categoryConfig.categories.root.children.push(groupName);
         }
     }
 
-
+    // sort the root
+    categoryConfig.categories.root.children = _.sortBy(
+        categoryConfig.categories.root.children,
+        [(x) => !keyLocationGroups.has(x), (x) => x]
+    );
 
     if (unclassifiedLocations.size > 0) {
         groupData["unclassified"] = {
