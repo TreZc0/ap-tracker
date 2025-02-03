@@ -41,14 +41,12 @@ let ToastContainer = () => {
     const frozenRef = useRef();
 
     const openDetailModal = (index) => {
-        console.log(index);
         setDetailIndex(index);
         setDetailModalOpen(true);
     };
 
     const pause = () => {
         frozenRef.current = true;
-        console.log("pause");
     };
 
     const resume = () => {
