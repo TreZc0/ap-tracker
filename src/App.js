@@ -17,6 +17,7 @@ import { createRegionManager } from "./services/regions/regionManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
 import { createOptionManager } from "./services/options/optionManager";
+import ToastContainer from "./components/notifications/toast/toastContainer";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -70,6 +71,7 @@ function App() {
     return (
         <div className="App">
             <AppScreen>
+                <ToastContainer />
                 <TrackerStateContext.Provider
                     value={{
                         connectionStatus: trackerConnectionState,

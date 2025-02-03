@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { PrimaryButton } from "../buttons";
 import { Input } from "../inputs";
 import ServiceContext from "../../contexts/serviceContext";
+import NotificationManager from "../../services/notifications/notifications";
 
 const Container = styled.div`
     display: grid;
@@ -41,7 +42,7 @@ const NewConnection = ({ ...props }) => {
     const connector = serviceContext.connector;
     let disabled = false;
     if (!connector) {
-         disabled = true;
+        disabled = true;
     }
 
     return (
@@ -86,9 +87,18 @@ const NewConnection = ({ ...props }) => {
             />
             <PrimaryButton
                 onClick={() => {
-                    connector?.connectToAP(connectionInfo)
-                        .then(console.log)
-                        .catch(console.error);
+                    connector
+                        ?.connectToAP(connectionInfo)
+                        .then((result) => {
+                            NotificationManager.createToast({
+                                ...result,
+                            });
+                        })
+                        .catch((result) => {
+                            NotificationManager.createToast({
+                                ...result,
+                            });
+                        });
                 }}
                 disabled={disabled}
             >

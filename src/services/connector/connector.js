@@ -4,6 +4,9 @@ import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
 import { TrackerBuilder } from "../../games/TrackerBuilder";
+import NotificationManager, {
+    MessageType,
+} from "../notifications/notifications";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -81,21 +84,16 @@ const createConnector = (
         };
     })();
 
-    setupAPCheckSync(
-        client,
-        checkManager,
-        tagManager,
-        connection
-    );
+    setupAPCheckSync(client, checkManager, tagManager, connection);
 
     /**
-     * 
-     * @param {Object} info 
+     *
+     * @param {Object} info
      * @param {string} info.host The Host to connect to
      * @param {string} info.port The port to connect to
      * @param {string} info.slot The name of the player slot to connect to
      * @param {string|undefined} info.password The password to use to connect
-     * @returns 
+     * @returns
      */
     const connectToAP = async ({ host, port, slot, password }) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
@@ -125,7 +123,11 @@ const createConnector = (
         }
 
         connection.status = CONNECTION_STATUS.connecting;
-
+        NotificationManager.createToast({
+            message: "Connecting to Archipelago...",
+            type: MessageType.info,
+            duration: 3,
+        });
         return client
             .login(`${host}:${port}`, slot, undefined, {
                 tags: ["Tracker", "Checklist"],
@@ -142,9 +144,12 @@ const createConnector = (
 
                 client.socket.on("disconnected", () => {
                     connection.status = CONNECTION_STATUS.disconnected;
-                    console.log("Disconnected")
-                    // TODO add show error to user
-                })
+                    NotificationManager.createToast({
+                        type: MessageType.warning,
+                        message: "Disconnected from Archipelago Server",
+                        duration: 10,
+                    });
+                });
 
                 /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
                 let savedConnectionInfo = {
@@ -188,26 +193,26 @@ const createConnector = (
                     };
                 }
                 setAPLocations(client, checkManager);
-                client.storage.fetchLocationNameGroups(client.game)
-                .then(a => a[`_read_location_name_groups_${client.game}`])
-                .then(groups => {
-                    TrackerBuilder(
-                    savedConnectionInfo.game,
-                    checkManager,
-                    entranceManager,
-                    regionManager,
-                    groupManager,
-                    sectionManager,
-                    {},
-                    // @ts-ignore, there is a typing error on Archipelago.js
-                    groups
-                )
-            })
-                ;
-                
+                client.storage
+                    .fetchLocationNameGroups(client.game)
+                    .then((a) => a[`_read_location_name_groups_${client.game}`])
+                    .then((groups) => {
+                        TrackerBuilder(
+                            savedConnectionInfo.game,
+                            checkManager,
+                            entranceManager,
+                            regionManager,
+                            groupManager,
+                            sectionManager,
+                            {},
+                            // @ts-ignore, there is a typing error on Archipelago.js
+                            groups
+                        );
+                    });
 
                 return CONNECTION_MESSAGES.connectionSuccess({
                     playerAlias: client.players.self.alias,
+                    game: client.players.self.game,
                 });
             })
             .catch((e) => {
@@ -221,7 +226,7 @@ const createConnector = (
                     host,
                     port,
                     slot,
-                    game:"",
+                    game: "",
                     error: e,
                 });
             });

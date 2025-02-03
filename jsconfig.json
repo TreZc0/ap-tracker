@@ -3,7 +3,7 @@
         "jsx": "react",
         "target": "ES2024",
         "module": "ESNext",
-        "lib": ["ESNext"],
+        "lib": ["ESNext", "DOM"],
         "moduleResolution": "node"
     }
 }
