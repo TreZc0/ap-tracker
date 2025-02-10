@@ -53,6 +53,9 @@ mockGroupManager.loadGroups({
     composite: {
         checks: ["Location 4", "Location 6", "Location 8", "Location 9"],
     },
+    tens: {
+        checks: [],
+    },
 });
 
 mockSectionManager.setConfiguration({
@@ -62,7 +65,7 @@ mockSectionManager.setConfiguration({
             type: null,
             groupKey: null,
             theme: "default",
-            children: ["one", "primes", "composites"],
+            children: ["one", "primes", "composites", "tens"],
         },
         one: {
             title: "One",
@@ -82,6 +85,13 @@ mockSectionManager.setConfiguration({
             title: "Composites",
             type: null,
             groupKey: "composite",
+            theme: "default",
+            children: null,
+        },
+        tens: {
+            title: "Tens",
+            type: null,
+            groupKey: "tens",
             theme: "default",
             children: null,
         },
@@ -105,6 +115,11 @@ const OptionsScreen = () => {
         "checkedLocationBehavior",
         "global"
     );
+    const clearedSectionBehavior = useOption(
+        optionManager,
+        "clearedSectionBehavior",
+        "global"
+    );
     const themeValue = useOption(optionManager, "theme", "global");
 
     return (
@@ -122,6 +137,7 @@ const OptionsScreen = () => {
                                         Theme:{" "}
                                     </label>
                                     <select
+                                        className="interactive"
                                         id={"global_theme"}
                                         value={themeValue ?? "system"}
                                         onChange={(event) => {
@@ -162,6 +178,7 @@ const OptionsScreen = () => {
                                                         Behavior:{" "}
                                                     </label>
                                                     <select
+                                                        className="interactive"
                                                         id={
                                                             "checked_location_behavior"
                                                         }
@@ -176,6 +193,50 @@ const OptionsScreen = () => {
                                                             if (value) {
                                                                 optionManager.setOptionValue(
                                                                     "checkedLocationBehavior",
+                                                                    "global",
+                                                                    value
+                                                                );
+                                                                optionManager.saveScope(
+                                                                    "global"
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        <option value="nothing">
+                                                            Nothing
+                                                        </option>
+                                                        <option value="separate">
+                                                            Separate
+                                                        </option>
+                                                        <option value="hide">
+                                                            Hide
+                                                        </option>
+                                                    </select>
+                                                    <br/>
+                                                    <label
+                                                        htmlFor={
+                                                            "cleared_section_behavior"
+                                                        }
+                                                    >
+                                                        Cleared Section
+                                                        Behavior:{" "}
+                                                    </label>
+                                                    <select
+                                                        className="interactive"
+                                                        id={
+                                                            "cleared_section_behavior"
+                                                        }
+                                                        value={
+                                                            clearedSectionBehavior ??
+                                                            "nothing"
+                                                        }
+                                                        onChange={(event) => {
+                                                            const value =
+                                                                event.target
+                                                                    .value;
+                                                            if (value) {
+                                                                optionManager.setOptionValue(
+                                                                    "clearedSectionBehavior",
                                                                     "global",
                                                                     value
                                                                 );
