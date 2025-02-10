@@ -6,16 +6,6 @@ import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
 
 /**
- * @typedef Condition
- * @prop {string} [option]
- * @prop {Condition} [not]
- * @prop {string} [state]
- * @prop {*} [is]
- * @prop {Condition} [and]
- * @prop {Condition} [or]
- */
-
-/**
  *
  * @param {Object} options
  * @param {string} options.name
@@ -70,7 +60,7 @@ const SectionView = ({ name, context, startOpen }) => {
 
     return (
         <>
-            {section?.checkReport.exist.size === 0 ? ( 
+            {section?.checkReport.exist.size === 0 ? (
                 <></> // Hide empty sections
             ) : (
                 <div style={style}>

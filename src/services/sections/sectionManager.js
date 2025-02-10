@@ -43,7 +43,7 @@ const addCheckReport = (sourceReport, destinationReport) => {
     });
     sourceReport.tagTotals.forEach((sourceCounter, counterName) => {
         let destinationCounter =
-            destinationReport.tagCounts.get(counterName) ?? new Set();
+            destinationReport.tagTotals.get(counterName) ?? new Set();
         sourceCounter.forEach((check) => destinationCounter.add(check));
         destinationReport.tagTotals.set(counterName, destinationCounter);
     });
@@ -132,7 +132,6 @@ const themeDefaults = {
  * @typedef SectionTheme
  * @prop {string} color
  */
-
 
 /**
  * @typedef SectionUpdateTreeNode
@@ -442,9 +441,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                  * @prop {String[] | null} children
                  */
                 groupKey = null;
-                    // groupManager.getGroupWithRegion(
-                    //     entranceManager.getEntranceDestRegion(portalName)
-                    // ) ?? null;
+                // groupManager.getGroupWithRegion(
+                //     entranceManager.getEntranceDestRegion(portalName)
+                // ) ?? null;
                 if (groupKey !== processedAreaKey) {
                     processedAreaKey = groupKey;
                     cleanUpListeners();
@@ -484,9 +483,9 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             let groupKey = null;
-                // groupManager.getGroupWithRegion(
-                //     entranceManager.getEntranceDestRegion(portalName)
-                // ) ?? null;
+            // groupManager.getGroupWithRegion(
+            //     entranceManager.getEntranceDestRegion(portalName)
+            // ) ?? null;
             let processedAreaKey = null;
 
             /** @type {SectionUpdateTreeNode} */
