@@ -122,9 +122,13 @@ const createConnector = (
             });
         }
 
+        if (!port) {
+            port = "38281";
+        }
+
         connection.status = CONNECTION_STATUS.connecting;
         NotificationManager.createToast({
-            message: "Connecting to Archipelago...",
+            message: `Connecting to ${host}:${port} ...`,
             type: MessageType.info,
             duration: 3,
         });
