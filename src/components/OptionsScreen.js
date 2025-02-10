@@ -105,113 +105,137 @@ const OptionsScreen = () => {
         "checkedLocationBehavior",
         "global"
     );
+    const themeValue = useOption(optionManager, "theme", "global");
 
     return (
-        <SplitScreen
-            screens={[
-                {
-                    name: "options",
-                    content: (
-                        <div>
-                            {/* <Checkbox label="Separate Graves/Grottos" />
-                            <br />
-                            <Checkbox label="Separate Interiors" />
-                            <br />
-                            <Checkbox label="Separate Overworld Areas" />
-                            <br />
-                            <Checkbox label="Separate Dungeons" />
-                            <br />
-                            <Checkbox label="Separate Dungeon Bosses" />
-                            <br /> */}
-                            <hr />
-                            <h3>Checklist Settings</h3>
-                            <SplitScreen
-                                rows={1}
-                                cols={2}
-                                screens={[
-                                    {
-                                        name: "options",
-                                        content: (
-                                            <>
-                                                <label
-                                                    htmlFor={
-                                                        "checked_location_behavior"
-                                                    }
-                                                >
-                                                    Checked Location Behavior:{" "}
-                                                </label>
-                                                <select
-                                                    id={
-                                                        "checked_location_behavior"
-                                                    }
-                                                    value={
-                                                        checkedLocationBehavior ??
-                                                        "nothing"
-                                                    }
-                                                    onChange={(event) => {
-                                                        const value =
-                                                            event.target.value;
-                                                        if (value) {
-                                                            optionManager.setOptionValue(
-                                                                "checkedLocationBehavior",
-                                                                "global",
-                                                                value
-                                                            );
-                                                            optionManager.saveScope(
-                                                                "global"
-                                                            );
+        <>
+            <SplitScreen
+                screens={[
+                    {
+                        name: "options",
+                        content: (
+                            <div>
+                                <hr />
+                                <h3>Theme Settings</h3>
+                                <>
+                                    <label htmlFor={"global_theme"}>
+                                        Theme:{" "}
+                                    </label>
+                                    <select
+                                        id={"global_theme"}
+                                        value={themeValue ?? "system"}
+                                        onChange={(event) => {
+                                            const value = event.target.value;
+                                            if (value) {
+                                                optionManager.setOptionValue(
+                                                    "theme",
+                                                    "global",
+                                                    value
+                                                );
+                                                optionManager.saveScope(
+                                                    "global"
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <option value="system">System</option>
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                    </select>
+                                </>
+                                <hr />
+                                <h3>Checklist Settings</h3>
+                                <SplitScreen
+                                    rows={1}
+                                    cols={2}
+                                    screens={[
+                                        {
+                                            name: "options",
+                                            content: (
+                                                <>
+                                                    <label
+                                                        htmlFor={
+                                                            "checked_location_behavior"
                                                         }
+                                                    >
+                                                        Checked Location
+                                                        Behavior:{" "}
+                                                    </label>
+                                                    <select
+                                                        id={
+                                                            "checked_location_behavior"
+                                                        }
+                                                        value={
+                                                            checkedLocationBehavior ??
+                                                            "nothing"
+                                                        }
+                                                        onChange={(event) => {
+                                                            const value =
+                                                                event.target
+                                                                    .value;
+                                                            if (value) {
+                                                                optionManager.setOptionValue(
+                                                                    "checkedLocationBehavior",
+                                                                    "global",
+                                                                    value
+                                                                );
+                                                                optionManager.saveScope(
+                                                                    "global"
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        <option value="nothing">
+                                                            Nothing
+                                                        </option>
+                                                        <option value="separate">
+                                                            Separate
+                                                        </option>
+                                                        <option value="hide">
+                                                            Hide
+                                                        </option>
+                                                    </select>
+                                                </>
+                                            ),
+                                        },
+                                        {
+                                            name: "exampleList",
+                                            content: (
+                                                <ServiceContext.Provider
+                                                    value={{
+                                                        checkManager:
+                                                            mockCheckManager,
+                                                        entranceManager:
+                                                            mockEntranceManager,
+                                                        groupManager:
+                                                            mockGroupManager,
+                                                        sectionManager:
+                                                            mockSectionManager,
+                                                        tagManager:
+                                                            mockTagManager,
+                                                        optionManager,
                                                     }}
                                                 >
-                                                    <option value="nothing">
-                                                        Nothing
-                                                    </option>
-                                                    <option value="separate">
-                                                        Separate
-                                                    </option>
-                                                    <option value="hide">
-                                                        Hide
-                                                    </option>
-                                                </select>
-                                            </>
-                                        ),
-                                    },
-                                    {
-                                        name: "exampleList",
-                                        content: (
-                                            <ServiceContext.Provider
-                                                value={{
-                                                    checkManager:
-                                                        mockCheckManager,
-                                                    entranceManager:
-                                                        mockEntranceManager,
-                                                    groupManager:
-                                                        mockGroupManager,
-                                                    sectionManager:
-                                                        mockSectionManager,
-                                                    tagManager: mockTagManager,
-                                                    optionManager,
-                                                }}
-                                            >
-                                                <SectionView
-                                                    name="root"
-                                                    context={{}}
-                                                    startOpen
-                                                />
-                                            </ServiceContext.Provider>
-                                        ),
-                                    },
-                                ]}
-                            ></SplitScreen>
+                                                    <SectionView
+                                                        name="root"
+                                                        context={{}}
+                                                        startOpen
+                                                    />
+                                                </ServiceContext.Provider>
+                                            ),
+                                        },
+                                    ]}
+                                ></SplitScreen>
 
-                            {/* <PrimaryButton>Back</PrimaryButton> */}
-                        </div>
-                    ),
-                },
-            ]}
-            rows={1}
-            cols={1}
-        />
+                                {/* <PrimaryButton>Back</PrimaryButton> */}
+                            </div>
+                        ),
+                    },
+                ]}
+                rows={1}
+                cols={1}
+            />
+        </>
     );
 };
 

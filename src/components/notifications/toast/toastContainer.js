@@ -1,10 +1,14 @@
+// @ts-check
 import { createPortal } from "react-dom";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import NotificationManager from "../../../services/notifications/notifications";
 import Toast from "./toastNotification";
 import styled from "styled-components";
 import { SecondaryButton } from "../../buttons";
 import Dialog from "../../shared/Dialog";
+import ServiceContext from "../../../contexts/serviceContext";
+import useOption from "../../../hooks/optionHook";
+import { readThemeValue } from "../../../services/theme/theme";
 
 const ContentContainer = styled.div`
     width: fit-content;
@@ -22,11 +26,14 @@ const ContentContainer = styled.div`
 let ToastContainer = () => {
     let [notifications, setNotifications] = useState([]);
     const [detailModalOpen, setDetailModalOpen] = useState(false);
-    const [detailIndex, setDetailIndex] = useState(false);
+    const [detailIndex, setDetailIndex] = useState(0);
     const dialog = useRef(null);
-    const animationFrameRef = useRef();
-    const timeRef = useRef();
-    const frozenRef = useRef();
+    const animationFrameRef = useRef(0);
+    const timeRef = useRef(0);
+    const frozenRef = useRef(false);
+    const serviceContext = useContext(ServiceContext);
+    const optionManger = serviceContext.optionManager;
+    const themeValue = useOption(optionManger, "theme", "global");
 
     const openDetailModal = (index) => {
         setDetailIndex(index);
@@ -112,6 +119,7 @@ let ToastContainer = () => {
                         pointerEvents: "none",
                         zIndex: 100,
                     }}
+                    data-theme={readThemeValue(themeValue)}
                 >
                     {detailModalOpen && notifications[detailIndex] && (
                         <Dialog ref={dialog}>
@@ -124,6 +132,7 @@ let ToastContainer = () => {
                                 </div>
                                 <SecondaryButton
                                     style={{ gridArea: "close" }}
+                                    // @ts-ignore
                                     $small
                                     onClick={() => {
                                         setDetailModalOpen(false);

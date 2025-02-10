@@ -1,16 +1,12 @@
 // @ts-check
 
-const color1 = "#433D9D";
-const color2 = "#48799E";
-const color3 = "#AFB5AF";
-// const color4 = "#B6AD96";
-const color5 = "#B67567";
+const primary = "var(--background-primary)";
+const secondary = "var(--background-secondary)";
+const tertiary = "var(--background-tertiary)";
+const danger = "var(--background-danger)";
 
-const primary = color1;
-const secondary = color2;
-const tertiary = color3;
-const danger = color5;
+const textPrimary = "var(--text-primary)";
+const background = "var(--background)";
+const filledTextPrimary = "var(--filled-text-primary)";
 
-const textPrimary = "#FFFFFF";
-
-export { primary, secondary, tertiary, textPrimary, danger };
+export { primary, secondary, tertiary, textPrimary, filledTextPrimary, danger, background };

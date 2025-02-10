@@ -1,12 +1,12 @@
 // @ts-check
 import React from "react";
 import styled from "styled-components";
-import { primary, secondary, textPrimary } from "../../constants/colors";
+import { primary, secondary, filledTextPrimary } from "../../constants/colors";
 
-const SavedConnectionContainer = styled.div.attrs({className:"interactive"})`
+const SavedConnectionContainer = styled.div.attrs({ className: "interactive" })`
     box-sizing: border-box;
     width: 25vw;
-    color: ${textPrimary};
+    color: ${filledTextPrimary};
     background-color: ${(props) =>
         // @ts-ignore
         props.$selected ? primary : secondary};
@@ -38,7 +38,9 @@ const SavedConnection = ({
             onClick={() => onClick(connectionId)}
         >
             <div>{name}</div>
-            <div>{playerAlias} - {game}</div>
+            <div>
+                {playerAlias} - {game}
+            </div>
             <div>
                 {slot}@{host}:{port}
             </div>

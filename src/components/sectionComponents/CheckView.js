@@ -2,6 +2,7 @@
 import React, { useContext, useState, useSyncExternalStore } from "react";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
+import { textPrimary } from "../../constants/colors";
 const CheckView = ({ check }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
@@ -23,8 +24,8 @@ const CheckView = ({ check }) => {
     }
 
     let iconType = status.checked ? "check_small" : "check_indeterminate_small";
-    let iconColor = "black";
-    let tagTextColor = "black";
+    let iconColor = textPrimary;
+    let tagTextColor = textPrimary;
     if (status.tags.length > 0 && serviceContext.tagManager) {
         let selectedTag = status.tags[0];
         let selectedTagType = selectedTag.type;

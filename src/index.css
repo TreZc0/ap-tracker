@@ -1,14 +1,35 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+
+:root {
+    --background: white;
+    --text-primary: black;
+    --filled-text-primary: white;
+    --background-primary: #433d9d;
+    --background-secondary: #48799e;
+    --background-tertiary: #afb5af;
+    --background-danger: #b67567;
+}
+
+[data-theme="dark"] {
+    --background: #1f1f1f;
+    --text-primary: white;
+    --filled-text-primary: white;
+    --background-primary: #433d9d;
+    --background-secondary: #48799e;
+    --background-tertiary: #afb5af;
+    --background-danger: #b67567;
+}
+
 body {
     font-family: "Roboto", sans-serif;
 }
 
+.App {
+    background-color: var(--background);
+}
+
 .material-symbols-rounded {
-  font-variation-settings:
-  'FILL' 1,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
 .interactive {
@@ -16,30 +37,32 @@ body {
     cursor: pointer;
 }
 
-.interactive:hover{
+.interactive:hover {
     box-shadow: 1px 2px 0px rgba(128, 128, 128, 0.5);
 }
 
-.interactive:active, .interactive:focus, .interactive[focused="true"]{
+.interactive:active,
+.interactive:focus,
+.interactive[focused="true"] {
     box-shadow: 1px 1px 0px rgba(128, 128, 128, 0.5);
 }
 
-.interactive:disabled, .interactive[disabled]{
+.interactive:disabled,
+.interactive[disabled] {
     opacity: 0.5;
     box-shadow: 0px 0px 0px black;
     cursor: not-allowed;
 }
 
 .section_title {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--text-primary);
     width: 50%;
     font-size: medium;
 }
 
 .section_check {
-    color: black;
+    color: var(--text-primary);
     font-size: medium;
-    font-weight: bold;
 }
 
 .section_check.checked {
@@ -48,4 +71,3 @@ body {
     list-style-type: none;
     font-weight: lighter;
 }
-

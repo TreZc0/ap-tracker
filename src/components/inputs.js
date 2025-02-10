@@ -1,11 +1,14 @@
 // @ts-check
 import React, { forwardRef } from "react";
+import { background, tertiary, textPrimary } from "../constants/colors";
 
 /** @type {React.ForwardedRef<*>} */
 const Input = forwardRef(({ label, style, ...props }, ref) => {
     return (
         <>
-            <div style={{...style, display: "inline-block", textAlign: "left" }}>
+            <div
+                style={{ ...style, display: "inline-block", textAlign: "left" }}
+            >
                 {label && (
                     <label
                         style={{
@@ -18,7 +21,16 @@ const Input = forwardRef(({ label, style, ...props }, ref) => {
                     </label>
                 )}
                 <br />
-                <input ref={ref} {...props} className="interactive"/>
+                <input
+                    ref={ref}
+                    {...props}
+                    className="interactive"
+                    style={{
+                        backgroundColor: background,
+                        color: textPrimary,
+                        border: `1px solid ${tertiary}`,
+                    }}
+                />
             </div>
         </>
     );

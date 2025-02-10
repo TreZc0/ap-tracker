@@ -3,13 +3,22 @@ import React, { useContext } from "react";
 import { TrackerStateContext } from "../contexts/contexts";
 import { SecondaryButton } from "./buttons";
 import Icon from "./icons/icons";
+import { background } from "../constants/colors";
 
 const MainHeader = ({ optionsCallback, ...props }) => {
     const trackerState = useContext(TrackerStateContext);
     const slot = trackerState.slotData;
 
     return (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1rem" }}>
+        <div
+            style={{
+                display: "grid",
+                gridTemplateColumns: "1fr auto 1rem",
+                position: "sticky",
+                top: "0px",
+                backgroundColor: background,
+            }}
+        >
             <div
                 style={{ width: "100%", display: "flex", columnGap: "1rem" }}
                 {...props}

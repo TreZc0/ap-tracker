@@ -18,6 +18,9 @@ import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
 import { createOptionManager } from "./services/options/optionManager";
 import ToastContainer from "./components/notifications/toast/toastContainer";
+import { background, textPrimary } from "./constants/colors";
+import useOption from "./hooks/optionHook";
+import { readThemeValue } from "./services/theme/theme";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -28,7 +31,10 @@ const AppScreen = styled.div`
     margin: 0;
     padding: 0;
     display: grid;
-
+    overflow: auto;
+    background-color: ${background};
+    color: ${textPrimary};
+    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
     grid-template-rows: auto 1fr;
     grid-template-columns: auto;
 `;
@@ -67,11 +73,10 @@ function App() {
         () => connection.slotInfo
     );
     const [optionWindowOpen, setOptionWindowOpen] = useState(false);
-
+    const themeValue = useOption(optionManager, "theme", "global");
     return (
-        <div className="App">
-            <AppScreen>
-                <ToastContainer />
+        <div className="App" data-theme={readThemeValue(themeValue)}>
+            <AppScreen data-theme={readThemeValue(themeValue)}>
                 <TrackerStateContext.Provider
                     value={{
                         connectionStatus: trackerConnectionState,
@@ -89,6 +94,7 @@ function App() {
                             optionManager,
                         }}
                     >
+                        <ToastContainer />
                         <MainHeader
                             optionsCallback={() => {
                                 setOptionWindowOpen(!optionWindowOpen);
@@ -105,7 +111,18 @@ function App() {
                                 )}
                                 {CONNECTION_STATUS.connected ===
                                     trackerConnectionState && (
-                                    <SectionView name="root" context={{}} />
+                                    <>
+                                        <SectionView name="root" context={{}} />
+                                        <div
+                                            style={{
+                                                position: "sticky",
+                                                bottom: "0px",
+                                                height: "25vh",
+                                            }}
+                                        >
+                                            {/* Stainless-steel block for taking up space */}
+                                        </div>
+                                    </>
                                 )}
                             </>
                         )}

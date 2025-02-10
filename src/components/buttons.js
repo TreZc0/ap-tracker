@@ -1,8 +1,13 @@
 // @ts-check
 import styled from "styled-components";
-import { textPrimary, primary, secondary, danger } from "../constants/colors";
+import {
+    filledTextPrimary,
+    primary,
+    secondary,
+    danger,
+} from "../constants/colors";
 
-const BaseButton = styled.button.attrs({className:'interactive'})`
+const BaseButton = styled.button.attrs({ className: "interactive" })`
     border: none;
     padding: 0.5rem
         ${(props) =>
@@ -14,17 +19,17 @@ const BaseButton = styled.button.attrs({className:'interactive'})`
 `;
 
 const PrimaryButton = styled(BaseButton)`
-    color: ${textPrimary};
+    color: ${filledTextPrimary};
     background-color: ${primary};
 `;
 
 const DangerButton = styled(BaseButton)`
-    color: ${textPrimary};
+    color: ${filledTextPrimary};
     background-color: ${danger};
 `;
 
 const SecondaryButton = styled(BaseButton)`
-    color: ${textPrimary};
+    color: ${filledTextPrimary};
     background-color: ${secondary};
 `;
 
