@@ -2,32 +2,15 @@
 import styled from "styled-components";
 import { textPrimary, primary, secondary, danger } from "../constants/colors";
 
-const BaseButton = styled.button`
+const BaseButton = styled.button.attrs({className:'interactive'})`
     border: none;
-    border-radius: 2px;
     padding: 0.5rem
         ${(props) =>
             // @ts-ignore
             props.$small ? "0.5rem" : "1.5rem"};
     margin: 0.25rem 0.75rem;
-    box-shadow: 0px 2px 4px black;
-    cursor: pointer;
     font-size: 1em;
     background-color: transparent;
-
-    &:hover {
-        box-shadow: 0px 1px 4px black;
-    }
-
-    &:active {
-        box-shadow: 0px 0px 4px black;
-    }
-
-    &:disabled {
-        opacity: 0.5;
-        box-shadow: 0px 0px 0px black;
-        cursor: not-allowed;
-    }
 `;
 
 const PrimaryButton = styled(BaseButton)`

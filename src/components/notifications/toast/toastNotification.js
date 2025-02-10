@@ -121,7 +121,7 @@ const Toast = ({
                     <>
                         <br />
                         <i style={{ textDecoration: "underline" }}>
-                            Click for more details
+                            Click for details
                         </i>
                     </>
                 ) : (

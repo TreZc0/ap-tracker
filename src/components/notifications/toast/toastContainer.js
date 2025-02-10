@@ -3,20 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import NotificationManager from "../../../services/notifications/notifications";
 import Toast from "./toastNotification";
 import styled from "styled-components";
-import { PrimaryButton } from "../../buttons";
-
-const DialogContainer = styled.dialog`
-    position: fixed;
-    padding: 2rem;
-    background-color: white;
-    border: 0px solid black;
-    box-shadow: 0px 2px 4px black;
-    border-radius: 5px;
-    pointer-events: all;
-    &::backdrop {
-        background: rgba(0, 0, 0, 0.7);
-    }
-`;
+import { SecondaryButton } from "../../buttons";
+import Dialog from "../../shared/Dialog";
 
 const ContentContainer = styled.div`
     width: fit-content;
@@ -126,7 +114,7 @@ let ToastContainer = () => {
                     }}
                 >
                     {detailModalOpen && notifications[detailIndex] && (
-                        <DialogContainer ref={dialog}>
+                        <Dialog ref={dialog}>
                             <ContentContainer>
                                 <h3 style={{ gridArea: "message" }}>
                                     {notifications[detailIndex].message}
@@ -134,18 +122,17 @@ let ToastContainer = () => {
                                 <div style={{ gridArea: "details" }}>
                                     {notifications[detailIndex].details}
                                 </div>
-                                <PrimaryButton
+                                <SecondaryButton
                                     style={{ gridArea: "close" }}
                                     $small
                                     onClick={() => {
                                         setDetailModalOpen(false);
                                     }}
                                 >
-                                    {" "}
-                                    Close{" "}
-                                </PrimaryButton>
+                                    Close
+                                </SecondaryButton>
                             </ContentContainer>
-                        </DialogContainer>
+                        </Dialog>
                     )}
                     {notifications.map((toast, index) => (
                         <Toast

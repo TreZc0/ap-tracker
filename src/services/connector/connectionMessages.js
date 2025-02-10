@@ -1,5 +1,4 @@
 // @ts-check
-
 import { MessageType } from "../notifications/notifications";
 
 /**
@@ -65,7 +64,7 @@ const CONNECTION_MESSAGES = {
             }
         }
 
-        details += `\n Original Error:  ${error}`;
+        details += `\n\n Original Error:  ${error}`;
         return {
             type: MessageType.error,
             message,

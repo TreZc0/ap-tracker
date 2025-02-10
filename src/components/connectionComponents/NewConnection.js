@@ -5,6 +5,7 @@ import { PrimaryButton } from "../buttons";
 import { Input } from "../inputs";
 import ServiceContext from "../../contexts/serviceContext";
 import NotificationManager from "../../services/notifications/notifications";
+import { CONNECTION_STATUS } from "../../services/connector/connector";
 
 const Container = styled.div`
     display: grid;
@@ -41,7 +42,7 @@ const NewConnection = ({ ...props }) => {
     const serviceContext = useContext(ServiceContext);
     const connector = serviceContext.connector;
     let disabled = false;
-    if (!connector) {
+    if (!connector || connector.connection.status !== CONNECTION_STATUS.disconnected) {
         disabled = true;
     }
 

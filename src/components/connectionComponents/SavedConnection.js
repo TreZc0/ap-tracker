@@ -3,27 +3,15 @@ import React from "react";
 import styled from "styled-components";
 import { primary, secondary, textPrimary } from "../../constants/colors";
 
-const SavedConnectionContainer = styled.div`
+const SavedConnectionContainer = styled.div.attrs({className:"interactive"})`
     box-sizing: border-box;
     width: 25vw;
     color: ${textPrimary};
-    cursor: pointer;
     background-color: ${(props) =>
         // @ts-ignore
         props.$selected ? primary : secondary};
-    border-radius: 5px;
-    margin: 0.25rem 0.75rem;
-    box-shadow: 0px 2px 4px black;
+    margin: 0.5rem 0.75rem;
     padding: 0.5rem;
-
-    &:hover {
-        box-shadow: 0px 1px 4px black;
-    }
-
-    &[disabled] {
-        opacity: 0.5;
-        box-shadow: 0px 0px 0px black;
-    }
 `;
 
 const SavedConnection = ({
@@ -45,6 +33,7 @@ const SavedConnection = ({
         <SavedConnectionContainer
             // @ts-ignore don't know how to jsdoc it properly
             $selected={selected}
+            focused={selected.toString()}
             disabled={disabled}
             onClick={() => onClick(connectionId)}
         >

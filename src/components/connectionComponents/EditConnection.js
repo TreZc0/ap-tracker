@@ -4,18 +4,7 @@ import styled from "styled-components";
 import { Input } from "../inputs";
 import { PrimaryButton, SecondaryButton, DangerButton } from "../buttons";
 import SavedConnectionManager from "../../services/savedConnections/savedConnectionManager";
-
-const DialogContainer = styled.dialog`
-    position: absolute;
-    padding: 2rem;
-    background-color: white;
-    border: 0px solid black;
-    box-shadow: 0px 2px 4px black;
-    border-radius: 5px;
-    &::backdrop {
-        background: rgba(0, 0, 0, 0.7);
-    }
-`;
+import Dialog from "../shared/Dialog";
 
 const ContentContainer = styled.div`
     width: fit-content;
@@ -55,7 +44,7 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
         });
     };
     return (
-        <DialogContainer ref={dialog}>
+        <Dialog ref={dialog}>
             <ContentContainer>
                 <h2 style={{ gridArea: "title" }}>Edit Connection</h2>
                 {/** @ts-ignore */}
@@ -153,7 +142,7 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     Delete
                 </DangerButton>
             </ContentContainer>
-        </DialogContainer>
+        </Dialog>
     );
 };
 

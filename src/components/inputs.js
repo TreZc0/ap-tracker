@@ -18,7 +18,7 @@ const Input = forwardRef(({ label, style, ...props }, ref) => {
                     </label>
                 )}
                 <br />
-                <input ref={ref} {...props} />
+                <input ref={ref} {...props} className="interactive"/>
             </div>
         </>
     );

@@ -17,7 +17,7 @@ const Container = styled.div`
     row-gap: 0.25em;
     width: 30vw;
     padding: 1em 2em;
-    grid-template-rows: 2.5em 15em 4em;
+    grid-template-rows: 2.5em 30em 4em;
 `;
 
 const SavedConnections = ({ ...props }) => {
@@ -88,7 +88,7 @@ const SavedConnections = ({ ...props }) => {
     return (
         <Container {...props}>
             <h2>Saved Connections</h2>
-            <div style={{ overflowY: "auto", height: "15em" }}>
+            <div style={{ overflowY: "auto", height: "30em" }}>
                 {sortedConnections.length > 0 ? (
                     <>
                         {sortedConnections.map((connection) => (
@@ -113,13 +113,13 @@ const SavedConnections = ({ ...props }) => {
             <span>
                 <PrimaryButton
                     onClick={connect}
-                    disabled={!selectedConnection && true}
+                    disabled={!selectedConnection || disabled}
                 >
                     Connect
                 </PrimaryButton>
                 <SecondaryButton
                     onClick={openEditor}
-                    disabled={!selectedConnection && true}
+                    disabled={!selectedConnection || disabled}
                 >
                     Edit
                 </SecondaryButton>
