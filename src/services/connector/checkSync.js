@@ -35,7 +35,7 @@ let addHint = (client, hint, tagManager, saveId) => {
         tagData.typeId = "hint";
         tagData.text = hintToText(client, hint);
         tagData.tagId = `hint-${hint.item.locationName}`;
-        tagManager.saveTag(tagData, saveId);
+        tagManager.addTag(tagData, saveId);
     }
 };
 

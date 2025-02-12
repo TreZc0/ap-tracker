@@ -7,12 +7,14 @@ import SavedConnectionManager from "../savedConnections/savedConnectionManager";
  * @prop {string} id Internal name for tracking
  * @prop {string} [iconColor] Valid web color
  * @prop {string} [textColor] Valid web color
- * @prop {boolean} hideWhenChecked If true, tag will not be visible on completed checks
+ * @prop {boolean} hideWhenChecked If true, tag will not be visible on completed checks, but not deleted
+ * @prop {string | null} [convertToWhenChecked] when set, converts tag to a different type when checked
  * @prop {boolean} considerChecked If true, tag will count as collected when added
  * @prop {string} icon Which icon to use for this tag
  * @prop {number} priority When multiple tags are on a location, the one with the highest priority will show
  * @prop {string} [tagCounterId] If it exists, it will add an additional counter that decrements with the tag locations that are marked as collected
  * @prop {boolean} [internalUseOnly] if true, tag may not be modified by user
+ * @prop {boolean} [doNotSave] if true, tag will not be saved to local storage when created
  */
 
 /**
@@ -45,7 +47,21 @@ const builtInTagTypeDefaults = {
         tagCounterId: "hints",
         icon: "flag",
         priority: 50,
-        hideWhenChecked: true,
+        hideWhenChecked: false,
+        convertToWhenChecked: "hint_found",
+        doNotSave: true,
+    },
+    hint_found: {
+        displayName: "Hint",
+        id: "hint_found",
+        textColor: "green",
+        iconColor: "#00ff00",
+        considerChecked: false,
+        tagCounterId: null,
+        icon: "flag_check",
+        priority: 50,
+        hideWhenChecked: false,
+        doNotSave: true,
     },
     ignore: {
         displayName: "Ignore",
@@ -64,6 +80,7 @@ const builtInTagTypeDefaults = {
         hideWhenChecked: false,
         considerChecked: false,
         internalUseOnly: true,
+        doNotSave: true,
     },
 };
 
@@ -108,20 +125,22 @@ const TAG_ITEM_NAME = "archipelagoTrackerTagData";
 
 /**
  * @typedef TagManager
- * @prop {(saveId: string, tagId: string) => void} removeTag
- * @prop {(tag: TagData, saveId: string) => void} saveTag
- * @prop {() => void} createTagType
+ * @prop {(tag: TagData, saveId: string | undefined) => void} removeTag Removes a tag from the manager and from any checks specified in the data
+ * @prop {(tag: TagData, saveId: string | undefined) => void} addTag Adds a tag to the manger and to any checks specified in the data
+ * @prop {() => void} createTagType Creates a base tag type
  * @prop {() => void} deleteTagType
  * @prop {(typeID: string) => TagType} getTagType
- * @prop {()=>TagData} createTagData
- * @prop {(tag: Tag)=>TagData} extractTagData
- * @prop {(counterId: string)=>TagCounter} getCounter
+ * @prop {()=>TagData} createTagData Creates the minimum object to be a tag
+ * @prop {(tag: Tag)=>TagData} extractTagData Extracts tag data from a full tag
+ * @prop {(counterId: string)=>TagCounter} getCounter Gets
  */
 /**
  * @param {import("../checks/checkManager").CheckManager} checkManager
  * @returns {TagManager}
  */
 const createTagManager = (checkManager) => {
+    /** @type {Map<string, Set<()=>void>>} */
+    const tagListenerCleanupCalls = new Map();
     const createTagType = () => {};
 
     const deleteTagType = () => {};
@@ -144,29 +163,42 @@ const createTagManager = (checkManager) => {
         };
         return tag;
     };
+
+    /**
+     *
+     * @param {Tag} tag
+     * @param {string | undefined} saveId
+     */
+    const handleTagConversion = (tag, saveId) => {
+        let tagData = extractTagData(tag);
+        if (tag.checkName) {
+            let checkStatus = checkManager.getCheckStatus(tag.checkName);
+            if (checkStatus.checked) {
+                if (tag.type.convertToWhenChecked === null) {
+                    removeTag(tagData, saveId);
+                } else if (tag.type.convertToWhenChecked) {
+                    removeTag(tagData, saveId);
+                    let newTagData = createTagData();
+                    newTagData.checkName = tagData.checkName;
+                    newTagData.tagId = tagData.tagId;
+                    newTagData.typeId = tag.type.convertToWhenChecked;
+                    newTagData.text = tagData.text;
+                    addTag(newTagData, saveId);
+                }
+            }
+        }
+    };
+
     /**
      * @param {TagData} tagData
-     * @param {string} saveId
+     * @param {string | undefined} saveId
      */
-    const saveTag = (tagData, saveId) => {
+    const addTag = (tagData, saveId) => {
         let tag = buildTag(tagData);
-        let saveData = SavedConnectionManager.getConnectionSaveData(
-            saveId
-        );
-        if (!saveData) {
-            saveData = {};
+
+        if (!tag.type.doNotSave && saveId) {
+            saveTag(tagData, saveId);
         }
-        if (!saveData.tagData) {
-            saveData.tagData = {};
-        }
-        if (!tagData.tagId) {
-            tagData.tagId = generateTagId();
-        }
-        saveData.tagData[tagData.tagId] = tagData;
-        SavedConnectionManager.updateConnectionSaveData(
-            saveId,
-            saveData
-        );
 
         if (tagData.checkName) {
             let checkStatus = checkManager.getCheckStatus(tagData.checkName);
@@ -182,6 +214,20 @@ const createTagManager = (checkManager) => {
             if (!found) {
                 checkTags.push(tag);
             }
+
+            if (tag.type.convertToWhenChecked !== undefined) {
+                let convertTag = () => {
+                    handleTagConversion(tag, saveId);
+                };
+
+                let checkSubscriber = checkManager.getSubscriberCallback(
+                    tag.checkName
+                );
+                let cleanUpCalls =
+                    tagListenerCleanupCalls.get(tag.tagId) ?? new Set();
+                cleanUpCalls.add(checkSubscriber(convertTag));
+                tagListenerCleanupCalls.set(tag.tagId, cleanUpCalls);
+            }
             checkManager.updateCheckStatus(tagData.checkName, {
                 tags: checkTags,
             });
@@ -189,10 +235,10 @@ const createTagManager = (checkManager) => {
     };
 
     /**
+     * @param {TagData} tagData
      * @param {string} saveId
-     * @param {string} tagId
      */
-    const removeTag = (saveId, tagId) => {
+    const saveTag = (tagData, saveId) => {
         let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
         if (!saveData) {
             saveData = {};
@@ -200,11 +246,33 @@ const createTagManager = (checkManager) => {
         if (!saveData.tagData) {
             saveData.tagData = {};
         }
-        const tag = saveData.tagData[tagId];
-        delete saveData.tagData[tagId];
+        if (!tagData.tagId) {
+            tagData.tagId = generateTagId();
+        }
+        saveData.tagData[tagData.tagId] = tagData;
         SavedConnectionManager.updateConnectionSaveData(saveId, saveData);
+    };
 
-        if (tag && tag.checkName) {
+    /**
+     * @param {TagData} tag
+     * @param {string | undefined} saveId
+     */
+    const removeTag = (tag, saveId) => {
+        // Delete tag from data if it exists there
+        if (saveId && tag.tagId) {
+            let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
+            if (!saveData) {
+                saveData = {};
+            }
+            if (!saveData.tagData) {
+                saveData.tagData = {};
+            }
+            delete saveData.tagData[tag.tagId];
+            SavedConnectionManager.updateConnectionSaveData(saveId, saveData);
+        }
+
+        // Remove tag from checks
+        if (tag.tagId && tag.checkName) {
             let checkStatus = checkManager.getCheckStatus(tag.checkName);
             let checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
@@ -214,6 +282,11 @@ const createTagManager = (checkManager) => {
                     checkTags = checkTags.splice(i, 1);
                     found = true;
                 }
+            }
+
+            let cleanUpCalls = tagListenerCleanupCalls.get(tag.tagId);
+            if (cleanUpCalls) {
+                cleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             }
 
             if (found) {
@@ -267,7 +340,7 @@ const createTagManager = (checkManager) => {
 
     return {
         removeTag,
-        saveTag,
+        addTag,
         createTagType,
         deleteTagType,
         getTagType,
