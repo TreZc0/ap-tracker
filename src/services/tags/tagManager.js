@@ -69,7 +69,8 @@ const builtInTagTypeDefaults = {
         considerChecked: true,
         icon: "check_circle",
         priority: 50,
-        hideWhenChecked: true,
+        hideWhenChecked: false,
+        convertToWhenChecked: null,
     },
     deleted: {
         // Fail safe tag for un-recognized or deleted tags
@@ -195,11 +196,14 @@ const createTagManager = (checkManager) => {
      */
     const addTag = (tagData, saveId) => {
         let tag = buildTag(tagData);
+        // clear any existing listeners about the tag in case of duplicates.
+        removeTag(tagData, saveId);
 
         if (!tag.type.doNotSave && saveId) {
             saveTag(tagData, saveId);
         }
 
+        // Add the tag to any relevant checks, set up conversion listeners
         if (tagData.checkName) {
             let checkStatus = checkManager.getCheckStatus(tagData.checkName);
             const checkTags = checkStatus.tags.slice();
@@ -228,9 +232,16 @@ const createTagManager = (checkManager) => {
                 cleanUpCalls.add(checkSubscriber(convertTag));
                 tagListenerCleanupCalls.set(tag.tagId, cleanUpCalls);
             }
-            checkManager.updateCheckStatus(tagData.checkName, {
-                tags: checkTags,
-            });
+            if (tag.type.considerChecked) {
+                checkManager.updateCheckStatus(tagData.checkName, {
+                    ignored: true,
+                    tags: checkTags,
+                });
+            } else {
+                checkManager.updateCheckStatus(tagData.checkName, {
+                    tags: checkTags,
+                });
+            }
         }
     };
 
@@ -277,10 +288,14 @@ const createTagManager = (checkManager) => {
             let checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
-            for (let i = 0; i < checkTags.length && !found; i++) {
+            let keepIgnore = false;
+            for (let i = 0; i < checkTags.length; i++) {
                 if (checkTags[i].tagId === tag.tagId) {
-                    checkTags = checkTags.splice(i, 1);
+                    checkTags.splice(i, 1);
+                    i--;
                     found = true;
+                } else if (checkTags[i].type.considerChecked) {
+                    keepIgnore = true;
                 }
             }
 
@@ -291,7 +306,8 @@ const createTagManager = (checkManager) => {
 
             if (found) {
                 checkManager.updateCheckStatus(tag.checkName, {
-                    tags: checkTags,
+                    ignored: keepIgnore,
+                    tags: checkTags.slice(0),
                 });
             }
         }

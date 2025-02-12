@@ -3,6 +3,7 @@ import React, { useContext, useState, useSyncExternalStore } from "react";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
+import { DangerButton } from "../buttons";
 const CheckView = ({ check }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
@@ -10,11 +11,14 @@ const CheckView = ({ check }) => {
     if (!checkManager) {
         throw new Error("No check manager provided");
     }
+    const tagManager = serviceContext.tagManager;
     const status = useSyncExternalStore(
         checkManager.getSubscriberCallback(check),
         () => checkManager.getCheckStatus(check),
         () => checkManager.getCheckStatus(check)
     );
+    const connection = serviceContext.connector;
+
     let classes = new Set(["section_check"]);
     if (status.checked || status.ignored) {
         classes.add("checked");
@@ -76,6 +80,37 @@ const CheckView = ({ check }) => {
                                 {tag.text}
                             </div>
                         ))}
+                    {showDetails && (
+                        <div
+                            style={{
+                                marginLeft: "2rem",
+                                color: tagTextColor,
+                            }}
+                        >
+                            <DangerButton
+                                // @ts-ignore
+                                $small
+                                onClick={(event)=>{
+                                    event.stopPropagation();
+                                    if(!(status.ignored || status.checked) && tagManager){
+                                        let ignoreTag = tagManager.createTagData();
+                                        ignoreTag.typeId = "ignore";
+                                        ignoreTag.checkName = check;
+                                        ignoreTag.tagId = `${check}-ignore`;
+                                        tagManager.addTag(ignoreTag, connection.connection.slotInfo.connectionId);
+                                    } else if ((status.ignored && !status.checked) && tagManager) {
+                                        let ignoreTag = tagManager.createTagData();
+                                        ignoreTag.typeId = "ignore";
+                                        ignoreTag.checkName = check;
+                                        ignoreTag.tagId = `${check}-ignore`;
+                                        tagManager.removeTag(ignoreTag, connection.connection.slotInfo.connectionId);
+                                    }
+                                }}
+                            >
+                                <Icon type={status.ignored ? "check_indeterminate_small" :  "check_circle"}></Icon>
+                            </DangerButton>
+                        </div>
+                    )}
                 </div>
             )}
         </>

@@ -33,8 +33,8 @@ const SavedConnection = ({
         <SavedConnectionContainer
             // @ts-ignore don't know how to jsdoc it properly
             $selected={selected}
-            focused={selected.toString()}
-            disabled={disabled}
+            data-focused={selected.toString()}
+            data-disabled={disabled.toString()}
             onClick={() => onClick(connectionId)}
         >
             <div>{name}</div>

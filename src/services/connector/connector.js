@@ -18,7 +18,7 @@ const CONNECTION_STATUS = {
 /**
  * @typedef Connector
  * @prop {({ host, port, slot, password }:{host:string, port: string, slot: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
- * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;}} connection
+ * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;readonly slotInfo: *;}} connection
  *
  */
 
