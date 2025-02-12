@@ -1,5 +1,10 @@
 // @ts-check
-import React, { useContext, useState, useSyncExternalStore } from "react";
+import React, {
+    Fragment,
+    useContext,
+    useState,
+    useSyncExternalStore,
+} from "react";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
@@ -141,7 +146,7 @@ const CheckView = ({ check }) => {
                     </span>
                     {showDetails &&
                         status.tags.map((tag) => (
-                            <>
+                            <Fragment key={tag.tagId}>
                                 <br />
                                 <div
                                     key={tag.tagId}
@@ -164,7 +169,7 @@ const CheckView = ({ check }) => {
                                     />{" "}
                                     {tag.text ?? tag.type.displayName}
                                 </div>
-                            </>
+                            </Fragment>
                         ))}
                 </div>
             )}
