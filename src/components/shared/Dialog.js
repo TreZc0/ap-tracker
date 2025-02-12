@@ -9,7 +9,7 @@ const Dialog = styled.dialog`
     color: ${textPrimary};
     border: 0px solid black;
     pointer-events: all;
-    box-shadow: 4px 8px 0px rgba(128, 128, 128, 0.5);
+    box-shadow: 4px 8px 0px rgba(0, 0, 0, 0.5);
     &::backdrop {
         background: rgba(0, 0, 0, 0.7);
     }
