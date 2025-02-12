@@ -15,7 +15,7 @@ const CONNECTION_MESSAGES = {
         message: "Tracker is already connected to the archipelago server.",
     }),
     alreadyConnecting: () => ({
-        type:  MessageType.info,
+        type: MessageType.info,
         message:
             "Tracker is already trying to connect to the archipelago server.",
     }),
@@ -25,27 +25,25 @@ const CONNECTION_MESSAGES = {
     }),
     connectionFailed: ({ host, port, slot, game, error }) => {
         let serverHelp = "";
-        switch(host){
+        switch (host) {
             case "archipelago.gg": {
                 serverHelp = `A common reason to not be able to connect to ${host} is the room has either gone to sleep (after 2 hours of inactivity) or the port has changed. 
-                You can wake up the room by refreshing the room page and verify the port is still ${port}. 
-                If the port has changed, you can change it by clicking a Saved Connection followed by the edit button.`;
+You can wake up the room by refreshing the room page and verify the port is still ${port}.
+If the port has changed, you can change it by clicking a Saved Connection followed by the edit button.`;
                 break;
             }
             case "localhost": // fallthrough
-            case "127.0.0.1":
-                {
-                    serverHelp = `You seem to be trying to connect to a locally hosted Archipelago Server. Please verify the correct port is ${port}. 
-                    You can verify this by looking at the server console to see what port it is running on. The default is 38281`;
-                    break;
-                }
-            default:
-                {
-                    serverHelp = `You are trying to connect to the host: ${host}. Verify with the person running the server that it is up and running on the port ${port}.
-                    If you are using the publicly hosted version of this tracker, it cannot connect to web sockets that are not secured due to web browser enforced policies on secured (https) websites.
-                    To use the tracker you will need to host the tracker locally, instructions can be found at https://github.com/DrAwesome4333/ap-tracker in the readme section.`;
-                    break;
-                }
+            case "127.0.0.1": {
+                serverHelp = `You seem to be trying to connect to a locally hosted Archipelago Server. Please verify the correct port is ${port}. 
+You can verify this by looking at the server console to see what port it is running on. The default is 38281`;
+                break;
+            }
+            default: {
+                serverHelp = `You are trying to connect to the host: ${host}. Verify with the person running the server that it is up and running on the port ${port}.
+If you are using the publicly hosted version of this tracker, it cannot connect to web sockets that are not secured due to web browser enforced policies on secured (https) websites.
+To use the tracker you will need to host the tracker locally, instructions can be found at https://github.com/DrAwesome4333/ap-tracker in the readme section.`;
+                break;
+            }
         }
         let message = `Failed to connect to server ${host}:${port}. Check connection details and ensure the server is running.`;
         let details = serverHelp;
@@ -55,7 +53,7 @@ const CONNECTION_MESSAGES = {
                 case "InvalidSlot": {
                     message = `Failed to connect to slot. The slot name "${slot}" was invalid.`;
                     details = `An Archipelago server was running at ${host}:${port}, but "${slot}" was not a player in that server.
-                    Please verify you have the correct slot details.`;
+Please verify you have the correct slot details.`;
                     break;
                 }
                 default: {
@@ -64,7 +62,7 @@ const CONNECTION_MESSAGES = {
             }
         }
 
-        details += `\n\n Original Error:  ${error}`;
+        details += `\n\nOriginal Error:\n\t${error}`;
         return {
             type: MessageType.error,
             message,

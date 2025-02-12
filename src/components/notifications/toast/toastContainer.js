@@ -127,7 +127,7 @@ let ToastContainer = () => {
                                 <h3 style={{ gridArea: "message" }}>
                                     {notifications[detailIndex].message}
                                 </h3>
-                                <div style={{ gridArea: "details" }}>
+                                <div style={{ gridArea: "details", whiteSpace:"pre-wrap" }}>
                                     {notifications[detailIndex].details}
                                 </div>
                                 <SecondaryButton

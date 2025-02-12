@@ -114,6 +114,7 @@ const Toast = ({
                     justifySelf: "left",
                     alignSelf: "center",
                     gridRow: "1 /span 1",
+                    whiteSpace: "pre-wrap",
                 }}
             >
                 {message}

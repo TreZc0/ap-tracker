@@ -122,7 +122,7 @@ const generateTagId = (n = 16) => {
     return result;
 };
 
-const TAG_ITEM_NAME = "archipelagoTrackerTagData";
+// const TAG_ITEM_NAME = "archipelagoTrackerTagData";
 
 /**
  * @typedef TagManager
