@@ -3,7 +3,7 @@ import React, { useContext, useState, useSyncExternalStore } from "react";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
-import { DangerButton } from "../buttons";
+import { GhostButton } from "../buttons";
 const CheckView = ({ check }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
@@ -29,7 +29,6 @@ const CheckView = ({ check }) => {
 
     let iconType = status.checked ? "check_small" : "check_indeterminate_small";
     let iconColor = textPrimary;
-    let tagTextColor = textPrimary;
     if (status.tags.length > 0 && serviceContext.tagManager) {
         let selectedTag = status.tags[0];
         let selectedTagType = selectedTag.type;
@@ -44,73 +43,129 @@ const CheckView = ({ check }) => {
         }
         iconType = selectedTagType.icon;
         iconColor = selectedTagType.iconColor ?? iconColor;
-        tagTextColor = selectedTagType.textColor ?? tagTextColor;
     }
     return (
         <>
             {status.exists && (
-                <div
-                    onClick={() => {
-                        setShowDetails(!showDetails);
-                    }}
-                    className={[...classes].join(" ")}
-                >
-                    {
+                <div>
+                    <span
+                        className={[...classes].join(" ")}
+                        onClick={() => {
+                            setShowDetails(!showDetails);
+                        }}
+                    >
                         <Icon
                             fontSize="14px"
                             type={iconType}
                             style={{ color: iconColor }}
-                        />
-                    }
-                    {check}
-                    {showDetails &&
-                        status.tags.map((tag) => (
-                            <div
-                                key={tag.tagId}
-                                style={{
-                                    marginLeft: "1rem",
-                                    color: tagTextColor,
-                                }}
-                            >
-                                <Icon
-                                    fontSize="14px"
-                                    type={iconType}
-                                    style={{ color: iconColor }}
-                                />
-                                {tag.text}
-                            </div>
-                        ))}
-                    {showDetails && (
-                        <div
-                            style={{
-                                marginLeft: "2rem",
-                                color: tagTextColor,
+                        />{" "}
+                        {check}
+                        <GhostButton
+                            // @ts-ignore
+                            $tiny
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                if (
+                                    !(status.ignored || status.checked) &&
+                                    tagManager
+                                ) {
+                                    let ignoreTag = tagManager.createTagData();
+                                    ignoreTag.typeId = "ignore";
+                                    ignoreTag.checkName = check;
+                                    ignoreTag.tagId = `${check}-ignore`;
+                                    tagManager.addTag(
+                                        ignoreTag,
+                                        connection.connection.slotInfo
+                                            .connectionId
+                                    );
+                                } else if (
+                                    status.ignored &&
+                                    !status.checked &&
+                                    tagManager
+                                ) {
+                                    let ignoreTag = tagManager.createTagData();
+                                    ignoreTag.typeId = "ignore";
+                                    ignoreTag.checkName = check;
+                                    ignoreTag.tagId = `${check}-ignore`;
+                                    tagManager.removeTag(
+                                        ignoreTag,
+                                        connection.connection.slotInfo
+                                            .connectionId
+                                    );
+                                }
+                                setShowDetails(false);
                             }}
                         >
-                            <DangerButton
-                                // @ts-ignore
-                                $small
-                                onClick={(event)=>{
-                                    event.stopPropagation();
-                                    if(!(status.ignored || status.checked) && tagManager){
-                                        let ignoreTag = tagManager.createTagData();
-                                        ignoreTag.typeId = "ignore";
-                                        ignoreTag.checkName = check;
-                                        ignoreTag.tagId = `${check}-ignore`;
-                                        tagManager.addTag(ignoreTag, connection.connection.slotInfo.connectionId);
-                                    } else if ((status.ignored && !status.checked) && tagManager) {
-                                        let ignoreTag = tagManager.createTagData();
-                                        ignoreTag.typeId = "ignore";
-                                        ignoreTag.checkName = check;
-                                        ignoreTag.tagId = `${check}-ignore`;
-                                        tagManager.removeTag(ignoreTag, connection.connection.slotInfo.connectionId);
+                            <Icon
+                                type={status.ignored ? "add" : "block"}
+                                fontSize="12pt"
+                            ></Icon>
+                        </GhostButton>
+                        <GhostButton
+                            // @ts-ignore
+                            $tiny
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                let found = false;
+                                status.tags?.forEach((tag) => {
+                                    if (tag.tagId === `${check}-star`) {
+                                        found = true;
                                     }
-                                }}
-                            >
-                                <Icon type={status.ignored ? "check_indeterminate_small" :  "check_circle"}></Icon>
-                            </DangerButton>
-                        </div>
-                    )}
+                                });
+                                if (tagManager && !found) {
+                                    let tagData = tagManager.createTagData();
+                                    tagData.typeId = "star";
+                                    tagData.checkName = check;
+                                    tagData.tagId = `${check}-star`;
+                                    tagManager.addTag(
+                                        tagData,
+                                        connection.connection.slotInfo
+                                            .connectionId
+                                    );
+                                } else if (tagManager && found) {
+                                    let ignoreTag = tagManager.createTagData();
+                                    ignoreTag.typeId = "star";
+                                    ignoreTag.checkName = check;
+                                    ignoreTag.tagId = `${check}-star`;
+                                    tagManager.removeTag(
+                                        ignoreTag,
+                                        connection.connection.slotInfo
+                                            .connectionId
+                                    );
+                                }
+                                setShowDetails(false);
+                            }}
+                        >
+                            <Icon type={"star"} fontSize="12pt"></Icon>
+                        </GhostButton>
+                    </span>
+                    {showDetails &&
+                        status.tags.map((tag) => (
+                            <>
+                                <br />
+                                <div
+                                    key={tag.tagId}
+                                    style={{
+                                        marginLeft: "1rem",
+                                        color:
+                                            tag.type.textColor ?? textPrimary,
+                                        textDecoration: "none",
+                                        display: "inline-block",
+                                    }}
+                                >
+                                    <Icon
+                                        fontSize="14px"
+                                        type={tag.type.icon}
+                                        style={{
+                                            color:
+                                                tag.type.iconColor ??
+                                                textPrimary,
+                                        }}
+                                    />{" "}
+                                    {tag.text ?? tag.type.displayName}
+                                </div>
+                            </>
+                        ))}
                 </div>
             )}
         </>

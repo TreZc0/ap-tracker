@@ -63,11 +63,24 @@ const builtInTagTypeDefaults = {
         hideWhenChecked: false,
         doNotSave: true,
     },
+    star: {
+        displayName: "Starred",
+        id: "star",
+        textColor: "orange",
+        iconColor: "orange",
+        considerChecked: false,
+        tagCounterId: "stars",
+        icon: "star",
+        priority: 100,
+        hideWhenChecked: false,
+    },
     ignore: {
-        displayName: "Ignore",
+        displayName: "Ignored",
+        textColor: "grey",
+        iconColor: "grey",
         id: "ignore",
         considerChecked: true,
-        icon: "check_circle",
+        icon: "block",
         priority: 50,
         hideWhenChecked: false,
         convertToWhenChecked: null,
@@ -112,6 +125,14 @@ const builtInTagCounterDefaults = {
         countMode: CounterMode.countUnchecked,
         showTotal: false, // Shows the count (based on count mode) out of the total number of items in that group with that tag
     },
+    stars: {
+        id: "stars",
+        displayName: "Starred Checks",
+        icon: "star",
+        color: "orange",
+        countMode: CounterMode.countChecked,
+        showTotal: true,
+    },
 };
 
 const generateTagId = (n = 16) => {
@@ -128,6 +149,7 @@ const generateTagId = (n = 16) => {
  * @typedef TagManager
  * @prop {(tag: TagData, saveId: string | undefined) => void} removeTag Removes a tag from the manager and from any checks specified in the data
  * @prop {(tag: TagData, saveId: string | undefined) => void} addTag Adds a tag to the manger and to any checks specified in the data
+ * @prop {(saveId: string | undefined) => void} loadTags Loads tags from a saved connection
  * @prop {() => void} createTagType Creates a base tag type
  * @prop {() => void} deleteTagType
  * @prop {(typeID: string) => TagType} getTagType
@@ -354,9 +376,28 @@ const createTagManager = (checkManager) => {
         return builtInTagCounterDefaults[counterId];
     };
 
+    /**
+     *
+     * @param {string | undefined} saveId
+     */
+    const loadTags = (saveId) => {
+        let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
+        if (!saveData) {
+            saveData = {};
+        }
+        if (!saveData.tagData) {
+            saveData.tagData = {};
+        }
+        let tagNames = Object.getOwnPropertyNames(saveData.tagData);
+        tagNames.forEach((tagName) => {
+            addTag(saveData.tagData[tagName], saveId);
+        });
+    };
+
     return {
         removeTag,
         addTag,
+        loadTags,
         createTagType,
         deleteTagType,
         getTagType,

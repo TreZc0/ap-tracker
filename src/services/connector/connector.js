@@ -212,6 +212,7 @@ const createConnector = (
                             // @ts-ignore, there is a typing error on Archipelago.js
                             groups
                         );
+                        tagManager.loadTags(connection.slotInfo.connectionId);
                     });
 
                 return CONNECTION_MESSAGES.connectionSuccess({

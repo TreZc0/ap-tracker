@@ -9,6 +9,8 @@ const supportedIcons = [
     "bolt",
     "label",
     "bookmark",
+    "block",
+    "add",
     "beenhere",
     "new_label",
     "pentagon",

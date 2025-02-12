@@ -63,9 +63,14 @@ body {
 .section_check {
     color: var(--text-primary);
     font-size: medium;
+    cursor: pointer;
+}
+.section_check:hover {
+    text-decoration: underline;
 }
 
-.section_check.checked, .section_title.checked {
+.section_check.checked,
+.section_title.checked {
     color: grey;
     text-decoration: line-through;
     list-style-type: none;

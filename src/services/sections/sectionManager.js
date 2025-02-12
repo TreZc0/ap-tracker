@@ -342,13 +342,13 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
                     switch (counter.countMode) {
                         case CounterMode.countChecked: {
-                            if (status.checked) {
+                            if (status.checked || status.ignored) {
                                 counterCount.add(checkName);
                             }
                             break;
                         }
                         case CounterMode.countUnchecked: {
-                            if (!status.checked) {
+                            if (!status.checked && !status.ignored) {
                                 counterCount.add(checkName);
                             }
                             break;
@@ -431,15 +431,6 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             };
 
             const update = () => {
-                /*\
-                 * @typedef Section
-                 * @prop {string} title
-                 * @prop {CheckReport} checkReport
-                 * @prop {Map<string, import("../checks/checkManager").CheckStatus>} checks
-                 * @prop {SectionType} type
-                 * @prop {SectionTheme} theme
-                 * @prop {String[] | null} children
-                 */
                 groupKey = null;
                 // groupManager.getGroupWithRegion(
                 //     entranceManager.getEntranceDestRegion(portalName)

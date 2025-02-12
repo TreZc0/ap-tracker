@@ -105,7 +105,7 @@ const SectionView = ({ name, context, startOpen }) => {
                                                 section?.checkReport.tagTotals.get(
                                                     id
                                                 )?.size ?? 0
-                                            }`}
+                                            }`}{" "}
                                     </i>
                                 );
                             }

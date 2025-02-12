@@ -5,16 +5,24 @@ import {
     primary,
     secondary,
     danger,
+    textPrimary,
+    background,
 } from "../constants/colors";
 
 const BaseButton = styled.button.attrs({ className: "interactive" })`
     border: none;
-    padding: 0.5rem
+    padding:
         ${(props) =>
             // @ts-ignore
-            props.$small ? "0.5rem" : "1.5rem"};
-    margin: 0.25rem 0.75rem;
-    font-size: 1em;
+            props.$tiny ? "0.125rem 0.125rem" : props.$small ? "0.5rem 0.5rem" : "0.5rem 1.5rem"};
+    margin: ${(props) =>
+        // @ts-ignore
+        props.$tiny
+            ? "0rem 0.25rem"
+            : "0.25rem 0.75rem"};
+    font-size: ${(props) =>
+        // @ts-ignore
+        props.$tiny ? "0.5em" : "1em"};
     background-color: transparent;
 `;
 
@@ -34,7 +42,8 @@ const SecondaryButton = styled(BaseButton)`
 `;
 
 const GhostButton = styled(BaseButton)`
-    color: ${primary};
+    color: ${textPrimary};
+    background-color: ${background}
 `;
 
 export { PrimaryButton, DangerButton, SecondaryButton, GhostButton };
