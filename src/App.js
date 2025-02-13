@@ -26,16 +26,18 @@ const AppScreen = styled.div`
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     margin: 0;
     padding: 0;
     display: grid;
     overflow: auto;
     background-color: ${background};
+    justify-items: stretch;
+    align-items: stretch;
     color: ${textPrimary};
     transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 3em 1fr;
     grid-template-columns: auto;
 `;
 

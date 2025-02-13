@@ -11,6 +11,8 @@ const Container = styled.div`
     display: grid;
     align-items: end;
     justify-items: center;
+    justify-self: center;
+    margin: auto 0;
     row-gap: 0.25em;
     width: fit-content;
     padding: 1em 2em;
@@ -18,11 +20,10 @@ const Container = styled.div`
         "title"
         "host"
         "port"
-        "game"
         "slot"
         "password"
         "connect";
-    grid-template-rows: repeat(6, 2.5em) 4em;
+    grid-template-rows: repeat(5, 2.5em) 4em;
 `;
 
 const NewConnection = ({ ...props }) => {

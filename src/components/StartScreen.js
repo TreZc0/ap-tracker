@@ -8,15 +8,18 @@ const StartScreen = ({ className = "" }) => {
     return (
         <SplitScreen
             className={className}
-            rows={1}
-            cols={2}
+            style={{
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+            }}
             screens={[
                 {
-                    name: "new",
+                    key: "new",
                     content: <NewConnection />,
                 },
                 {
-                    name: "saved",
+                    key: "saved",
                     content: <SavedConnections />,
                 },
             ]}

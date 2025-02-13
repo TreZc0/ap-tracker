@@ -5,7 +5,8 @@ import { primary, secondary, filledTextPrimary } from "../../constants/colors";
 
 const SavedConnectionContainer = styled.div.attrs({ className: "interactive" })`
     box-sizing: border-box;
-    width: 25vw;
+    width: 80%;
+    justify-self:center;
     color: ${filledTextPrimary};
     background-color: ${(props) =>
         // @ts-ignore
@@ -39,10 +40,10 @@ const SavedConnection = ({
         >
             <div>{name}</div>
             <div>
-                {playerAlias} - {game}
+                {game}
             </div>
             <div>
-                {slot}@{host}:{port}
+                {slot} {host}:{port}
             </div>
             <div>
                 <i>

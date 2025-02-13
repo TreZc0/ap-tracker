@@ -1,41 +1,54 @@
 // @ts-check
-import React, { useMemo } from "react";
+import React from "react";
+import styled from "styled-components";
 
-const SplitScreen = ({ screens, rows = 1, cols = 1, className = "" }) => {
-    const gridTemplateRows = useMemo(() => {
-        let _rows = [];
-        for (let i = 0; i < rows; i++) {
-            _rows.push("1fr");
+const SplitContainer = styled.div`
+    display: grid;
+    grid:
+        "s1" 50%
+        "s2" 50%
+        / 100%;
+
+    @media only screen and (orientation: landscape) {
+        & {
+            grid:
+                "s1 s2" auto
+                / 1fr 1fr;
         }
-        return _rows.join(" ");
-    }, [rows]);
-
-    const gridTemplateColumns = useMemo(() => {
-        let _cols = [];
-        for (let i = 0; i < cols; i++) {
-            _cols.push("1fr");
-        }
-        return _cols.join(" ");
-    }, [cols]);
-
-    const divConfig = {
-        display: "grid",
-        gridTemplateRows,
-        gridTemplateColumns,
-        alignItems: "center",
-        justifyItems: "center",
-    };
-
+    }
+`;
+/**
+ *
+ * @param {Object} param0
+ * @param {{key:React.Key, content: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined}[]} param0.screens
+ * @param {React.CSSProperties} param0.style
+ * @param {string} param0.className
+ * @returns
+ */
+const SplitScreen = ({ screens, style, className = "" }) => {
     return (
-        <div style={divConfig} className={className}>
-            {screens.map(
-                (
-                    /** @type {{ name: React.Key; content: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }} */ screen
-                ) => (
-                    <div key={screen.name}>{screen.content}</div>
-                )
-            )}
-        </div>
+        <SplitContainer className={className} style={style}>
+            <div
+                style={{
+                    gridArea: "s1",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignContent: "center",
+                }}
+            >
+                {screens[0].content}
+            </div>
+            <div
+                style={{
+                    gridArea: "s2",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignContent: "center",
+                }}
+            >
+                {screens[1].content}
+            </div>
+        </SplitContainer>
     );
 };
 

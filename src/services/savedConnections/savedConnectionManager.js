@@ -135,7 +135,7 @@ const createNewSavedConnection = (data) => {
         connectionId,
         seed: data.seed,
         game: data.game,
-        name: `${data.playerAlias || data.slot} - ${data.seed}`,
+        name: `${data.playerAlias || data.slot}`,
         host: data.host,
         port: data.port,
         slot: data.slot,

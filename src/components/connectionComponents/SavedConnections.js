@@ -9,15 +9,21 @@ import { TrackerStateContext } from "../../contexts/contexts";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
 import EditConnectionDialog from "./EditConnection";
 import NotificationManager from "../../services/notifications/notifications";
+import { createPortal } from "react-dom";
 
 const Container = styled.div`
     display: grid;
-    align-items: end;
+    align-items: center;
     justify-items: center;
+    justify-self: center;
+    align-self: center;
     row-gap: 0.25em;
-    width: 30vw;
-    padding: 1em 2em;
-    grid-template-rows: 2.5em 30em 4em;
+    width: 80%;
+    margin: 1em 2em;
+    grid-template-rows: 3em 1fr 3em;
+    grid-template-columns: 1fr;
+    max-height: 75%;
+    height: fit-content;
 `;
 
 const SavedConnections = ({ ...props }) => {
@@ -88,7 +94,14 @@ const SavedConnections = ({ ...props }) => {
     return (
         <Container {...props}>
             <h2>Saved Connections</h2>
-            <div style={{ overflowY: "auto", height: "30em" }}>
+            <div
+                style={{
+                    overflowY: "auto",
+                    minHeight: "5em",
+                    maxHeight: "100%",
+                    width: "100%",
+                }}
+            >
                 {sortedConnections.length > 0 ? (
                     <>
                         {sortedConnections.map((connection) => (
@@ -124,11 +137,14 @@ const SavedConnections = ({ ...props }) => {
                     Edit
                 </SecondaryButton>
             </span>
-            <EditConnectionDialog
-                open={editorOpen}
-                onClose={closeEditor}
-                connection={selectedConnection}
-            />
+            {editorOpen &&
+                createPortal(
+                    <EditConnectionDialog
+                        open={editorOpen}
+                        onClose={closeEditor}
+                        connection={selectedConnection}
+                    />
+                )}
         </Container>
     );
 };

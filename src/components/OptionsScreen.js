@@ -1,6 +1,6 @@
 // @ts-check
 import React, { useContext } from "react";
-import SplitScreen from "./SplitScreen";
+import MultiScreen from "./MultiScreen";
 import ServiceContext from "../contexts/serviceContext";
 import SectionView from "./sectionComponents/SectionView";
 import useOption from "../hooks/optionHook";
@@ -124,7 +124,7 @@ const OptionsScreen = () => {
 
     return (
         <>
-            <SplitScreen
+            <MultiScreen
                 screens={[
                     {
                         name: "options",
@@ -161,7 +161,7 @@ const OptionsScreen = () => {
                                 </>
                                 <hr />
                                 <h3>Checklist Settings</h3>
-                                <SplitScreen
+                                <MultiScreen
                                     rows={1}
                                     cols={2}
                                     screens={[
@@ -286,7 +286,7 @@ const OptionsScreen = () => {
                                             ),
                                         },
                                     ]}
-                                ></SplitScreen>
+                                ></MultiScreen>
 
                                 {/* <PrimaryButton>Back</PrimaryButton> */}
                             </div>
