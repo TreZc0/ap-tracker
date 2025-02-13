@@ -282,6 +282,16 @@ const OptionsScreen = () => {
                                                         context={{}}
                                                         startOpen
                                                     />
+                                                    <div
+                                                        style={{
+                                                            position: "sticky",
+                                                            bottom: "0px",
+                                                            height: "25vh",
+                                                            pointerEvents: "none",
+                                                        }}
+                                                    >
+                                                        {/* Stainless-steel block for taking up space */}
+                                                    </div>
                                                 </ServiceContext.Provider>
                                             ),
                                         },
