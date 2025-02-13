@@ -9,7 +9,6 @@ import { TrackerStateContext } from "../../contexts/contexts";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
 import EditConnectionDialog from "./EditConnection";
 import NotificationManager from "../../services/notifications/notifications";
-import { createPortal } from "react-dom";
 
 const Container = styled.div`
     display: grid;
@@ -137,14 +136,13 @@ const SavedConnections = ({ ...props }) => {
                     Edit
                 </SecondaryButton>
             </span>
-            {editorOpen &&
-                createPortal(
-                    <EditConnectionDialog
-                        open={editorOpen}
-                        onClose={closeEditor}
-                        connection={selectedConnection}
-                    />
-                )}
+            {
+                <EditConnectionDialog
+                    open={editorOpen}
+                    onClose={closeEditor}
+                    connection={selectedConnection}
+                />
+            }
         </Container>
     );
 };

@@ -162,8 +162,8 @@ const OptionsScreen = () => {
                                 <hr />
                                 <h3>Checklist Settings</h3>
                                 <MultiScreen
-                                    rows={1}
-                                    cols={2}
+                                    rows={2}
+                                    cols={1}
                                     screens={[
                                         {
                                             name: "options",

@@ -37,7 +37,7 @@ const SectionView = ({ name, context, startOpen }) => {
         borderLeft: `2px dashed ${section?.theme.color ?? "Black"}`,
         paddingLeft: "0.5em",
         marginLeft: "0.5em",
-        minWidth: "30em",
+        minWidth: "10em",
     };
 
     const clearedCheckCount =
