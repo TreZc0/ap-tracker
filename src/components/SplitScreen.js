@@ -12,7 +12,7 @@ const SplitContainer = styled.div`
     @media only screen and (orientation: landscape) {
         & {
             grid:
-                "s1 s2" auto
+                "s1 s2" 100%
                 / 1fr 1fr;
         }
     }

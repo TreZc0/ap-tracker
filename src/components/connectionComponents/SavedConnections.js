@@ -117,7 +117,13 @@ const SavedConnections = ({ ...props }) => {
                         ))}
                     </>
                 ) : (
-                    <div style={{ padding: "1em", color: "gray" }}>
+                    <div
+                        style={{
+                            padding: "1em",
+                            color: "gray",
+                            textAlign: "center",
+                        }}
+                    >
                         <i>Create a new connection and it will appear here</i>
                     </div>
                 )}
