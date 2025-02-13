@@ -45,7 +45,7 @@ To use the tracker you will need to host the tracker locally, instructions can b
                 break;
             }
         }
-        let message = `Failed to connect to server ${host}:${port}. Check connection details and ensure the server is running.`;
+        let message = `Failed to connect to server ${host}:${port}.`;
         let details = serverHelp;
         if (error.errors) {
             let e = error.errors[0];

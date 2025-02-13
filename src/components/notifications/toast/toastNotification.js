@@ -59,6 +59,7 @@ const Toast = ({
                 columnGap: "5px",
                 gridTemplateColumns: "75px auto",
                 width: "600px",
+                maxWidth: "90%",
                 height: "75px",
                 backgroundColor: "antiquewhite",
                 borderRadius: "5px",
