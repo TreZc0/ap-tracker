@@ -16,6 +16,7 @@ const MainHeader = ({ optionsCallback, ...props }) => {
                 gridTemplateColumns: "1fr auto 1rem",
                 position: "sticky",
                 top: "0px",
+                boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
                 backgroundColor: background,
             }}
         >
