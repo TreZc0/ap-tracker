@@ -7,6 +7,7 @@ import { TrackerBuilder } from "../../games/TrackerBuilder";
 import NotificationManager, {
     MessageType,
 } from "../notifications/notifications";
+import { enableDataSync } from "./remoteSync";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -214,7 +215,7 @@ const createConnector = (
                         );
                         tagManager.loadTags(connection.slotInfo.connectionId);
                     });
-
+                enableDataSync(client, tagManager);
                 return CONNECTION_MESSAGES.connectionSuccess({
                     playerAlias: client.players.self.alias,
                     game: client.players.self.game,
