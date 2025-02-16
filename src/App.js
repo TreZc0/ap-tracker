@@ -17,7 +17,7 @@ import { createRegionManager } from "./services/regions/regionManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
 import { createOptionManager } from "./services/options/optionManager";
-import ToastContainer from "./components/notifications/toast/toastContainer";
+import NotificationContainer from "./components/notifications/notificationContainer";
 import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
@@ -96,7 +96,7 @@ function App() {
                             optionManager,
                         }}
                     >
-                        <ToastContainer />
+                        <NotificationContainer />
                         <MainHeader
                             optionsCallback={() => {
                                 setOptionWindowOpen(!optionWindowOpen);

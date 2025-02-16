@@ -91,11 +91,6 @@ const NewConnection = ({ ...props }) => {
                 onClick={() => {
                     connector
                         ?.connectToAP(connectionInfo)
-                        .then((result) => {
-                            NotificationManager.createToast({
-                                ...result,
-                            });
-                        })
                         .catch((result) => {
                             NotificationManager.createToast({
                                 ...result,

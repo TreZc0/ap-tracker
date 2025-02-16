@@ -66,11 +66,6 @@ const SavedConnections = ({ ...props }) => {
                 SavedConnectionManager.getConnectionInfo(selectedConnection);
             connector
                 .connectToAP(connectionInfo)
-                .then((result) => {
-                    NotificationManager.createToast({
-                        ...result,
-                    });
-                })
                 .catch((result) => {
                     NotificationManager.createToast({
                         ...result,

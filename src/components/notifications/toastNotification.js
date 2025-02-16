@@ -1,5 +1,7 @@
+// @ts-check
 import React from "react";
-import { MessageType } from "../../../services/notifications/notifications";
+import { MessageType } from "../../services/notifications/notifications";
+import { filledTextPrimary, secondary } from "../../constants/colors";
 const TOAST_HEIGHT = 85;
 const Toast = ({
     message,
@@ -47,7 +49,6 @@ const Toast = ({
     let right = onScreen ? 10 : -600;
     let timePercent = remainingTime / duration;
     timePercent = timePercent < 0 ? 0 : timePercent;
-    const center = { x: 50, y: 50 };
     const radius = 40;
     return (
         <div
@@ -61,9 +62,9 @@ const Toast = ({
                 width: "600px",
                 maxWidth: "90%",
                 height: "75px",
-                backgroundColor: "antiquewhite",
-                borderRadius: "5px",
-                boxShadow: `0px 5px 0px ${boxColor}`,
+                backgroundColor: secondary,
+                color: filledTextPrimary,
+                boxShadow: `3px 5px 0px ${boxColor}`,
                 opacity: onScreen ? 1 : 0,
                 transition: "all 0.25s ease-in-out",
                 pointerEvents: "all",
@@ -74,7 +75,7 @@ const Toast = ({
             onClick={details ? click : () => {}}
         >
             <svg
-                viewBox="0 0 100 100"
+                viewBox="-50 -50 100 100"
                 style={{
                     gridColumn: "1 / span 1",
                     gridRow: "1 /span 1",
@@ -83,19 +84,17 @@ const Toast = ({
                     textAlign: "center",
                 }}
             >
-                <path
-                    fill="black"
-                    fillOpacity={0.25}
-                    d={`M ${center.x},${center.y} L ${center.x},${
-                        center.y - radius
-                    } A ${radius},${radius} 0 ${
-                        timePercent < 0.5 ? "0,1" : "1,1"
-                    } ${
-                        center.x + Math.sin(timePercent * Math.PI * 2) * radius
-                    },${
-                        center.y - Math.cos(timePercent * Math.PI * 2) * radius
-                    } z`}
-                ></path>
+                <circle
+                    stroke="black"
+                    strokeDasharray={`${radius * timePercent * Math.PI * 2} ${
+                        7 * radius
+                    }`}
+                    strokeOpacity={0.25}
+                    strokeWidth={5}
+                    r={radius}
+                    fill="none"
+                    transform="rotate(-90)"
+                />
             </svg>
             <div
                 style={{

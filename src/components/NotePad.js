@@ -44,18 +44,31 @@ const NotePad = ({ open, onClose, disabled, ...props }) => {
             }
         }
         setLoading(true);
+        let noteStatusHandle = NotificationManager.createStatus({
+            message: "Syncing Notes",
+            type: MessageType.info,
+            id: "note-status",
+        });
         loadNote()
             .then((value) => {
                 setNoteContent(value);
                 setLoading(false);
                 setUnsavedChanges(false);
-                NotificationManager.createToast({
+                noteStatusHandle.update({
                     message: "Note Loaded",
                     type: MessageType.success,
+                    duration: 1,
+                    progress: 1,
                 });
             })
             .catch((e) => {
                 setLoading(false);
+                noteStatusHandle.update({
+                    message: "Failed to load notes",
+                    type: MessageType.error,
+                    duration: 4,
+                    progress: 0,
+                });
                 NotificationManager.createToast({
                     message: "Failed to load note",
                     details: `Failed to load note due to an unexpected error.\nError:\n\t${e}`,

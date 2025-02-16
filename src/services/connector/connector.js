@@ -18,7 +18,7 @@ const CONNECTION_STATUS = {
 
 /**
  * @typedef Connector
- * @prop {({ host, port, slot, password }:{host:string, port: string, slot: string, password: string}) => Promise<{type: string,message: string}>} connectToAP
+ * @prop {({ host, port, slot, password }:{host:string, port: string, slot: string, password: string}) => Promise<void>} connectToAP
  * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;readonly slotInfo: *;}} connection
  *
  */
@@ -128,10 +128,10 @@ const createConnector = (
         }
 
         connection.status = CONNECTION_STATUS.connecting;
-        NotificationManager.createToast({
+        let statusMessageHandle = NotificationManager.createStatus({
             message: `Connecting to ${host}:${port} ...`,
-            type: MessageType.info,
-            duration: 3,
+            type: MessageType.progress,
+            id:"ap-connection",
         });
         return client
             .login(`${host}:${port}`, slot, undefined, {
@@ -140,6 +140,15 @@ const createConnector = (
                 items: API.itemsHandlingFlags.all,
             })
             .then((packet) => {
+                statusMessageHandle.update({
+                    ...CONNECTION_MESSAGES.connectionSuccess({
+                        playerAlias: client.players.self.alias,
+                        game: client.players.self.game,
+                    }),
+                    duration: 5,
+                    progress: 1,
+                });
+                
                 connection.status = CONNECTION_STATUS.connected;
                 connection.slotInfo = {
                     ...connection.slotInfo,
@@ -216,12 +225,14 @@ const createConnector = (
                         tagManager.loadTags(connection.slotInfo.connectionId);
                     });
                 enableDataSync(client, tagManager);
-                return CONNECTION_MESSAGES.connectionSuccess({
-                    playerAlias: client.players.self.alias,
-                    game: client.players.self.game,
-                });
             })
             .catch((e) => {
+                statusMessageHandle.update({
+                    message: `Failed to connect`,
+                    type: MessageType.error,
+                    duration: 4,
+                    progress: 1,
+                })
                 connection.status = CONNECTION_STATUS.disconnected;
                 connection.slotInfo = {
                     ...connection.slotInfo,
