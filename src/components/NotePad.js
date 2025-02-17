@@ -8,6 +8,7 @@ import { saveNote, loadNote } from "../services/connector/remoteSync";
 import NotificationManager, {
     MessageType,
 } from "../services/notifications/notifications";
+import Spinner from "./icons/spinner";
 const NoteGrid = styled.div`
     display: grid;
     width: 80vw;
@@ -171,6 +172,7 @@ const NotePad = ({ open, onClose, disabled, ...props }) => {
                     <GhostButton $small onClick={onClose}>
                         Close
                     </GhostButton>
+                    <Spinner/>
                 </div>
             </NoteGrid>
         </Dialog>

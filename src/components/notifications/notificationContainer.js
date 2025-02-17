@@ -46,6 +46,7 @@ let toastNotificationReducer = (notifications, action) => {
                     remainingTime: x.remainingTime - action.data.delta,
                 }))
                 .filter((x) => x.remainingTime > -300);
+            // -300 ms left on the timer to make time for the clearing animation that starts at 0
 
             break;
         }
@@ -54,6 +55,7 @@ let toastNotificationReducer = (notifications, action) => {
                 id: action.data.notification.id,
             });
             if (index < 0) {
+                // add completely new notification
                 newNotifications.unshift({
                     message: action.data.notification.message,
                     type: action.data.notification.type,
@@ -63,6 +65,7 @@ let toastNotificationReducer = (notifications, action) => {
                     details: action.data.notification.details,
                 });
             } else {
+                // update an older one
                 newNotifications[index] = {
                     ...newNotifications[index],
                     message: action.data.notification.message,
@@ -150,7 +153,7 @@ let NotificationContainer = () => {
     const dialog = useRef(null);
     const animationFrameRef = useRef(0);
     const timeRef = useRef(0);
-    const frozenRef = useRef(false);
+    const toastTimerStopped = useRef(false);
     const serviceContext = useContext(ServiceContext);
     const optionManger = serviceContext.optionManager;
     const themeValue = useOption(optionManger, "theme", "global");
@@ -161,13 +164,14 @@ let NotificationContainer = () => {
     };
 
     const pause = () => {
-        frozenRef.current = true;
+        toastTimerStopped.current = true;
     };
 
     const resume = () => {
-        frozenRef.current = false;
+        toastTimerStopped.current = false;
     };
 
+    // Effect to sync modal opening and closing with state
     useEffect(() => {
         if (detailModalOpen) {
             dialog.current?.showModal();
@@ -176,6 +180,7 @@ let NotificationContainer = () => {
         }
     }, [detailModalOpen]);
 
+    // Effect to run timer animations, set listeners on notifications
     useEffect(() => {
         /**
          * @param {import("../../services/notifications/notifications").ToastNotification} toast
@@ -206,7 +211,7 @@ let NotificationContainer = () => {
             }
             let delta = time - timeRef.current;
             timeRef.current = time;
-            if (!frozenRef.current && !detailModalOpen) {
+            if (!toastTimerStopped.current && !detailModalOpen) {
                 updateToastNotifications({ type: "tick", data: { delta } });
             }
 
@@ -217,6 +222,7 @@ let NotificationContainer = () => {
         NotificationManager.addToastListener(addToast);
         NotificationManager.addStatusListener(addStatus);
         return () => {
+            // clean up call
             NotificationManager.removeToastListener(addToast);
             NotificationManager.removeStatusListener(addStatus);
             cancelAnimationFrame(animationFrameRef.current);

@@ -1,12 +1,19 @@
 // @ts-check
 /** @import {Client} from "archipelago.js" */
+
+/**
+ * @typedef NoteData
+ * @prop {number[]} [bytes]
+ * @prop {string|null} compression
+ * @prop {number} timestamp
+ */
+
 /** @type {Client} */
 let client = null;
 // /** @type {import("../tags/tagManager").TagManager} */
 // let tagManager = null;
 
-const NOTE_KEY = "tracker_note";
-
+const NOTE_KEY = "_tracker_note";
 /**
  *
  * @param {string} note
@@ -19,8 +26,8 @@ const saveNote = async (note) => {
     }
     let key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
     await client.storage
-        .prepare(key, { note: "", timestamp: Date.now() })
-        .update({ note, timestamp: Date.now() })
+        .prepare(key, { text: "", timestamp: Date.now() })
+        .update({ text: note, timestamp: Date.now() })
         .commit();
 };
 
@@ -32,7 +39,7 @@ const loadNote = async () => {
     }
     let key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
     let value = await client.storage.fetch([key], true);
-    return value[key] ? value[key]["note"] ?? "" : "";
+    return (value[key] ?? { text: "" })["text"];
 };
 
 // const saveTags = async () => {
