@@ -4,11 +4,11 @@ import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
 /**
  * @param {string} gameName
  * @param {import("../../services/checks/checkManager").CheckManager} checkManager
- * @param {Object.<string, string[]>} groups
+ * @param {Object.<string, string[]>} locationGroups
  */
-const buildGenericGame = (gameName, checkManager, groups) => {
+const buildGenericGame = (gameName, checkManager, locationGroups) => {
     const { groupConfig, categoryConfig } =
-        LocationGroupCategoryGenerator.generateCategories(checkManager, groups);
+        LocationGroupCategoryGenerator.generateCategories(checkManager, locationGroups);
 
     /** @type {import("../TrackerBuilder").GameBuilder} */
     const buildTracker = (

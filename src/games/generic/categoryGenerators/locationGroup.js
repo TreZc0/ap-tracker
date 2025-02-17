@@ -1,8 +1,8 @@
 // @ts-check
 import _ from "lodash";
-const GROUP_DEBUG = true;
-const DEBUG_PARENT_GROUP_ORGANIZATION = true;
-const DEBUG_GROUP_CLASSIFICATION = true;
+const GROUP_DEBUG = false;
+const DEBUG_PARENT_GROUP_ORGANIZATION = true && GROUP_DEBUG;
+const DEBUG_GROUP_CLASSIFICATION = true && GROUP_DEBUG;
 
 /**
  *
@@ -206,14 +206,13 @@ const generateCategories = (checkManager, groups) => {
                 conflictGroups.set(groupName, localConflicts);
             }
         }
-        if (DEBUG_GROUP_CLASSIFICATION) {
-            console.log(conflictGroups);
-        }
         return _.sortBy([...conflictGroups.entries()], ([_, y]) => -y.size);
     };
 
     let orderedConflicts = computeKeyGroupConflicts();
-    console.log(orderedConflicts);
+    if(DEBUG_GROUP_CLASSIFICATION){
+        console.log("Conflicts", orderedConflicts);
+    }
     while (orderedConflicts.length > 0) {
         let [groupName, conflicts] = orderedConflicts[0];
         if (conflicts.size <= 1) {
@@ -229,6 +228,9 @@ const generateCategories = (checkManager, groups) => {
             console.log(`Determined ${groupName} was not a key group`);
         }
         orderedConflicts = computeKeyGroupConflicts();
+        if(DEBUG_GROUP_CLASSIFICATION){
+            console.log("Remaining Conflicts", orderedConflicts);
+        }
     }
 
     if (DEBUG_GROUP_CLASSIFICATION) {
