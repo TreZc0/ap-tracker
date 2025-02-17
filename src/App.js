@@ -13,7 +13,6 @@ import { createEntranceManager } from "./services/entrances/entranceManager";
 import { createCheckManager } from "./services/checks/checkManager";
 import ServiceContext from "./contexts/serviceContext";
 import { createGroupManager } from "./services/sections/groupManager";
-import { createRegionManager } from "./services/regions/regionManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
 import { createOptionManager } from "./services/options/optionManager";
@@ -43,7 +42,6 @@ const AppScreen = styled.div`
 
 const checkManager = createCheckManager();
 const entranceManager = createEntranceManager();
-const regionManager = createRegionManager();
 const optionManager = createOptionManager();
 optionManager.loadScope("global");
 const groupManager = createGroupManager(entranceManager);
@@ -56,7 +54,6 @@ const tagManager = createTagManager(checkManager);
 const connector = createConnector(
     checkManager,
     entranceManager,
-    regionManager,
     groupManager,
     sectionManager,
     tagManager

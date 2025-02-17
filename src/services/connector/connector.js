@@ -27,7 +27,6 @@ const CONNECTION_STATUS = {
  *
  * @param {import("../checks/checkManager").CheckManager} checkManager
  * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
- * @param {import("../regions/regionManager").RegionManager} regionManager
  * @param {import("../sections/groupManager").GroupManager} groupManager
  * @param {import("../sections/sectionManager").SectionManager} sectionManager
  * @param {import("../tags/tagManager").TagManager} tagManager
@@ -35,7 +34,6 @@ const CONNECTION_STATUS = {
 const createConnector = (
     checkManager,
     entranceManager,
-    regionManager,
     groupManager,
     sectionManager,
     tagManager
@@ -215,7 +213,6 @@ const createConnector = (
                             savedConnectionInfo.game,
                             checkManager,
                             entranceManager,
-                            regionManager,
                             groupManager,
                             sectionManager,
                             {},

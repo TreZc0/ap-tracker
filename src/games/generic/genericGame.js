@@ -369,7 +369,6 @@ const buildGenericGame = (gameName, checkManager, groups) => {
     const buildTracker = (
         checkManager,
         entranceManager,
-        regionManager,
         groupManager,
         sectionManager,
         slotData
