@@ -129,7 +129,7 @@ const createConnector = (
         let statusMessageHandle = NotificationManager.createStatus({
             message: `Connecting to ${host}:${port} ...`,
             type: MessageType.progress,
-            id:"ap-connection",
+            id: "ap-connection",
         });
         return client
             .login(`${host}:${port}`, slot, undefined, {
@@ -146,7 +146,7 @@ const createConnector = (
                     duration: 5,
                     progress: 1,
                 });
-                
+
                 connection.status = CONNECTION_STATUS.connected;
                 connection.slotInfo = {
                     ...connection.slotInfo,
@@ -205,22 +205,41 @@ const createConnector = (
                     };
                 }
                 setAPLocations(client, checkManager);
-                client.storage
-                    .fetchLocationNameGroups(client.game)
-                    .then((a) => a[`_read_location_name_groups_${client.game}`])
-                    .then((groups) => {
-                        TrackerBuilder(
-                            savedConnectionInfo.game,
-                            checkManager,
-                            entranceManager,
-                            groupManager,
-                            sectionManager,
-                            {},
-                            // @ts-ignore, there is a typing error on Archipelago.js
-                            groups
+                let savedConnectionData =
+                    SavedConnectionManager.getConnectionSaveData(
+                        connection.slotInfo.connectionId
+                    );
+                // Load groups from save data or request them from AP
+                const getGroups = async () => {
+                    if (savedConnectionData.locationGroups) {
+                        return savedConnectionData.locationGroups;
+                    }
+                    let groups = await client.storage
+                        .fetchLocationNameGroups(client.game)
+                        .then(
+                            (a) =>
+                                a[`_read_location_name_groups_${client.game}`]
                         );
-                        tagManager.loadTags(connection.slotInfo.connectionId);
-                    });
+                    savedConnectionData.locationGroups = groups;
+                    SavedConnectionManager.updateConnectionSaveData(
+                        connection.slotInfo.connectionId,
+                        savedConnectionData
+                    );
+                    return savedConnectionData.locationGroups;
+                };
+                getGroups().then((groups) => {
+                    TrackerBuilder(
+                        savedConnectionInfo.game,
+                        checkManager,
+                        entranceManager,
+                        groupManager,
+                        sectionManager,
+                        {},
+                        // @ts-ignore, there is a typing error on Archipelago.js
+                        groups
+                    );
+                    tagManager.loadTags(connection.slotInfo.connectionId);
+                });
                 enableDataSync(client, tagManager);
             })
             .catch((e) => {
@@ -229,7 +248,7 @@ const createConnector = (
                     type: MessageType.error,
                     duration: 4,
                     progress: 1,
-                })
+                });
                 connection.status = CONNECTION_STATUS.disconnected;
                 connection.slotInfo = {
                     ...connection.slotInfo,
