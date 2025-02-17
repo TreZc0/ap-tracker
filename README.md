@@ -2,10 +2,18 @@
 
 This project is for use with the Multi-world game randomizer [Archipelago](https://archipelago.gg) to help players keep track of which locations they have collected within their games and hopefully organize a potentially large list of checks into something more easy to manage.
 
-There is a version of this tracker hosted at [https://drawesome4333.github.io/ap-tracker/](https://drawesome4333.github.io/ap-tracker/) for use with most games. The version hosted there cannot connect to not secured remote servers due to browser protections. You can get around this by hosting the project yourself by following the instructions in the [Running Locally section](#running-locally)
+There is a version of this tracker hosted at [https://drawesome4333.github.io/ap-tracker/](https://drawesome4333.github.io/ap-tracker/) for use with most games. The version hosted there cannot connect to not secured remote servers due to browser protections. You can get around this by following the instructions in the [Running Locally section](#running-locally)
+
 
 
 ## Running Locally
+1. Head to the releases page for the tracker [https://github.com/DrAwesome4333/ap-tracker/releases](https://github.com/DrAwesome4333/ap-tracker/releases) and download `ap-tracker-vX.X.X.zip`.
+
+2. Extract the zip file to a local directory and open it up.
+
+3. Open `index.html` in a web browser. The app should now be ready to go to connect to any AP server.
+
+## Developing
 
 ### What you will need:
  - git, [https://git-scm.com/](https://git-scm.com/)
