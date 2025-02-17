@@ -7,7 +7,7 @@
     --background-primary: #433d9d;
     --background-secondary: #48799e;
     --background-tertiary: #afb5af;
-    --background-danger: #b67567;
+    --background-danger: #e82a00;
 }
 
 [data-theme="dark"] {
@@ -17,7 +17,7 @@
     --background-primary: #433d9d;
     --background-secondary: #48799e;
     --background-tertiary: #afb5af;
-    --background-danger: #b67567;
+    --background-danger: #e82a00;
 }
 
 body {
