@@ -120,6 +120,11 @@ const OptionsScreen = () => {
         "clearedSectionBehavior",
         "global"
     );
+    const checkOrderBehavior = useOption(
+        optionManager,
+        "checkOrderBehavior",
+        "global"
+    );
     const themeValue = useOption(optionManager, "theme", "global");
 
     return (
@@ -212,7 +217,7 @@ const OptionsScreen = () => {
                                                             Hide
                                                         </option>
                                                     </select>
-                                                    <br/>
+                                                    <br />
                                                     <label
                                                         htmlFor={
                                                             "cleared_section_behavior"
@@ -256,6 +261,47 @@ const OptionsScreen = () => {
                                                             Hide
                                                         </option>
                                                     </select>
+                                                    <br />
+                                                    <label
+                                                        htmlFor={
+                                                            "check_order_behavior"
+                                                        }
+                                                    >
+                                                        Check Order:{" "}
+                                                    </label>
+                                                    <select
+                                                        className="interactive"
+                                                        id={
+                                                            "check_order_behavior"
+                                                        }
+                                                        value={
+                                                            checkOrderBehavior ??
+                                                            "lexical"
+                                                        }
+                                                        onChange={(event) => {
+                                                            const value =
+                                                                event.target
+                                                                    .value;
+                                                            if (value) {
+                                                                optionManager.setOptionValue(
+                                                                    "checkOrderBehavior",
+                                                                    "global",
+                                                                    value
+                                                                );
+                                                                optionManager.saveScope(
+                                                                    "global"
+                                                                );
+                                                            }
+                                                        }}
+                                                    >
+                                                        <option value="lexical">
+                                                            Lexical
+                                                        </option>
+                                                        <option value="id">
+                                                            Internal id
+                                                        </option>
+                                                    </select>
+                                                    <br />
                                                 </>
                                             ),
                                         },
@@ -287,7 +333,8 @@ const OptionsScreen = () => {
                                                             position: "sticky",
                                                             bottom: "0px",
                                                             height: "25vh",
-                                                            pointerEvents: "none",
+                                                            pointerEvents:
+                                                                "none",
                                                         }}
                                                     >
                                                         {/* Stainless-steel block for taking up space */}

@@ -1,5 +1,10 @@
 // @ts-check
-import React, { useContext, useState, useSyncExternalStore } from "react";
+import React, {
+    useContext,
+    useMemo,
+    useState,
+    useSyncExternalStore,
+} from "react";
 import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
@@ -58,6 +63,21 @@ const SectionView = ({ name, context, startOpen }) => {
     );
     const clearedSectionBehavior = clearedSectionBehavior_ ?? "nothing";
 
+    const checkOrderBehavior_ = useOption(
+        optionManager,
+        "checkOrderBehavior",
+        "global"
+    );
+    const checkOrderBehavior = checkOrderBehavior_ ?? "lexical";
+
+    const checks = useMemo(() => {
+        let checkNames = [...(section?.checks.keys() ?? [])];
+        if (checkOrderBehavior === "lexical") {
+            checkNames.sort();
+        }
+        return checkNames;
+    }, [checkOrderBehavior, section?.checks]);
+
     return (
         <>
             {section?.checkReport.exist.size === 0 ? (
@@ -115,7 +135,7 @@ const SectionView = ({ name, context, startOpen }) => {
                     {isOpen && (
                         <>
                             <div>
-                                {[...(section?.checks.keys() ?? [])].map(
+                                {checks.map(
                                     (check) =>
                                         check &&
                                         (!section?.checks.get(check)?.checked ||
@@ -130,7 +150,7 @@ const SectionView = ({ name, context, startOpen }) => {
                             </div>
                             {checkedLocationBehavior === "separate" && (
                                 <div>
-                                    {[...(section?.checks.keys() ?? [])].map(
+                                    {checks.map(
                                         (check) =>
                                             check &&
                                             section?.checks.get(check)
