@@ -2,7 +2,7 @@
   "name": "ap-tracker",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://drawesome4333.github.io/ap-tracker",
+  "homepage": ".",
   "dependencies": {
     "archipelago.js": "^2.0.4",
     "lodash": "^4.17.21",
