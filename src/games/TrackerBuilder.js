@@ -1,9 +1,8 @@
 // @ts-check
-
 import { buildGenericGame } from "./generic/genericGame.js";
 
 /**
- * @callback GameBuilder
+ * @callback TrackerBuilder
  * @param {import("../services/checks/checkManager").CheckManager} checkManager
  * @param {import("../services/entrances/entranceManager").EntranceManager} entranceManager
  * @param {import("../services/sections/groupManager").GroupManager} groupManager
@@ -13,18 +12,19 @@ import { buildGenericGame } from "./generic/genericGame.js";
  */
 
 /**
- * @typedef Game
- * @prop {string} title
- * @prop {string} abbreviation
- * @prop {GameBuilder} buildTracker
+ * @typedef Tracker
+ * @prop {string} name The name to display for this tracker
+ * @prop {string} gameName The name of the game according to AP
+ * @prop {string} id A unique id for the tracker
+ * @prop {string} [gameTitle] Use this instead of name if defined - unused
+ * @prop {string} [gameAbbreviation] Use title if not defined - unused
+ * @prop {TrackerBuilder} buildTracker
  */
 
-/** @type {Object.<string, () => Game>} */
-const games = {
+/** @type {Object.<string, Tracker>} */
+const trackers = {
     // "Ocarina of Time": () => require("./OOT/oot.js").default,
 };
-
-const gameList = new Set(Object.getOwnPropertyNames(games));
 
 /**
  *
@@ -45,9 +45,10 @@ const TrackerBuilder = (
     slotData,
     groups
 ) => {
+    const gameList = new Set(Object.getOwnPropertyNames(trackers));
     let game = null;
     if (gameList.has(gameName)) {
-        game = games[gameName]();
+        game = trackers[gameName];
     } else {
         game = buildGenericGame(gameName, checkManager, groups);
     }
@@ -60,4 +61,4 @@ const TrackerBuilder = (
     );
 };
 
-export { TrackerBuilder, gameList };
+export { TrackerBuilder, trackers };
