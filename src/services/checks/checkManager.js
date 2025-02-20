@@ -6,6 +6,7 @@
  * @prop {import("../tags/tagManager").Tag[]} tags
  * @prop {boolean} ignored
  * @prop {boolean} checked
+ * @prop {number} id
  */
 
 /**
@@ -14,6 +15,7 @@
  * @prop {import("../tags/tagManager").Tag[]} [tags]
  * @prop {boolean} [ignored]
  * @prop {boolean} [checked]
+ * @prop {number} [id]
  */
 
 const defaultCheckStatus = {
@@ -21,6 +23,7 @@ const defaultCheckStatus = {
     tags: [],
     ignored: false,
     checked: false,
+    id: 0,
 };
 
 /**

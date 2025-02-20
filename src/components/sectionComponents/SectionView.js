@@ -9,6 +9,7 @@ import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
+import _ from "lodash";
 
 /**
  *
@@ -25,6 +26,7 @@ const SectionView = ({ name, context, startOpen }) => {
     );
     const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
+    const checkManager = serviceContext.checkManager;
     const tagManager = serviceContext.tagManager;
     const optionManager = serviceContext.optionManager;
     if (!sectionManager) {
@@ -74,9 +76,14 @@ const SectionView = ({ name, context, startOpen }) => {
         let checkNames = [...(section?.checks.keys() ?? [])];
         if (checkOrderBehavior === "lexical") {
             checkNames.sort();
+        } else if (checkOrderBehavior === "id") {
+            checkNames = _.orderBy(
+                checkNames,
+                (name) => checkManager?.getCheckStatus(name).id
+            );
         }
         return checkNames;
-    }, [checkOrderBehavior, section?.checks]);
+    }, [checkOrderBehavior, section?.checks, checkManager]);
 
     return (
         <>

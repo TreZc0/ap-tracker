@@ -71,7 +71,7 @@ const setupAPCheckSync = (client, checkManager, tagManager, connection) => {
         locationIds.forEach((id) =>
             checkManager.updateCheckStatus(
                 client.package.lookupLocationName(client.game, id),
-                { checked: true }
+                { checked: true, id }
             )
         );
     });
@@ -79,11 +79,16 @@ const setupAPCheckSync = (client, checkManager, tagManager, connection) => {
     client.items
         .on("hintsInitialized", (hints) =>
             hints.forEach((hint) =>
-                addHint(client, hint, tagManager, connection.slotInfo.connectionId)
+                addHint(
+                    client,
+                    hint,
+                    tagManager,
+                    connection.slotInfo.connectionId
+                )
             )
         )
         .on("hintReceived", (hint) =>
-            addHint(client, hint, tagManager,  connection.slotInfo.connectionId)
+            addHint(client, hint, tagManager, connection.slotInfo.connectionId)
         );
 };
 

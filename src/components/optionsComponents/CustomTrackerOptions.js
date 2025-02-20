@@ -103,7 +103,7 @@ const CustomTrackerOptions = () => {
             </PrimaryButton>
             <Modal open={modalOpen}>
                 <div>
-                    <h3>Upload a custom tracker</h3>
+                    <h3>Upload a custom tracker (experimental)</h3>
                     <div>
                         <label htmlFor="custom_list_upload">
                             Load custom list:{" "}
