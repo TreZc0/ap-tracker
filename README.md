@@ -4,7 +4,13 @@ This project is for use with the Multi-world game randomizer [Archipelago](https
 
 There is a version of this tracker hosted at [https://drawesome4333.github.io/ap-tracker/](https://drawesome4333.github.io/ap-tracker/) for use with most games. The version hosted there cannot connect to not secured remote servers due to browser protections. You can get around this by following the instructions in the [Running Locally section](#running-locally)
 
-
+## App features
+- Connect to any Archipelago Game and get a checklist to help keep you organized by hiding checks you don't need to see
+- Automatically groups checks based on location groups
+- Allows for custom definitions, see [The Custom Tracker guide](./docs/customTrackers.md) for how to get this set up
+- Mark checks as ignored or star them as important so you know to come back
+- Remember where hinted locations are with automatic flags
+- Sync a short memo with the server with the built-in note pad, can be accessed any time, even from another device
 
 ## Running Locally
 1. Head to the releases page for the tracker [https://github.com/DrAwesome4333/ap-tracker/releases](https://github.com/DrAwesome4333/ap-tracker/releases) and download `ap-tracker-vX.X.X.zip`.
