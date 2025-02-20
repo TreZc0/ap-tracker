@@ -7,7 +7,7 @@ import { TrackerStateContext } from "./contexts/contexts";
 import { createConnector } from "./services/connector/connector";
 import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";
-import OptionsScreen from "./components/OptionsScreen";
+import OptionsScreen from "./components/optionsComponents/OptionsScreen";
 import SectionView from "./components/sectionComponents/SectionView";
 import { createEntranceManager } from "./services/entrances/entranceManager";
 import { createCheckManager } from "./services/checks/checkManager";
@@ -20,6 +20,7 @@ import NotificationContainer from "./components/notifications/notificationContai
 import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
+import TrackerDirectory from "./games/TrackerDirectory";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -59,6 +60,7 @@ const connector = createConnector(
     tagManager
 );
 const connection = connector.connection;
+TrackerDirectory.loadSavedTrackerChoices();
 
 function App() {
     const trackerConnectionState = useSyncExternalStore(

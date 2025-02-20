@@ -33,7 +33,7 @@ const CUSTOM_TRACKER_VERSION = 1;
  * @returns {import("../../TrackerBuilder").Tracker}
  */
 const buildCustomTracker = (gameName, customGameId) => {
-    let customGameData = CustomListManager.getCustomTracker(customGameId);
+    let customGameData = getCustomTracker(customGameId);
     if (!customGameData) {
         throw new Error("Failed to load custom game with id " + customGameId);
     }
@@ -60,7 +60,7 @@ const buildCustomTracker = (gameName, customGameId) => {
     return {
         id: customGameId,
         gameName: customGameData.game,
-        name: gameName,
+        name: customGameData.name,
         buildTracker,
     };
 };
@@ -86,13 +86,13 @@ const callDirectoryListeners = () => {
 };
 
 const getDirectory = () => {
-    return { ...readDirectoryFromStorage() };
+    return readDirectoryFromStorage();
 };
 
 /** @type {CustomListDirectory} */
 let cachedDirectory = {
     customLists: [],
-    modified: Date.now(),
+    modified: 0,
 };
 
 /**
@@ -107,10 +107,10 @@ const readDirectoryFromStorage = () => {
         ? JSON.parse(directoryDataString)
         : {
               customLists: [],
-              modified: Date.now(),
+              modified: 0,
           };
     // React requires returning the same object if nothing has changed
-    if (directory.modified !== cachedDirectory) {
+    if (directory.modified !== cachedDirectory.modified) {
         cachedDirectory = directory;
     }
     return cachedDirectory;
@@ -148,7 +148,7 @@ const getCustomTracker = (id) => {
  * @param {CustomCategory_V1} data
  */
 const addCustomTracker = (data) => {
-    let directory = readDirectoryFromStorage();
+    let directory = { ...readDirectoryFromStorage() };
     // validate data
     if (data.customTrackerVersion > CUSTOM_TRACKER_VERSION) {
         throw new Error(
@@ -162,6 +162,12 @@ const addCustomTracker = (data) => {
         throw new Error(
             "Failed to add custom tracker, a name was not specified"
         );
+    }
+    if (!data.groupData) {
+        throw new Error("Failed to add custom tracker, no group data found");
+    }
+    if (!data.sectionData) {
+        throw new Error("Failed to add custom tracker, no section data found");
     }
     let currentIndex = _.findIndex(directory.customLists, { id: data.id });
     if (currentIndex > -1) {
@@ -202,7 +208,7 @@ const addCustomTracker = (data) => {
  * @param {string} id
  */
 const removeCustomTracker = (id) => {
-    let directory = readDirectoryFromStorage();
+    let directory = { ...readDirectoryFromStorage() };
     // validate data
     let currentIndex = _.findIndex(directory.customLists, { id });
     if (currentIndex > -1) {
@@ -216,7 +222,7 @@ const removeCustomTracker = (id) => {
 };
 
 const loadTrackers = () => {
-    let directory = readDirectoryFromStorage(); // set the cached directory
+    let directory = { ...readDirectoryFromStorage() }; // set the cached directory as well
     let encounteredErrors = false;
     cachedDirectory.customLists.forEach((trackerInfo, index) => {
         if (trackerInfo.enabled) {
@@ -244,7 +250,7 @@ const loadTrackers = () => {
 
 loadTrackers();
 
-const CustomListManager = {
+const CustomTrackerManager = {
     removeCustomTracker,
     addCustomTracker,
     getCustomTracker,
@@ -252,4 +258,4 @@ const CustomListManager = {
     getDirectorySubscriberCallback,
 };
 
-export default CustomListManager;
+export default CustomTrackerManager;

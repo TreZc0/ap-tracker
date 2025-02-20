@@ -1,8 +1,9 @@
 // @ts-check
-import { trackers as configuredTrackers } from "./TrackerBuilder";
+import { getGameTracker, setGameTracker } from "./TrackerBuilder";
 /** @import {Tracker} from "./TrackerBuilder" */
 
 const modified = Symbol("modified");
+const TRACKER_CHOICE_KEY = "Archipelago_Checklist_saved_tracker_choices";
 
 /** @type {Map<string, Tracker>} */
 const allTrackers = new Map();
@@ -59,7 +60,7 @@ const getDirectory = () => {
 const registerTracker = (tracker) => {
     if (tracker.gameName === undefined) {
         throw new Error(
-            "Failed to register game, games must have a name. Generic games can be registered with empty strings"
+            "Failed to register tracker, trackers must have a game name. Generic trackers can be registered with empty strings"
         );
     }
     allTrackers.set(tracker.id, tracker);
@@ -86,8 +87,8 @@ const removeTracker = (trackerId) => {
             gameTrackers.delete(tracker.gameName);
         }
         directoryLastModified = Date.now();
-        if (configuredTrackers[tracker.gameName].id === tracker.id) {
-            delete configuredTrackers[tracker.gameName];
+        if (getGameTracker(tracker.gameName)?.id === tracker.id && tracker.id) {
+            setGameTracker(tracker.gameName, null);
         }
         callTrackerDirectoryListeners();
     }
@@ -95,16 +96,39 @@ const removeTracker = (trackerId) => {
 /**
  *
  * @param {string} game
- * @param {Tracker} tracker
+ * @param {string} trackerId
  */
-const setTracker = (game, tracker) => {
+const setTracker = (game, trackerId) => {
     // TODO, make it so setting with game name of "" will set the default tracker for games
     if (!game) {
         throw new Error(
             "Game must be defined when setting tracker, for now..."
         );
     }
-    configuredTrackers[game] = tracker;
+    let tracker = allTrackers.get(trackerId);
+    if (!tracker && trackerId !== null) {
+        throw new Error(`Failed to find tracker with id ${trackerId}`);
+    }
+    let savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
+    let trackerChoices = savedChoicesString
+        ? JSON.parse(savedChoicesString)
+        : {};
+    trackerChoices[game] = trackerId;
+    localStorage.setItem(TRACKER_CHOICE_KEY, JSON.stringify(trackerChoices));
+    setGameTracker(game, tracker);
+};
+
+const loadSavedTrackerChoices = () => {
+    let savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
+    let trackerChoices = savedChoicesString
+        ? JSON.parse(savedChoicesString)
+        : {};
+    Object.getOwnPropertyNames(trackerChoices).forEach((gameName) => {
+        let tracker = allTrackers.get(trackerChoices[gameName]);
+        if (tracker) {
+            setGameTracker(gameName, tracker);
+        }
+    });
 };
 
 const TrackerDirectory = {
@@ -113,6 +137,7 @@ const TrackerDirectory = {
     getDirectorySubscriberCallback,
     registerTracker,
     removeTracker,
+    loadSavedTrackerChoices,
 };
 
 export default TrackerDirectory;

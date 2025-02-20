@@ -22,8 +22,52 @@ import { buildGenericGame } from "./generic/genericGame.js";
  */
 
 /** @type {Object.<string, Tracker>} */
-const trackers = {
-    // "Ocarina of Time": () => require("./OOT/oot.js").default,
+const trackers = {};
+
+/** @type {Set<()=>void>} */
+const trackerListeners = new Set();
+
+/**
+ * Get a callback for changes to tracker settings
+ * @returns {(listener: () => void) =>(() => void)}
+ */
+const getTrackerSubscriberCallback = () => {
+    return (listener) => {
+        trackerListeners.add(listener);
+        return () => {
+            trackerListeners.delete(listener);
+        };
+    };
+};
+
+const callTrackerListeners = () => {
+    trackerListeners.forEach((listener) => listener());
+};
+
+/**
+ *
+ * @param {string} game
+ * @param {Tracker|null} tracker
+ */
+const setGameTracker = (game, tracker) => {
+    if (tracker) {
+        trackers[game] = tracker;
+    } else {
+        delete trackers[game];
+    }
+    callTrackerListeners();
+};
+
+/**
+ *
+ * @param {string} game
+ * @returns {null | Tracker}
+ */
+const getGameTracker = (game) => {
+    if (trackers[game]) {
+        return trackers[game];
+    }
+    return null;
 };
 
 /**
@@ -61,4 +105,9 @@ const TrackerBuilder = (
     );
 };
 
-export { TrackerBuilder, trackers };
+export {
+    TrackerBuilder,
+    getGameTracker,
+    setGameTracker,
+    getTrackerSubscriberCallback,
+};

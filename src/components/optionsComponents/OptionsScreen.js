@@ -1,14 +1,16 @@
 // @ts-check
 import React, { useContext } from "react";
-import MultiScreen from "./MultiScreen";
-import ServiceContext from "../contexts/serviceContext";
-import SectionView from "./sectionComponents/SectionView";
-import useOption from "../hooks/optionHook";
-import { createCheckManager } from "../services/checks/checkManager";
-import { createEntranceManager } from "../services/entrances/entranceManager";
-import { createGroupManager } from "../services/sections/groupManager";
-import { createSectionManager } from "../services/sections/sectionManager";
-import { createTagManager } from "../services/tags/tagManager";
+import MultiScreen from "../MultiScreen";
+import ServiceContext from "../../contexts/serviceContext";
+import SectionView from "../sectionComponents/SectionView";
+import useOption from "../../hooks/optionHook";
+import { createCheckManager } from "../../services/checks/checkManager";
+import { createEntranceManager } from "../../services/entrances/entranceManager";
+import { createGroupManager } from "../../services/sections/groupManager";
+import { createSectionManager } from "../../services/sections/sectionManager";
+import { createTagManager } from "../../services/tags/tagManager";
+import TrackerPicker from "./TrackerPicker";
+import CustomTrackerOptions from "./CustomTrackerOptions";
 // import { PrimaryButton } from "./buttons";
 
 const mockCheckManager = createCheckManager();
@@ -328,24 +330,27 @@ const OptionsScreen = () => {
                                                         context={{}}
                                                         startOpen
                                                     />
-                                                    <div
-                                                        style={{
-                                                            position: "sticky",
-                                                            bottom: "0px",
-                                                            height: "25vh",
-                                                            pointerEvents:
-                                                                "none",
-                                                        }}
-                                                    >
-                                                        {/* Stainless-steel block for taking up space */}
-                                                    </div>
                                                 </ServiceContext.Provider>
                                             ),
                                         },
                                     ]}
                                 ></MultiScreen>
+                                <hr />
+                                <TrackerPicker />
+                                <hr />
+                                <CustomTrackerOptions />
 
                                 {/* <PrimaryButton>Back</PrimaryButton> */}
+                                <div
+                                    style={{
+                                        position: "sticky",
+                                        bottom: "0px",
+                                        height: "25vh",
+                                        pointerEvents: "none",
+                                    }}
+                                >
+                                    {/* Stainless-steel block for taking up space */}
+                                </div>
                             </div>
                         ),
                     },
