@@ -11,6 +11,9 @@ To use a custom tracker you need to:
 
 Note that the changes only take affect the moment you connect to the Archipelago server, they will not update while you are already connected.
 
+## Getting a template
+You can copy the example here [Ori_BF_custom_example.json](./examples/Ori_BF_custom_example.json), or if you open the developer tools when using the default tracker, it will log the result of the default categorization. You can copy this object (in chrome right-click the object => copy object) and paste it into a json document so you can modify it. (This is how I created the example)
+
 ## General structure
 The json file must have the following structure:
 ```json
@@ -216,8 +219,11 @@ note that a theme named `default` will always be defined even if you do not spec
 ## Debugging
 There is not much verification in place yet (I plan to improve it in the future), so here are some possible issues you may encounter when uploading a custom tracker:
 
+### Missing groups/category sections:
+When you upload the tracker to the app, it will verify that all groups and sections are used and reachable. If it finds anything off, it will let you know with a validation warning. 
+
 ### Missing checks
-There is nothing currently in place to alert you of checks that do not have a place in the checklist, I recommend comparing check counts between your tracker and the default to ensure they match with various game settings.
+When you connect to an AP game with a custom tracker, the app will check if there are any checks on the server that are not listed in your tracker. If it finds any, they will show up in a warning notification (click to view the list of missing checks).
 
 ### There is no list rendered or there are missing sections
 Sections are set up to automatically hide themselves if they find they have no checks for a given game. Double check that these sections have checks in the slot you are testing it on and you have set the correct game name for your tracker.
@@ -226,4 +232,4 @@ Sections are set up to automatically hide themselves if they find they have no c
 Use the developer tools to help you pin point the reason for the crash. If it mentions something about not being able to find `root`, double check you have defined a `root` category. Otherwise report the crash on GitHub or to me in Discord and I can take a look.
 
 ### Other common issues will get a write up here
-I can't predict all the ways that you will find errors, report them as you come across them and I will build up some help document here.
+I can't predict all the ways that you will find errors, report them as you come across them and I will build up some help documentation here.
