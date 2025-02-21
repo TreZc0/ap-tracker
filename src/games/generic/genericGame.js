@@ -14,6 +14,19 @@ const buildGenericGame = (gameName, checkManager, locationGroups) => {
             locationGroups
         );
 
+    // so others can use templates
+    console.info(
+        "Result of tracker generation, copy this object for a template as needed.",
+        {
+            id: `Auto-generated-${gameName}-tracker-LG`,
+            name: `${gameName} - Location Grouped Tracker`,
+            game: gameName,
+            customTrackerVersion: 1,
+            groupData: groupConfig,
+            sectionData: categoryConfig,
+        }
+    );
+
     /** @type {import("../TrackerBuilder").TrackerBuilder} */
     const buildTracker = (
         checkManager,

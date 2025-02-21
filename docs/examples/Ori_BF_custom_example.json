@@ -1,8 +1,8 @@
 {
+    "id": "Example-OriBF",
+    "name": "Ori and the Blind Forest - Example",
     "game": "Ori and the Blind Forest",
-    "customTrackerVersion" : 1,
-    "id": "example_oribf",
-    "name": "Ori Example",
+    "customTrackerVersion": 1,
     "groupData": {
         "Blackroot": {
             "checks": [
@@ -29,7 +29,7 @@
                 "RazielNo"
             ]
         },
-        "HoruCutscene": {
+        "Cutscene": {
             "checks": [
                 "HoruL1",
                 "HoruL2",
@@ -39,135 +39,6 @@
                 "HoruR2",
                 "HoruR3",
                 "HoruR4"
-            ]
-        },
-        "EnergyCell": {
-            "checks": [
-                "DeathGauntletEnergyCell",
-                "FirstEnergyCell",
-                "GladesLaser",
-                "GladesMainPoolDeep",
-                "GroveAboveSpiderWaterEnergyCell",
-                "GumoHideoutEnergyCell",
-                "GumoHideoutRedirectEnergyCell",
-                "HoruFieldsEnergyCell",
-                "HoruR1EnergyCell",
-                "InnerSwampEnergyCell",
-                "LeftSorrowEnergyCell",
-                "SpiderSacEnergyCell",
-                "UpperGinsoEnergyCell",
-                "ValleyEntryGrenadeLongSwim",
-                "WallJumpAreaEnergyCell"
-            ]
-        },
-        "Event": {
-            "checks": [
-                "ForlornEscape",
-                "GinsoEscapeExit",
-                "GumonSeal",
-                "Sunstone",
-                "WaterVein"
-            ]
-        },
-        "ExpLarge": {
-            "checks": [
-                "DeathGauntletStompSwim",
-                "DoorWarpExp",
-                "ForlornEntranceExp",
-                "FronkeyWalkRoof",
-                "GinsoEscapeSpiderExp",
-                "GladesGrenadePool",
-                "GroveAboveSpiderWaterExp",
-                "GumoHideoutRedirectExp",
-                "HoruFieldsHiddenExp",
-                "HoruL4ChaseExp",
-                "HoruL4LowerExp",
-                "HoruLavaDrainedLeftExp",
-                "HoruLavaDrainedRightExp",
-                "HoruR4DrainedExp",
-                "HoruR4LaserExp",
-                "HoruR4StompExp",
-                "HoruTeleporterExp",
-                "KuroPerchExp",
-                "LeftGrottoTeleporterExp",
-                "LeftSorrowGrenade",
-                "MistyGrenade",
-                "MistyPostClimbAboveSpikePit",
-                "OuterSwampGrenadeExp",
-                "OutsideForlornCliffExp",
-                "StompAreaGrenadeExp",
-                "StompAreaRoofExp",
-                "SwampEntranceSwim",
-                "WallJumpAreaExp",
-                "WilhelmExp"
-            ]
-        },
-        "ExpMedium": {
-            "checks": [
-                "AboveChargeFlameTreeExp",
-                "AboveGrottoTeleporterExp",
-                "BashAreaExp",
-                "BlackrootBoulderExp",
-                "ChargeFlameAreaExp",
-                "DashAreaOrbRoomExp",
-                "DashAreaRoofExp",
-                "DeathGauntletExp",
-                "DoubleJumpAreaExp",
-                "FarLeftGumoHideoutExp",
-                "ForlornHiddenSpiderExp",
-                "GinsoEscapeHangingExp",
-                "GinsoEscapeJumpPadExp",
-                "GinsoEscapeProjectileExp",
-                "GladesMainPool",
-                "GrenadeAreaExp",
-                "GrottoEnergyDoorSwim",
-                "GrottoLasersRoofExp",
-                "GrottoSwampDrainAccessExp",
-                "GroveSpiderWaterSwim",
-                "GumoHideoutCrusherExp",
-                "GumoHideoutRockfallExp",
-                "HoruR1HangingExp",
-                "IcelessExp",
-                "InnerSwampDrainExp",
-                "InnerSwampHiddenSwimExp",
-                "InnerSwampStompExp",
-                "LeftGumoHideoutExp",
-                "LeftGumoHideoutSwim",
-                "LostGroveHiddenExp",
-                "LostGroveTeleporter",
-                "LowerBlackrootLaserExp",
-                "LowerGinsoHiddenExp",
-                "LowerValleyExp",
-                "MistyEntranceStompExp",
-                "MistyEntranceTreeExp",
-                "MistyFrogNookExp",
-                "MistyMortarCorridorHiddenExp",
-                "MistyMortarCorridorUpperExp",
-                "MistyPostClimbSpikeCave",
-                "OuterSwampStompExp",
-                "OutsideForlornTreeExp",
-                "OutsideForlornWaterExp",
-                "RazielNo",
-                "SpiritTreeExp",
-                "StompAreaExp",
-                "TopGinsoLeftLowerExp",
-                "TopGinsoLeftUpperExp",
-                "UpperGinsoRedirectLowerExp",
-                "UpperGinsoRedirectUpperExp",
-                "UpperSorrowSpikeExp",
-                "ValleyEntryTreeExp",
-                "ValleyRightExp",
-                "ValleyRightSwimExp"
-            ]
-        },
-        "ExpSmall": {
-            "checks": [
-                "FirstPickup",
-                "FronkeyFight",
-                "GumoHideoutLeftHangingExp",
-                "GumoHideoutRightHangingExp",
-                "LeftGladesExp",
-                "LeftGladesHiddenExp"
             ]
         },
         "Forlorn": {
@@ -316,22 +187,6 @@
                 "SpiritTreeExp"
             ]
         },
-        "HealthCell": {
-            "checks": [
-                "BelowGrottoTeleporterHealthCell",
-                "BlackrootTeleporterHealthCell",
-                "DeathGauntletRoofHealthCell",
-                "FourthHealthCell",
-                "GrottoEnergyDoorHealthCell",
-                "GroveAboveSpiderWaterHealthCell",
-                "HoruFieldsHealthCell",
-                "LeftGumoHideoutHealthCell",
-                "OuterSwampHealthCell",
-                "RightForlornHealthCell",
-                "SorrowHealthCell",
-                "SpiderSacHealthCell"
-            ]
-        },
         "Horu": {
             "checks": [
                 "DoorWarpExp",
@@ -350,50 +205,6 @@
                 "HoruTeleporterExp"
             ]
         },
-        "Keystone": {
-            "checks": [
-                "ForlornKeystone1",
-                "ForlornKeystone2",
-                "ForlornKeystone3",
-                "ForlornKeystone4",
-                "GladesKeystone1",
-                "GladesKeystone2",
-                "GladesMapKeystone",
-                "GumoHideoutCrusherKeystone",
-                "GumoHideoutMiniboss",
-                "InnerSwampSwimLeftKeystone",
-                "InnerSwampSwimRightKeystone",
-                "LeftGladesKeystone",
-                "LeftSorrowKeystone1",
-                "LeftSorrowKeystone2",
-                "LeftSorrowKeystone3",
-                "LeftSorrowKeystone4",
-                "LowerGinsoKeystone1",
-                "LowerGinsoKeystone2",
-                "LowerGinsoKeystone3",
-                "LowerGinsoKeystone4",
-                "MistyKeystone1",
-                "MistyKeystone2",
-                "MistyKeystone3",
-                "MistyKeystone4",
-                "SorrowHiddenKeystone",
-                "SorrowLowerLeftKeystone",
-                "SorrowMainShaftKeystone",
-                "SorrowSpikeKeystone",
-                "SpiritCavernsKeystone1",
-                "SpiritCavernsKeystone2",
-                "SpiritCavernsTopLeftKeystone",
-                "SpiritCavernsTopRightKeystone",
-                "UpperGinsoLowerKeystone",
-                "UpperGinsoRightKeystone",
-                "UpperGinsoUpperLeftKeystone",
-                "UpperGinsoUpperRightKeystone",
-                "UpperSorrowFarLeftKeystone",
-                "UpperSorrowFarRightKeystone",
-                "UpperSorrowLeftKeystone",
-                "UpperSorrowRightKeystone"
-            ]
-        },
         "Map": {
             "checks": [
                 "BlackrootMap",
@@ -405,19 +216,6 @@
                 "SorrowMap",
                 "SwampMap",
                 "ValleyMap"
-            ]
-        },
-        "Mapstone": {
-            "checks": [
-                "DashAreaMapstone",
-                "GumoHideoutMapstone",
-                "HollowGroveMapstone",
-                "HoruR1Mapstone",
-                "InnerSwampSwimMapstone",
-                "LeftGladesMapstone",
-                "LowerValleyMapstone",
-                "SorrowMapstone",
-                "ValleyForlornApproachMapstone"
             ]
         },
         "Misty": {
@@ -577,7 +375,6 @@
             ]
         }
     },
-
     "sectionData": {
         "categories": {
             "root": {
@@ -597,37 +394,28 @@
                     "Sorrow",
                     "Swamp",
                     "Valley",
-                    "AbilityCell",
-                    "EnergyCell",
-                    "Event",
-                    "ExpLarge",
-                    "ExpMedium",
-                    "ExpSmall",
-                    "HealthCell",
-                    "Keystone",
                     "Map",
-                    "Mapstone",
                     "Plant",
                     "Skill"
                 ]
             },
-            "HoruLevels": {
-                "title": "Levels",
+            "Cutscene": {
+                "title": "Floors",
                 "theme": "fire",
                 "children": [],
-                "groupKey": "HoruCutscene"
+                "groupKey": "Cutscene"
             },
             "Horu": {
                 "title": "Horu",
                 "theme": "fire",
                 "children": [
-                    "HoruLevels"
+                    "Cutscene"
                 ],
                 "groupKey": "Horu"
             },
             "ProgressiveMap": {
-                "title": "ProgressiveMap",
-                "theme": "default",
+                "title": "Progressive Map",
+                "theme": "map",
                 "children": [],
                 "groupKey": "ProgressiveMap"
             },
@@ -675,7 +463,7 @@
             },
             "Sorrow": {
                 "title": "Sorrow",
-                "theme": "rock",
+                "theme": "stone",
                 "children": [],
                 "groupKey": "Sorrow"
             },
@@ -687,39 +475,15 @@
             },
             "Valley": {
                 "title": "Valley",
-                "theme": "rock",
+                "theme": "stone",
                 "children": [],
                 "groupKey": "Valley"
             },
-            "EnergyCell": {
-                "title": "EnergyCell",
-                "theme": "default",
-                "children": [],
-                "groupKey": "EnergyCell"
-            },
-            "ExpLarge": {
-                "title": "ExpLarge",
-                "theme": "default",
-                "children": [],
-                "groupKey": "ExpLarge"
-            },
-            "ExpMedium": {
-                "title": "ExpMedium",
-                "theme": "default",
-                "children": [],
-                "groupKey": "ExpMedium"
-            },
             "Map": {
                 "title": "Map",
-                "theme": "default",
+                "theme": "map",
                 "children": [],
                 "groupKey": "Map"
-            },
-            "Mapstone": {
-                "title": "Mapstone",
-                "theme": "default",
-                "children": [],
-                "groupKey": "Mapstone"
             },
             "Plant": {
                 "title": "Plant",
@@ -732,36 +496,6 @@
                 "theme": "default",
                 "children": [],
                 "groupKey": "Skill"
-            },
-            "AbilityCell": {
-                "title": "AbilityCell",
-                "theme": "default",
-                "children": [],
-                "groupKey": "AbilityCell"
-            },
-            "HealthCell": {
-                "title": "HealthCell",
-                "theme": "default",
-                "children": [],
-                "groupKey": "HealthCell"
-            },
-            "Keystone": {
-                "title": "Keystone",
-                "theme": "default",
-                "children": [],
-                "groupKey": "Keystone"
-            },
-            "Event": {
-                "title": "Event",
-                "theme": "default",
-                "children": [],
-                "groupKey": "Event"
-            },
-            "ExpSmall": {
-                "title": "ExpSmall",
-                "theme": "default",
-                "children": [],
-                "groupKey": "ExpSmall"
             }
         },
         "options": {},
@@ -769,17 +503,20 @@
             "default": {
                 "color": "#000000"
             },
-            "forest" : {
-                "color": "#228B22"
-            },
             "water": {
-                "color": "#8CFFDB"
+                "color": "Aquamarine"
             },
             "fire": {
-                "color": "#E25822"
+                "color": "Crimson"
             },
-            "rock": {
-                "color": "#D2B48C"
+            "forest": {
+                "color": "ForestGreen"
+            },
+            "stone": {
+                "color": "Khaki"
+            },
+            "map": {
+                "color": "Gold"
             }
         }
     }

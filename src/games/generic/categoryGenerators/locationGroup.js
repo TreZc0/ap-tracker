@@ -15,14 +15,7 @@ const generateCategories = (checkManager, groups) => {
         console.log("Location groups provided:", groups);
     }
     /** @type {Object.<string, import("../../../services/sections/groupManager").GroupData>} */
-    const groupConfig = {
-        all: {
-            checks: [],
-        },
-        unclassified: {
-            checks: [],
-        },
-    };
+    const groupConfig = {};
 
     /** @type {import("../../../services/sections/sectionManager").SectionConfigData} */
     const categoryConfig = {
@@ -210,7 +203,7 @@ const generateCategories = (checkManager, groups) => {
     };
 
     let orderedConflicts = computeKeyGroupConflicts();
-    if(DEBUG_GROUP_CLASSIFICATION){
+    if (DEBUG_GROUP_CLASSIFICATION) {
         console.log("Conflicts", orderedConflicts);
     }
     while (orderedConflicts.length > 0) {
@@ -228,7 +221,7 @@ const generateCategories = (checkManager, groups) => {
             console.log(`Determined ${groupName} was not a key group`);
         }
         orderedConflicts = computeKeyGroupConflicts();
-        if(DEBUG_GROUP_CLASSIFICATION){
+        if (DEBUG_GROUP_CLASSIFICATION) {
             console.log("Remaining Conflicts", orderedConflicts);
         }
     }
@@ -369,6 +362,8 @@ const generateCategories = (checkManager, groups) => {
             children: null,
         };
         categoryConfig.categories.root.children.push("unclassified");
+    } else {
+        delete categoryConfig.categories["unclassified"];
     }
 
     return {
@@ -379,6 +374,6 @@ const generateCategories = (checkManager, groups) => {
 
 const LocationGroupCategoryGenerator = {
     generateCategories,
-}
+};
 
 export default LocationGroupCategoryGenerator;

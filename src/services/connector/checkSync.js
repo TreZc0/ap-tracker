@@ -29,7 +29,7 @@ let hintToText = (client, hint) => {
  */
 let addHint = (client, hint, tagManager, saveId) => {
     if (hint.item.sender.slot === client.players.self.slot) {
-        console.log(hintToText(client, hint));
+        // console.log(hintToText(client, hint));
         const tagData = tagManager.createTagData();
         tagData.checkName = hint.item.locationName;
         tagData.typeId = "hint";

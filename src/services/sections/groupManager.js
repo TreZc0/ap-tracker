@@ -107,7 +107,7 @@ let createGroupManager = (entranceManager) => {
         for (let key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
-        console.log("Loaded groups:", groups);
+        // console.log("Loaded groups:", groups);
     };
     return { groups, loadGroups, createNullGroup };
 };
