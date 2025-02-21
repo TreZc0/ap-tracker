@@ -1,11 +1,12 @@
 // @ts-check
 // Loads custom JSON supplied by users
-import _, { isArray } from "lodash";
+import _ from "lodash";
 import { generateId } from "../../../utility/randomIdGen";
 import TrackerDirectory from "../../TrackerDirectory";
 import NotificationManager, {
     MessageType,
 } from "../../../services/notifications/notifications";
+import { verifyTrackerConfig } from "./trackerVerification";
 const CUSTOM_TRACKER_DIRECTORY_STORAGE_KEY =
     "APChecklist_Custom_Tracker_Directory";
 const CUSTOM_TRACKER_STORAGE_KEY = "APChecklist_Custom_Tracker";
@@ -52,117 +53,11 @@ const buildCustomTracker = (gameName, customGameId) => {
         sectionManager,
         slotData
     ) => {
-        // Do verification
-        let remainingChecks = checkManager.getAllExistingChecks();
-        let remainingGroups = new Set(Object.getOwnPropertyNames(groupData));
-        let allGroups = new Set(Object.getOwnPropertyNames(groupData));
-        let remainingSections = new Set(
-            Object.getOwnPropertyNames(sectionData.categories)
+        const errors = verifyTrackerConfig(
+            sectionData,
+            groupData,
+            checkManager
         );
-
-        // verify all checks are covered, any left are in remaining checks
-        remainingGroups.forEach((groupName) => {
-            let { checks } = groupData[groupName];
-            checks.forEach((check) => remainingChecks.delete(check));
-        });
-
-        const errors = [];
-        // verify all groups are in at least one section
-        remainingSections.forEach((sectionName) => {
-            let { groupKey } = sectionData.categories[sectionName];
-            if (groupKey && typeof groupKey === "string") {
-                if (!allGroups.has(groupKey)) {
-                    errors.push(
-                        `Group not found error: "${groupKey}" in category "${sectionName}"`
-                    );
-                }
-                remainingGroups.delete(groupKey);
-            } else if (groupKey && isArray(groupKey)) {
-                groupKey.forEach((group) => {
-                    if (!allGroups.has(group)) {
-                        errors.push(
-                            `Group not found error: "${group}" in category "${sectionName}"`
-                        );
-                    }
-                    remainingGroups.delete(group);
-                });
-            }
-        });
-
-        // Verify all sections are reachable
-        /**
-         *
-         * @param {string} name
-         * @param {string[]} parents
-         */
-        const traverseCategoryTree = (name, parents) => {
-            if (!name) {
-                errors.push(
-                    `Name error: "${name}" was specified as a child category.\n\tReferenced by ${
-                        parents.length > 0
-                            ? parents[parents.length - 1]
-                            : "<source code>"
-                    }`
-                );
-                return;
-            }
-            if (!sectionData.categories[name]) {
-                errors.push(
-                    `Category not found error: "${name}".\n\tReferenced by ${
-                        parents.length > 0
-                            ? parents[parents.length - 1]
-                            : "<source code>"
-                    }`
-                );
-                return;
-            }
-            if (parents.includes(name)) {
-                errors.push(
-                    `Recursion error: "${name}" is an ancestor of itself.\n\tReferenced by ${
-                        parents.length > 0
-                            ? parents[parents.length - 1]
-                            : "<source code>"
-                    }\n\tLineage: ${parents.join(" -> ")}`
-                );
-                return;
-            }
-
-            let section = sectionData.categories[name];
-            if (section.children) {
-                let lineage = [...parents];
-                lineage.push(name);
-                section.children.forEach((childName) =>
-                    traverseCategoryTree(childName, lineage)
-                );
-            }
-            remainingSections.delete(name);
-        };
-
-        traverseCategoryTree("root", []);
-
-        // Final verification steps
-        if (remainingChecks.size > 0) {
-            errors.unshift(
-                `Not all checks in this game are covered by the tracker. Checks missing: ${[
-                    ...remainingChecks.values(),
-                ].join(", ")}`
-            );
-        }
-        if (remainingGroups.size > 0) {
-            errors.unshift(
-                `Not all groups in the tracker are used by a category. Groups not used: ${[
-                    ...remainingGroups.values(),
-                ].join(", ")}`
-            );
-        }
-        if (remainingSections.size > 0) {
-            errors.unshift(
-                `Not all sections are reached in the section tree. Unreachable sections: ${[
-                    ...remainingSections.values(),
-                ].join(", ")}`
-            );
-        }
-
         let errorMessage = errors.join("\n\n");
         if (errors.length > 0) {
             NotificationManager.createToast({
@@ -291,6 +186,22 @@ const addCustomTracker = (data) => {
     }
     if (!data.sectionData) {
         throw new Error("Failed to add custom tracker, no section data found");
+    }
+
+    let errors = verifyTrackerConfig(data.sectionData, data.groupData);
+    if (errors.length > 0) {
+        let errorMessage = errors.join("\n\n");
+        if (errors.length > 0) {
+            NotificationManager.createToast({
+                message:
+                    "Custom tracker has failed early verification checks and may not function as expected.",
+                details: errorMessage,
+                type: MessageType.warning,
+                duration: 30,
+                id: "custom-tracker-validation",
+            });
+            console.warn("Custom tracker has failed verification", errors);
+        }
     }
     let currentIndex = _.findIndex(directory.customLists, { id: data.id });
     if (currentIndex > -1) {
