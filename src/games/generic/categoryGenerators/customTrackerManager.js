@@ -44,7 +44,7 @@ const buildCustomTracker = (gameName, customGameId) => {
     }
     const { groupData, sectionData } = customGameData;
 
-    /** @type {import("../../TrackerBuilder").TrackerBuilder} */
+    /** @type {import("../../TrackerBuilder")._TrackerBuilder} */
     const buildTracker = (
         checkManager,
         entranceManager,

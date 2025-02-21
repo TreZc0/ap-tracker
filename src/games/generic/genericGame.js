@@ -27,7 +27,7 @@ const buildGenericGame = (gameName, checkManager, locationGroups) => {
         }
     );
 
-    /** @type {import("../TrackerBuilder").TrackerBuilder} */
+    /** @type {import("../TrackerBuilder")._TrackerBuilder} */
     const buildTracker = (
         checkManager,
         entranceManager,

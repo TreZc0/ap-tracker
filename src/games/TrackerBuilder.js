@@ -2,7 +2,7 @@
 import { buildGenericGame } from "./generic/genericGame.js";
 
 /**
- * @callback TrackerBuilder
+ * @callback _TrackerBuilder
  * @param {import("../services/checks/checkManager").CheckManager} checkManager
  * @param {import("../services/entrances/entranceManager").EntranceManager} entranceManager
  * @param {import("../services/sections/groupManager").GroupManager} groupManager
@@ -18,7 +18,7 @@ import { buildGenericGame } from "./generic/genericGame.js";
  * @prop {string} id A unique id for the tracker
  * @prop {string} [gameTitle] Use this instead of name if defined - unused
  * @prop {string} [gameAbbreviation] Use title if not defined - unused
- * @prop {TrackerBuilder} buildTracker
+ * @prop {_TrackerBuilder} buildTracker
  */
 
 /** @type {Object.<string, Tracker>} */
