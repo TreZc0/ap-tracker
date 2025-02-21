@@ -10,6 +10,8 @@ import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
+import { getGameTracker } from "../../games/TrackerBuilder";
+import TrackerDirectory from "../../games/TrackerDirectory";
 
 const CustomTrackerOptions = () => {
     const customTrackersDirectory = useCustomTrackerDirectory();
@@ -38,6 +40,9 @@ const CustomTrackerOptions = () => {
                     progress: 1,
                     duration: 4,
                 });
+                if (getGameTracker(data.game)?.id === data.id) {
+                    TrackerDirectory.setTracker(data.game, data.id);
+                }
             })
             .catch((e) => {
                 statusHandle.update({
