@@ -1,9 +1,11 @@
-// @ts-check
 import React from "react";
 import { useTrackerDirectory } from "../../hooks/trackerHooks";
 import TrackerDropdown from "./TrackerDropdown";
 import { tertiary } from "../../constants/colors";
 
+/**
+ * A UI for selecting which tracker to use with which game
+ */
 const TrackerPicker = () => {
     const trackerDirectory = useTrackerDirectory();
 

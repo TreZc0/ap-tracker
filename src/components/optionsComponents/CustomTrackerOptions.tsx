@@ -1,5 +1,4 @@
-// @ts-check
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useCustomTrackerDirectory } from "../../hooks/trackerHooks";
 import _ from "lodash";
 import { tertiary } from "../../constants/colors";
@@ -15,10 +14,35 @@ import TrackerDirectory from "../../games/TrackerDirectory";
 
 const CustomTrackerOptions = () => {
     const customTrackersDirectory = useCustomTrackerDirectory();
-    const sortedTrackers = _.sortBy(customTrackersDirectory.customLists, [
-        "game",
-        "name",
-    ]);
+    const trackersByGame = useMemo(() => {
+        let trackerMap: Map<
+            string,
+            {
+                id: string;
+                game: string;
+                name: string;
+                enabled: boolean;
+            }[]
+        > = new Map();
+        customTrackersDirectory.customLists.forEach((tracker) => {
+            let gameList = trackerMap.get(tracker.game) ?? [];
+            gameList.push(tracker);
+            trackerMap.set(tracker.game, gameList);
+        });
+        const games = [...trackerMap.keys()];
+        games.forEach((game) => {
+            let list = trackerMap.get(game);
+            trackerMap.set(game, _.sortBy(list, ["name"]));
+        });
+        return trackerMap;
+    }, [customTrackersDirectory]);
+
+    const sortedGames = useMemo(() => {
+        let games = [...trackersByGame.keys()];
+        games.sort();
+        return games;
+    }, [trackersByGame]);
+
     const [modalOpen, setModalOpen] = useState(false);
     /**
      *
@@ -64,32 +88,50 @@ const CustomTrackerOptions = () => {
         <div>
             <div>
                 <p>Manage custom trackers here</p>
-                {sortedTrackers.length > 0 ? (
-                    sortedTrackers.map((data) => {
-                        return (
-                            <div key={data.id}>
-                                {data.game} - {data.name}
-                                {!data.enabled && "(Disabled)"}{" "}
-                                <DangerButton
-                                    // @ts-ignore
-                                    $small
-                                    onClick={() => {
-                                        if (
-                                            window.confirm(
-                                                `Are you sure you want to delete ${data.name}?`
-                                            )
-                                        ) {
-                                            CustomTrackerManager.removeCustomTracker(
-                                                data.id
-                                            );
-                                        }
-                                    }}
-                                >
-                                    Delete
-                                </DangerButton>
+                {sortedGames.length > 0 ? (
+                    sortedGames.map((game) => 
+                        <div key={game} style={{
+                            marginBottom: "2em"
+                        }}>
+                            <h4>{game}</h4>
+                            <div
+                            style={{
+                                marginLeft: "1em"
+                            }}>
+                                {trackersByGame.get(game).map((tracker) => (
+                                    <div
+                                        key={tracker.id}
+                                        style={{
+                                            marginBottom: "0.25em",
+                                        }}
+                                    >
+                                        {tracker.name}
+                                        {!tracker.enabled && "(Disabled)"}{" "}
+                                        <DangerButton
+                                            // @ts-ignore
+                                            $tiny
+                                            onClick={() => {
+                                                if (
+                                                    window.confirm(
+                                                        `Are you sure you want to delete ${tracker.name}?`
+                                                    )
+                                                ) {
+                                                    CustomTrackerManager.removeCustomTracker(
+                                                        tracker.id
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Icon
+                                                fontSize={"14px"}
+                                                type="delete"
+                                            />
+                                        </DangerButton>
+                                    </div>
+                                ))}
                             </div>
-                        );
-                    })
+                        </div>
+                    )
                 ) : (
                     <i style={{ color: tertiary }}>
                         No custom trackers, try adding one below
@@ -98,7 +140,7 @@ const CustomTrackerOptions = () => {
             </div>
             <PrimaryButton
                 // @ts-ignore
-                $small
+                $tiny
                 onClick={() => {
                     setModalOpen(true);
                 }}

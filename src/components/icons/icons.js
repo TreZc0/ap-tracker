@@ -45,6 +45,8 @@ const supportedIcons = [
     "info",
     "check_circle",
     "checklist",
+    "delete_forever",
+    "delete",
 ];
 
 const link = document.createElement("link");

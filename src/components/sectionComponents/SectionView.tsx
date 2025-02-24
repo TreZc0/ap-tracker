@@ -19,7 +19,11 @@ import _ from "lodash";
  * @param {boolean} [options.startOpen]
  * @returns
  */
-const SectionView = ({ name, context, startOpen }) => {
+const SectionView = ({ name, context, startOpen } : {
+    name: string,
+    context: any,
+    startOpen: boolean | undefined
+}) => {
     const isClosable = name !== "root";
     const [isOpen, setIsOpen] = useState(
         isClosable ? startOpen ?? false : true
@@ -197,7 +201,7 @@ const SectionView = ({ name, context, startOpen }) => {
                                             />
                                         );
                                     }
-                                    return <></>;
+                                    return <React.Fragment key={childName} />;
                                 })}
                             {clearedSectionBehavior === "separate" &&
                                 section?.children &&
@@ -220,7 +224,7 @@ const SectionView = ({ name, context, startOpen }) => {
                                             />
                                         );
                                     }
-                                    return <></>;
+                                    return <React.Fragment key={childName} />;
                                 })}
                         </>
                     )}

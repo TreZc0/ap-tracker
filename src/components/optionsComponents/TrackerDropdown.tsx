@@ -8,13 +8,14 @@ import TrackerDirectory from "../../games/TrackerDirectory";
 import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
-
 /**
- *
- * @param {Object} param0
- * @param {string} param0.game
+ * Displays a drop down with a list of options available for trackers for the provided game name
+ * @param param0 
+ * @returns 
  */
-let TrackerDropdown = ({ game }) => {
+const TrackerDropdown = ({ game }:{
+    game: string
+}) => {
     const directory = useTrackerDirectory();
     const currentSelection = useCurrentGameTracker(game);
     return (

@@ -17,7 +17,7 @@
     "predeploy": "npm run build",
     "start": "npx serve@latest ./build",
     "build": "next build",
-    "dev": "next dev --turbopack"
+    "dev": "next dev"
   },
   "eslintConfig": {
     "extends": [
