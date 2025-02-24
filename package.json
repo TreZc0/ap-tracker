@@ -7,10 +7,11 @@
     "archipelago.js": "^2.0.4",
     "lodash": "^4.17.21",
     "next": "^15.1.7",
+    "nextjs": "^0.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-scripts": "^5.0.1",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "typescript": "^5.7.3"
   },
   "scripts": {
     "predeploy": "npm run build",
@@ -37,7 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-transform-private-property-in-object": "^7.25.8",
+    "@types/node": "22.13.5",
     "@types/react": "19.0.10",
     "gh-pages": "^6.3.0"
   }
