@@ -62,7 +62,6 @@ const CustomTrackerOptions = () => {
     };
     return (
         <div>
-            <h3>Custom Tracker Manager</h3>
             <div>
                 <p>Manage custom trackers here</p>
                 {sortedTrackers.length > 0 ? (

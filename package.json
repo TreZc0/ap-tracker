@@ -2,7 +2,7 @@
   "name": "ap-tracker",
   "version": "0.1.4",
   "private": true,
-  "type":"module",
+  "type": "module",
   "dependencies": {
     "archipelago.js": "^2.0.4",
     "lodash": "^4.17.21",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "22.13.5",
-    "@types/react": "19.0.10"
+    "@types/react": "19.0.10",
+    "@types/react-dom": "^19.0.4"
   }
 }

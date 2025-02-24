@@ -9,7 +9,6 @@ const TrackerPicker = () => {
 
     return (
         <div>
-            <h3>Tracker Picker</h3>
             <div>
                 <p>Select which tracker to use for different games</p>
                 {trackerDirectory.games.length > 0 ? (
