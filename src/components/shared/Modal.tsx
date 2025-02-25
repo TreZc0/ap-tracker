@@ -1,4 +1,3 @@
-// @ts-check
 import React, { useContext } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
@@ -6,6 +5,7 @@ import { background, textPrimary } from "../../constants/colors";
 import { readThemeValue } from "../../services/theme/theme";
 import useOption from "../../hooks/optionHook";
 import ServiceContext from "../../contexts/serviceContext";
+import { globalOptionManager } from "../../services/options/optionManager";
 
 const BackDrop = styled.div`
     position: fixed;
@@ -34,15 +34,24 @@ const Container = styled.div`
 `;
 /**
  *
- * @param {Object} param0
- * @param {boolean} param0.open
- * @param {*} param0.children
+ * @param param0
+ * @param param0.open If true the modal will render
  * @returns
  */
-const Modal = ({ open, children }) => {
+const Modal = ({
+    open,
+    children,
+}: {
+    open: boolean;
+    children: React.ReactNode;
+}) => {
     const serviceContext = useContext(ServiceContext);
-    const optionManger = serviceContext.optionManager;
-    const themeValue = useOption(optionManger, "theme", "global");
+    const optionManger = serviceContext.optionManager ?? globalOptionManager;
+    const themeValue = useOption(optionManger, "theme", "global") as
+        | "light"
+        | "dark"
+        | "system"
+        | null;
     return (
         <>
             {open &&

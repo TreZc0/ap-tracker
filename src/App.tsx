@@ -1,5 +1,3 @@
-// @ts-check
-// import './App.css';
 import React, { useState, useSyncExternalStore } from "react";
 import MainHeader from "./components/MainHeader";
 import StartScreen from "./components/StartScreen";
@@ -15,12 +13,13 @@ import ServiceContext from "./contexts/serviceContext";
 import { createGroupManager } from "./services/sections/groupManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
-import { createOptionManager } from "./services/options/optionManager";
+import { globalOptionManager } from "./services/options/optionManager";
 import NotificationContainer from "./components/notifications/notificationContainer";
 import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
 import TrackerDirectory from "./games/TrackerDirectory";
+import StickySpacer from "./components/shared/StickySpacer";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -43,8 +42,7 @@ const AppScreen = styled.div`
 
 const checkManager = createCheckManager();
 const entranceManager = createEntranceManager();
-const optionManager = createOptionManager();
-optionManager.loadScope("global");
+const optionManager = globalOptionManager;
 const groupManager = createGroupManager(entranceManager);
 const sectionManager = createSectionManager(
     checkManager,
@@ -62,7 +60,7 @@ const connector = createConnector(
 const connection = connector.connection;
 TrackerDirectory.loadSavedTrackerChoices();
 
-function App() {
+let App = (): React.ReactNode => {
     const trackerConnectionState = useSyncExternalStore(
         connection.subscribe,
         () => connection.status,
@@ -74,7 +72,7 @@ function App() {
         () => connection.slotInfo
     );
     const [optionWindowOpen, setOptionWindowOpen] = useState(false);
-    const themeValue = useOption(optionManager, "theme", "global");
+    const themeValue = useOption(optionManager, "theme", "global") as "light"|"dark"|"system"|null;
     return (
         <div className="App" data-theme={readThemeValue(themeValue)}>
             <AppScreen data-theme={readThemeValue(themeValue)}>
@@ -114,16 +112,7 @@ function App() {
                                     trackerConnectionState && (
                                     <>
                                         <SectionView name="root" context={{}} />
-                                        <div
-                                            style={{
-                                                position: "sticky",
-                                                bottom: "0px",
-                                                height: "25vh",
-                                                pointerEvents: "none",
-                                            }}
-                                        >
-                                            {/* Stainless-steel block for taking up space */}
-                                        </div>
+                                        <StickySpacer/>
                                     </>
                                 )}
                             </>
