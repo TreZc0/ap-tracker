@@ -6,8 +6,6 @@ import Icon from "./icons/icons";
 import { background } from "../constants/colors";
 import NotePad from "./NotePad";
 import ServiceContext from "../contexts/serviceContext";
-import useOption from "../hooks/optionHook";
-import { readThemeValue } from "../services/theme/theme";
 import { CONNECTION_STATUS } from "../services/connector/connector";
 
 const MainHeader = ({ optionsCallback, ...props }) => {
@@ -15,8 +13,6 @@ const MainHeader = ({ optionsCallback, ...props }) => {
     const [notePadOpen, setNotePadOpen] = useState(false);
     const slot = trackerState.slotData;
     const serviceContext = useContext(ServiceContext);
-    const optionManger = serviceContext.optionManager;
-    const themeValue = useOption(optionManger, "theme", "global");
     return (
         <div
             style={{
@@ -67,7 +63,6 @@ const MainHeader = ({ optionsCallback, ...props }) => {
                         trackerState.connectionStatus !==
                         CONNECTION_STATUS.connected
                     }
-                    data-theme={readThemeValue(themeValue)}
                 />
             }
         </div>

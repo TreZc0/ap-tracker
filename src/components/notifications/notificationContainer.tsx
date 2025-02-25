@@ -156,9 +156,9 @@ let NotificationContainer = () => {
     const toastTimerStopped = useRef(false);
     const serviceContext = useContext(ServiceContext);
     const optionManger = serviceContext.optionManager;
-    const themeValue = useOption(optionManger, "theme", "global");
+    const themeValue = useOption(optionManger, "theme", "global") as "light"|"dark"|"system"|null;
 
-    const openDetailModal = (index) => {
+    const openDetailModal = (index: number) => {
         setDetailIndex(index);
         setDetailModalOpen(true);
     };
@@ -203,7 +203,7 @@ let NotificationContainer = () => {
             });
         };
 
-        let update = (time) => {
+        let update = (time: number) => {
             animationFrameRef.current = requestAnimationFrame(update);
             if (!timeRef.current) {
                 timeRef.current = time;
