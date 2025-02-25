@@ -37,7 +37,7 @@ After downloading and installing these you should have everything you need to ho
 4. Now it is time to install the app's dependencies, run the command:
 > $ `npm install`
 5. After everything is installed it is time to compile and run the app. Run the command:
-> $ `npm run start`
+> $ `npm run dev`
 6. The app should start compiling (it may take a minute). When it is finished you should see something saying the development server has started. Navigate to [http://localhost:3000](http://localhost:3000) to use the app and enjoy.
 
 

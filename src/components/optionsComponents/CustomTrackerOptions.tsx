@@ -155,12 +155,13 @@ const CustomTrackerOptions = () => {
                     <h3>Upload a custom tracker (experimental)</h3>
                     <div>
                         <label htmlFor="custom_list_upload">
-                            Load custom list:{" "}
+                            Load custom tracker:{" "}
                         </label>
                         <input
                             type="file"
                             id="custom_list_upload"
                             accept="application/JSON"
+                            className="interactive"
                             onChange={(e) => {
                                 if (e.target.files.length > 0) {
                                     loadCustomTracker(e.target.files[0]);

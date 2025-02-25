@@ -20,6 +20,7 @@ const TrackerDropdown = ({ game }:{
     const currentSelection = useCurrentGameTracker(game);
     return (
         <select
+            className="interactive"
             value={currentSelection?.id ?? ""}
             onChange={(e) => {
                 try {
