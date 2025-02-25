@@ -32,11 +32,11 @@ const OptionsScreen = () => {
             </OptionBlock>
             <OptionBlock title="Attributions">
                 <img src="./icon.svg" width={"64px"} style={{float:"left", marginRight: "1em"}}/>
-                The Archipelago Logos used by this app are the modified works of Krista Corkos and Christopher Wilson (© 2022) and is licensed under Attribution-NonCommercial 4.0 International. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by-nc/4.0/">http://creativecommons.org/licenses/by-nc/4.0/</a>
+                The Archipelago Logos used by this app are the modified works of Krista Corkos and Christopher Wilson (© 2022) and is licensed under Attribution-NonCommercial 4.0 International. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">http://creativecommons.org/licenses/by-nc/4.0/</a>
                 <br/>
                 <br/>
-                This app is primarily built using <a href="https://react.dev/">React</a> and <a href="https://nextjs.org/">NextJS</a> with <a href="https://github.com/ThePhar/archipelago.js">Archipelago.js</a> to connect to Archipelago. <br/>
-                More information about other libraries used and their licenses can be found on this project's <a href="https://github.com/DrAwesome4333/ap-tracker">GitHub repository</a>. Please report any problems you find there.
+                This app is primarily built using <a href="https://react.dev/" target="_blank">React</a> and <a href="https://nextjs.org/" target="_blank">NextJS</a> with <a href="https://github.com/ThePhar/archipelago.js" target="_blank">Archipelago.js</a> to connect to Archipelago. <br/>
+                More information about other libraries used and their licenses can be found on this project's <a href="https://github.com/DrAwesome4333/ap-tracker" target="_blank">GitHub repository</a>. Please report any problems you find there.
             </OptionBlock>
             <StickySpacer />
         </div>
