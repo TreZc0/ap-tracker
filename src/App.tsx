@@ -19,6 +19,7 @@ import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
 import TrackerDirectory from "./games/TrackerDirectory";
+import StickySpacer from "./components/shared/StickySpacer";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -111,16 +112,7 @@ let App = (): React.ReactNode => {
                                     trackerConnectionState && (
                                     <>
                                         <SectionView name="root" context={{}} />
-                                        <div
-                                            style={{
-                                                position: "sticky",
-                                                bottom: "0px",
-                                                height: "25vh",
-                                                pointerEvents: "none",
-                                            }}
-                                        >
-                                            {/* Stainless-steel block for taking up space */}
-                                        </div>
+                                        <StickySpacer/>
                                     </>
                                 )}
                             </>

@@ -45,10 +45,9 @@ const CustomTrackerOptions = () => {
 
     const [modalOpen, setModalOpen] = useState(false);
     /**
-     *
-     * @param {File} file
+     * Passes the contents of a file to the CustomTrackerManager
      */
-    let loadCustomTracker = (file) => {
+    let loadCustomTracker = (file: File) => {
         let statusHandle = NotificationManager.createStatus({
             message: "Loading Custom Tracker",
             type: MessageType.info,
@@ -89,15 +88,19 @@ const CustomTrackerOptions = () => {
             <div>
                 <p>Manage custom trackers here</p>
                 {sortedGames.length > 0 ? (
-                    sortedGames.map((game) => 
-                        <div key={game} style={{
-                            marginBottom: "2em"
-                        }}>
+                    sortedGames.map((game) => (
+                        <div
+                            key={game}
+                            style={{
+                                marginBottom: "2em",
+                            }}
+                        >
                             <h4>{game}</h4>
                             <div
-                            style={{
-                                marginLeft: "1em"
-                            }}>
+                                style={{
+                                    marginLeft: "1em",
+                                }}
+                            >
                                 {trackersByGame.get(game).map((tracker) => (
                                     <div
                                         key={tracker.id}
@@ -131,7 +134,7 @@ const CustomTrackerOptions = () => {
                                 ))}
                             </div>
                         </div>
-                    )
+                    ))
                 ) : (
                     <i style={{ color: tertiary }}>
                         No custom trackers, try adding one below

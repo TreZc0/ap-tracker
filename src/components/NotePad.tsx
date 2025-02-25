@@ -1,6 +1,4 @@
-// @ts-check
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import Dialog from "./shared/Dialog";
 import { PrimaryButton, GhostButton, SecondaryButton } from "./buttons";
 import styled from "styled-components";
 import { background, danger, textPrimary } from "../constants/colors";
@@ -9,12 +7,13 @@ import NotificationManager, {
     MessageType,
 } from "../services/notifications/notifications";
 import Spinner from "./icons/spinner";
+import Modal from "./shared/Modal";
 const NoteGrid = styled.div`
     display: grid;
     width: 80vw;
     height: 80vh;
     grid:
-        "title" 6em
+        "title" 8em
         "note" 1fr
         "." 1em
         "buttons" 3em / 100%;
@@ -22,20 +21,21 @@ const NoteGrid = styled.div`
 
 const MAX_NOTE_LENGTH = 1024;
 
-const NotePad = ({ open, onClose, disabled, ...props }) => {
-    let dialog = useRef(null);
+const NotePad = ({
+    open,
+    onClose,
+    disabled,
+    ...props
+}: {
+    open: boolean;
+    onClose: () => void;
+    disabled: boolean;
+}) => {
     let textArea = useRef(null);
     let [noteContent, setNoteContent] = useState("");
     let [loading, setLoading] = useState(false);
     let [unsavedChanges, setUnsavedChanges] = useState(false);
     let [initialLoad, setInitialLoad] = useState(false);
-    useEffect(() => {
-        if (open) {
-            dialog.current?.showModal();
-        } else {
-            dialog.current?.close();
-        }
-    }, [open]);
 
     const retrieveNote = useCallback(() => {
         if (unsavedChanges) {
@@ -122,7 +122,7 @@ const NotePad = ({ open, onClose, disabled, ...props }) => {
         }
     }, [disabled, noteContent, retrieveNote, loading, initialLoad]);
     return (
-        <Dialog ref={dialog}>
+        <Modal open={open}>
             <NoteGrid>
                 <div style={{ gridArea: "title" }}>
                     <div
@@ -241,7 +241,7 @@ const NotePad = ({ open, onClose, disabled, ...props }) => {
                     </div>
                 </div>
             </NoteGrid>
-        </Dialog>
+        </Modal>
     );
 };
 

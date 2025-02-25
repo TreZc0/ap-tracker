@@ -18,7 +18,7 @@ const OptionsScreen = () => {
     }
 
     return (
-        <>
+        <div>
             <OptionBlock title="Theme Settings">
                 <ThemeOptions optionManager={optionManager} />
             </OptionBlock>
@@ -32,7 +32,7 @@ const OptionsScreen = () => {
                 <CustomTrackerOptions />
             </OptionBlock>
             <StickySpacer />
-        </>
+        </div>
     );
 };
 

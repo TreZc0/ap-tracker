@@ -13,16 +13,20 @@ import _ from "lodash";
 
 /**
  *
- * @param {Object} options
- * @param {string} options.name
- * @param {*} options.context
- * @param {boolean} [options.startOpen]
+ * @param options
+ * @param options.name The name of the registered section
+ * @param options.context Unused
+ * @param options.startOpen Sections will start open instead of closed if true
  * @returns
  */
-const SectionView = ({ name, context, startOpen } : {
-    name: string,
-    context: any,
-    startOpen: boolean | undefined
+const SectionView = ({
+    name,
+    context,
+    startOpen,
+}: {
+    name: string;
+    context: any;
+    startOpen?: boolean;
 }) => {
     const isClosable = name !== "root";
     const [isOpen, setIsOpen] = useState(
