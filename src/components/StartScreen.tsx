@@ -1,10 +1,10 @@
 // @ts-check
 import React from "react";
-import SplitScreen from "./SplitScreen";
+import SplitScreen from "./shared/SplitScreen";
 import NewConnection from "./connectionComponents/NewConnection";
 import SavedConnections from "./connectionComponents/SavedConnections";
 
-const StartScreen = ({ className = "" }) => {
+const StartScreen = ({ className = "" }: { className?: string }) => {
     return (
         <SplitScreen
             className={className}

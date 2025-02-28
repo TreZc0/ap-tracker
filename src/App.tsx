@@ -6,20 +6,20 @@ import { createConnector } from "./services/connector/connector";
 import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";
 import OptionsScreen from "./components/optionsComponents/OptionsScreen";
-import SectionView from "./components/sectionComponents/SectionView";
 import { createEntranceManager } from "./services/entrances/entranceManager";
 import { createCheckManager } from "./services/checks/checkManager";
 import ServiceContext from "./contexts/serviceContext";
 import { createGroupManager } from "./services/sections/groupManager";
 import { createSectionManager } from "./services/sections/sectionManager";
 import { createTagManager } from "./services/tags/tagManager";
+import { createInventoryManager } from "./services/inventory/inventoryManager";
 import { globalOptionManager } from "./services/options/optionManager";
 import NotificationContainer from "./components/notifications/notificationContainer";
 import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
 import TrackerDirectory from "./games/TrackerDirectory";
-import StickySpacer from "./components/shared/StickySpacer";
+import TrackerScreen from "./components/TrackerScreen";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -41,6 +41,7 @@ const AppScreen = styled.div`
 `;
 
 const checkManager = createCheckManager();
+const inventoryManager = createInventoryManager();
 const entranceManager = createEntranceManager();
 const optionManager = globalOptionManager;
 const groupManager = createGroupManager(entranceManager);
@@ -52,6 +53,7 @@ const sectionManager = createSectionManager(
 const tagManager = createTagManager(checkManager);
 const connector = createConnector(
     checkManager,
+    inventoryManager,
     entranceManager,
     groupManager,
     sectionManager,
@@ -72,7 +74,11 @@ let App = (): React.ReactNode => {
         () => connection.slotInfo
     );
     const [optionWindowOpen, setOptionWindowOpen] = useState(false);
-    const themeValue = useOption(optionManager, "theme", "global") as "light"|"dark"|"system"|null;
+    const themeValue = useOption(optionManager, "theme", "global") as
+        | "light"
+        | "dark"
+        | "system"
+        | null;
     return (
         <div className="App" data-theme={readThemeValue(themeValue)}>
             <AppScreen data-theme={readThemeValue(themeValue)}>
@@ -91,6 +97,7 @@ let App = (): React.ReactNode => {
                             sectionManager,
                             tagManager,
                             optionManager,
+                            inventoryManager,
                         }}
                     >
                         <NotificationContainer />
@@ -109,12 +116,7 @@ let App = (): React.ReactNode => {
                                     <StartScreen />
                                 )}
                                 {CONNECTION_STATUS.connected ===
-                                    trackerConnectionState && (
-                                    <>
-                                        <SectionView name="root" context={{}} />
-                                        <StickySpacer/>
-                                    </>
-                                )}
+                                    trackerConnectionState && <TrackerScreen />}
                             </>
                         )}
                     </ServiceContext.Provider>
@@ -122,6 +124,6 @@ let App = (): React.ReactNode => {
             </AppScreen>
         </div>
     );
-}
+};
 
 export default App;

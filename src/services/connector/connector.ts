@@ -1,4 +1,3 @@
-// @ts-check
 import { API, Client } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
@@ -8,6 +7,13 @@ import NotificationManager, {
     MessageType,
 } from "../notifications/notifications";
 import { enableDataSync } from "./remoteSync";
+import { setupAPInventorySync } from "./inventorySync";
+import { CheckManager } from "../checks/checkManager";
+import { InventoryManager } from "../inventory/inventoryManager";
+import { EntranceManager } from "../entrances/entranceManager";
+import { GroupManager } from "../sections/groupManager";
+import { SectionManager } from "../sections/sectionManager";
+import { TagManager } from "../tags/tagManager";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -16,41 +22,31 @@ const CONNECTION_STATUS = {
     error: "Error", // unrecoverable state
 };
 
-/**
- * @typedef Connector
- * @prop {({ host, port, slot, password }:{host:string, port: string, slot: string, password: string}) => Promise<void>} connectToAP
- * @prop {{status: string;readonly subscribe: (listener: () => void) => () => void;readonly unsubscribe: (listener: () => void) => void;readonly client: Client;readonly slotInfo: *;}} connection
- *
- */
+interface Connector {
+    connectToAP: ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string; }) => Promise<void>;
+    connection: { status: string; readonly subscribe: (listener: () => void) => () => void; readonly unsubscribe: (listener: () => void) => void; readonly client: Client; readonly slotInfo: any; };
+}
 
-/**
- *
- * @param {import("../checks/checkManager").CheckManager} checkManager
- * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
- * @param {import("../sections/groupManager").GroupManager} groupManager
- * @param {import("../sections/sectionManager").SectionManager} sectionManager
- * @param {import("../tags/tagManager").TagManager} tagManager
- */
 const createConnector = (
-    checkManager,
-    entranceManager,
-    groupManager,
-    sectionManager,
-    tagManager
-) => {
+    checkManager: CheckManager,
+    inventoryManger: InventoryManager,
+    entranceManager: EntranceManager,
+    groupManager: GroupManager,
+    sectionManager: SectionManager,
+    tagManager: TagManager,
+): Connector => {
     const client = new Client();
     // @ts-ignore
     window.APClient = client;
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo = { slotName: "", alias: "", connectionId: "" };
-        /** @type {Set<()=>void>} */
-        let listeners = new Set();
-        const subscribe = (/** @type {() => void} */ listener) => {
+        let slotInfo = { slotName: "", alias: "", connectionId: "", name: "" };
+        let listeners: Set<() => void> = new Set();
+        const subscribe = (listener: () => void) => {
             listeners.add(listener);
             return () => unsubscribe(listener);
         };
-        const unsubscribe = (/** @type {() => void} */ listener) => {
+        const unsubscribe = (listener: () => void) => {
             listeners.delete(listener);
         };
         const callListeners = () => {
@@ -84,17 +80,9 @@ const createConnector = (
     })();
 
     setupAPCheckSync(client, checkManager, tagManager, connection);
+    setupAPInventorySync(client, inventoryManger);
 
-    /**
-     *
-     * @param {Object} info
-     * @param {string} info.host The Host to connect to
-     * @param {string} info.port The port to connect to
-     * @param {string} info.slot The name of the player slot to connect to
-     * @param {string|undefined} info.password The password to use to connect
-     * @returns
-     */
-    const connectToAP = async ({ host, port, slot, password }) => {
+    const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
                 throw CONNECTION_MESSAGES.alreadyConnected();
@@ -268,3 +256,4 @@ const createConnector = (
 };
 
 export { CONNECTION_STATUS, createConnector };
+export type { Connector }
