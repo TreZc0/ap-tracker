@@ -11,11 +11,15 @@ There is a version of this tracker hosted at [https://drawesome4333.github.io/ap
 - Mark checks as ignored or star them as important so you know to come back
 - Remember where hinted locations are with automatic flags
 - Sync a short memo with the server with the built-in note pad, can be accessed any time, even from another device
+- Inventory Viewing
+    - Easily see where items have come from, and mark any local ones of interest on the checklist. Should be useful for games that treat local items differently.
+    - Filter the view based on item class (e.g. only progression and useful items)
+    - Sort your inventory by time received, alphabetically, or the number of items of that type.
 
 ## Running Locally
 1. Head to the releases page for the tracker [https://github.com/DrAwesome4333/ap-tracker/releases](https://github.com/DrAwesome4333/ap-tracker/releases) and download `ap-tracker-vX.X.X.zip`.
 
-2. Extract the zip file to a local directory and open it up.
+2. Extract the contents of the zip file to a local directory and open it up.
 
 3. Open `index.html` in a web browser. The app should now be ready to go to connect to any AP server.
 
