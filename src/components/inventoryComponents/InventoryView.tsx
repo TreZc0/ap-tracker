@@ -53,13 +53,13 @@ const InventoryView = ({}) => {
         return items
             .filter(
                 (collection) =>
-                    (collection.progression && showProgression) ||
-                    (collection.useful && showUseful) ||
-                    (collection.trap && showTrap) ||
+                    (collection.progression && (showProgression ?? true)) ||
+                    (collection.useful && (showUseful ?? true)) ||
+                    (collection.trap && (showTrap ?? true)) ||
                     (!collection.progression &&
                         !collection.useful &&
                         !collection.trap &&
-                        showNormal)
+                        (showNormal ?? true))
             )
             .sort((a, b) => {
                 let orderValue = 1;
@@ -78,7 +78,7 @@ const InventoryView = ({}) => {
                         break;
                     }
                 }
-                if (itemOrderDirection_desc) {
+                if (itemOrderDirection_desc ?? true) {
                     orderValue *= -1;
                 }
                 return orderValue;
