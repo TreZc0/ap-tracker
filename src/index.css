@@ -8,6 +8,10 @@
     --background-secondary: #48799e;
     --background-tertiary: #afb5af;
     --background-danger: #e82a00;
+    --useful_item: #6D8BE8;
+    --normal_item: #00EEEE;
+    --progression_item: #AF99EF;
+    --trap_item: #FA8072;
 }
 
 [data-theme="dark"] {
