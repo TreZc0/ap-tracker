@@ -1,6 +1,6 @@
 {
   "name": "ap-tracker",
-  "version": "0.1.5",
+  "version": "0.1.6-alpha",
   "private": true,
   "type": "module",
   "dependencies": {

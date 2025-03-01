@@ -78,7 +78,16 @@ const OptionsScreen = () => {
                 </a>
                 . Please report any problems you find there.
             </OptionBlock>
-
+            <div
+                style={{
+                    textAlign: "center",
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: "1em",
+                }}
+            >
+                Version: {process.env.NEXT_PUBLIC_APP_VERSION}
+            </div>
             <StickySpacer />
         </div>
     );
