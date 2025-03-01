@@ -1,4 +1,3 @@
-// @ts-check
 import React, { useContext, useState } from "react";
 import { TrackerStateContext } from "../contexts/contexts";
 import { PrimaryButton, SecondaryButton } from "./buttons";
@@ -7,12 +6,12 @@ import { background } from "../constants/colors";
 import NotePad from "./NotePad";
 import ServiceContext from "../contexts/serviceContext";
 import { CONNECTION_STATUS } from "../services/connector/connector";
+import ConnectionIcon from "./icons/ConnectionIcon";
 
 const MainHeader = ({ optionsCallback, ...props }) => {
     const trackerState = useContext(TrackerStateContext);
     const [notePadOpen, setNotePadOpen] = useState(false);
     const slot = trackerState.slotData;
-    const serviceContext = useContext(ServiceContext);
     return (
         <div
             style={{
@@ -25,9 +24,18 @@ const MainHeader = ({ optionsCallback, ...props }) => {
             }}
         >
             <div
-                style={{ width: "100%", display: "flex", columnGap: "1rem" }}
+                style={{
+                    width: "100%",
+                    display: "flex",
+                    columnGap: "1rem",
+                    alignItems: "center",
+                }}
                 {...props}
             >
+                {" "}
+                <div style={{ width: "2.5em", margin: "0.25em" }}>
+                    <ConnectionIcon status={trackerState.connectionStatus} />
+                </div>
                 <div>{trackerState.connectionStatus}</div>
                 {slot?.alias && <div>{slot.alias}</div>}
             </div>
