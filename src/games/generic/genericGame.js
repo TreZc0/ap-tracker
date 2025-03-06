@@ -1,5 +1,6 @@
 // @ts-check
 import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
+import locationNameGroupGenerator from "./categoryGenerators/locationName";
 
 /**
  * @param {string} gameName
@@ -8,6 +9,10 @@ import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
  * @returns {import("../TrackerBuilder").Tracker}
  */
 const buildGenericGame = (gameName, checkManager, locationGroups) => {
+    // quick test, do not merge;
+    let checks = checkManager.getAllExistingChecks();
+    locationNameGroupGenerator.generateCategories(checks, { splitCharacters: [" ", ".", "_", "-", ":"], splitOnCase: true }, 3);
+
     const { groupConfig, categoryConfig } =
         LocationGroupCategoryGenerator.generateCategories(
             checkManager,
