@@ -9,7 +9,6 @@ import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
-import _ from "lodash";
 
 /**
  *
@@ -85,9 +84,10 @@ const SectionView = ({
         if (checkOrderBehavior === "lexical") {
             checkNames.sort();
         } else if (checkOrderBehavior === "id") {
-            checkNames = _.orderBy(
-                checkNames,
-                (name) => checkManager?.getCheckStatus(name).id
+            checkNames.sort(
+                (a, b) =>
+                    checkManager.getCheckStatus(b).id -
+                    checkManager.getCheckStatus(a).id
             );
         }
         return checkNames;

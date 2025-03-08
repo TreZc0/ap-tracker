@@ -5,7 +5,6 @@
   "type": "module",
   "dependencies": {
     "archipelago.js": "^2.0.4",
-    "lodash": "^4.17.21",
     "next": "^15.1.7",
     "nextjs": "^0.0.3",
     "react": "^18.3.1",

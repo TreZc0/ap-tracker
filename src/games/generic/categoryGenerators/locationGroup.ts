@@ -1,24 +1,19 @@
-// @ts-check
-import _ from "lodash";
+import { CheckManager } from "../../../services/checks/checkManager";
+import { GroupData } from "../../../services/sections/groupManager";
+import { SectionConfigData } from "../../../services/sections/sectionManager";
+
 const GROUP_DEBUG = false;
 const DEBUG_PARENT_GROUP_ORGANIZATION = true && GROUP_DEBUG;
 const DEBUG_GROUP_CLASSIFICATION = true && GROUP_DEBUG;
 
-/**
- *
- * @param {import("../../../services/checks/checkManager").CheckManager} checkManager
- * @param {Object.<string, string[]>} groups
- */
-const generateCategories = (checkManager, groups) => {
+const generateCategories = (checkManager: CheckManager, groups: { [s: string]: string[]; }) => {
     let unclassifiedLocations = checkManager.getAllExistingChecks();
     if (GROUP_DEBUG) {
         console.log("Location groups provided:", groups);
     }
-    /** @type {Object.<string, import("../../../services/sections/groupManager").GroupData>} */
-    const groupConfig = {};
+    const groupConfig: { [s: string]: GroupData; } = {};
 
-    /** @type {import("../../../services/sections/sectionManager").SectionConfigData} */
-    const categoryConfig = {
+    const categoryConfig: SectionConfigData = {
         categories: {
             root: {
                 title: "Total",
@@ -48,10 +43,8 @@ const generateCategories = (checkManager, groups) => {
         "theme6",
     ];
 
-    /** @type {Map<string, Set<string>>} */
-    let checkMembership = new Map();
-    /** @type {Map<string, Set<string>>} */
-    let groupSets = new Map();
+    let checkMembership: Map<string, Set<string>> = new Map();
+    let groupSets: Map<string, Set<string>> = new Map();
 
     for (let groupName of Object.getOwnPropertyNames(groups)) {
         if (groupName === "Everywhere") {
@@ -67,25 +60,18 @@ const generateCategories = (checkManager, groups) => {
         });
     }
 
-    /** @type {Set<string>} */
-    const keyLocationGroups = new Set();
-    /** @type {Map<string, Set<string>>} */
-    const possibleParentGroups = new Map();
-    /** @type {Map<string, Set<string>>} */
-    const possibleChildGroups = new Map();
-    /**
-     *  @type {Map<string, Set<string>>}
-     * Contains all groups that a group intersects with partially, but is not a subset or superset of
-     */
-    const groupOverlappingSets = new Map();
-    /** @type {Set<string>} */
-    const possibleMetaLocationGroups = new Set();
+    const keyLocationGroups: Set<string> = new Set();
+    const possibleParentGroups: Map<string, Set<string>> = new Map();
+    const possibleChildGroups: Map<string, Set<string>> = new Map();
+    /** Contains all groups that a group intersects with partially, but is not a subset or superset of */
+    const groupOverlappingSets: Map<string, Set<string>> = new Map();
+    const possibleMetaLocationGroups: Set<string> = new Set();
 
     // Go through all groups and determine how they relate to one another
     for (let [groupName, group] of groupSets.entries()) {
-        let parentGroups = new Set();
-        let childGroups = new Set();
-        let overlappingGroups = new Set();
+        let parentGroups: Set<string> = new Set();
+        let childGroups: Set<string> = new Set();
+        let overlappingGroups: Set<string> = new Set();
         for (let [otherGroupName, otherGroup] of groupSets.entries()) {
             if (otherGroupName === groupName) {
                 continue;
@@ -155,7 +141,7 @@ const generateCategories = (checkManager, groups) => {
         groupOverlappingSets.set(groupName, overlappingGroups);
     }
 
-    const metaLocationGroups = new Set();
+    const metaLocationGroups: Set<string> = new Set();
     // Resolve edge cases where a key group may be completely made up of meta groups
     for (let groupName of possibleMetaLocationGroups) {
         // A meta group must also be a part of one key group in which it is not a complete subset of
@@ -186,10 +172,10 @@ const generateCategories = (checkManager, groups) => {
     // A conflict between 2 groups cannot be solved easily, so we will not try to resolve those conflicts
     const computeKeyGroupConflicts = () => {
         /** @type {Map<string, Set<string>>} */
-        const conflictGroups = new Map();
+        const conflictGroups: Map<string, Set<string>> = new Map();
         for (let groupName of [...keyLocationGroups.values()]) {
             /** @type {Set<string>} */
-            let localConflicts = new Set();
+            let localConflicts: Set<string> = new Set();
             for (let otherGroupName of keyLocationGroups) {
                 if (groupOverlappingSets.get(groupName)?.has(otherGroupName)) {
                     localConflicts.add(otherGroupName);
@@ -199,7 +185,9 @@ const generateCategories = (checkManager, groups) => {
                 conflictGroups.set(groupName, localConflicts);
             }
         }
-        return _.sortBy([...conflictGroups.entries()], ([_, y]) => -y.size);
+        let result = [...conflictGroups.entries()];
+        result.sort(([_, a], [_2, b]) => b.size - a.size);
+        return result;
     };
 
     let orderedConflicts = computeKeyGroupConflicts();
@@ -234,18 +222,18 @@ const generateCategories = (checkManager, groups) => {
 
     // resolve parent/child relationships for key groups
     /** @type {Map<string, Set<string>>} */
-    const finalGroups = new Map();
+    const finalGroups: Map<string, Set<string>> = new Map();
     groupSets.forEach((value, key) => finalGroups.set(key, value));
     /** @type {Map<string, Set<string>>} */
-    const locationGroupToFinalGroups = new Map();
+    const locationGroupToFinalGroups: Map<string, Set<string>> = new Map();
     groupSets.forEach((value, key) =>
         locationGroupToFinalGroups.set(key, new Set([key]))
     );
 
     /** @type {Map<string, Set<string>>} */
-    const childTable = new Map();
+    const childTable: Map<string, Set<string>> = new Map();
     /** @type {Set<string>} */
-    const roots = new Set();
+    const roots: Set<string> = new Set();
     for (let groupName of keyLocationGroups) {
         let possibleParents = (
             possibleParentGroups.get(groupName) ?? new Set()
@@ -256,10 +244,10 @@ const generateCategories = (checkManager, groups) => {
                 console.log(`Added ${groupName} to root`);
             }
         } else {
-            let parent = _.sortBy(
-                [...possibleParents.values()],
-                (x) => groupSets.get(x)?.size ?? Infinity
-            )[0];
+            let parents = [...possibleParents.values()];
+            // sort the list ascending order
+            parents.sort((a, b) => groupSets.get(a)?.size ?? Infinity - groupSets.get(b)?.size ?? Infinity);
+            let parent = parents[0];
             let siblings = childTable.get(parent) ?? new Set();
             siblings.add(groupName);
             childTable.set(parent, siblings);
@@ -290,10 +278,10 @@ const generateCategories = (checkManager, groups) => {
                     console.log(`Added ${groupName} to root`);
                 }
             } else {
-                let parent = _.sortBy(
-                    [...possibleParents.values()],
-                    (x) => groupSets.get(x)?.size ?? Infinity
-                )[0];
+                let parents = [...possibleParents.values()];
+                // sort the list ascending order
+                parents.sort((a, b) => groupSets.get(a)?.size ?? Infinity - groupSets.get(b)?.size ?? Infinity);
+                let parent = parents[0];
                 let siblings = childTable.get(parent) ?? new Set();
                 siblings.add(groupName);
                 childTable.set(parent, siblings);
@@ -346,10 +334,16 @@ const generateCategories = (checkManager, groups) => {
     }
 
     // sort the root
-    categoryConfig.categories.root.children = _.sortBy(
-        categoryConfig.categories.root.children,
-        [(x) => !keyLocationGroups.has(x), (x) => x]
-    );
+    categoryConfig.categories.root.children.sort((a: string, b:string) => {
+        let aIsKey = keyLocationGroups.has(a);
+        let bIsKey = keyLocationGroups.has(b);
+        if (aIsKey === bIsKey) {
+            return a < b ? -1 : 1;
+        } else if (aIsKey) {
+            return -1;
+        }
+        return 1;
+    })
 
     if (unclassifiedLocations.size > 0) {
         groupConfig["unclassified"] = {

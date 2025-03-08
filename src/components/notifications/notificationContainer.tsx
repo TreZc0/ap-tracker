@@ -15,7 +15,6 @@ import Dialog from "../shared/Dialog";
 import ServiceContext from "../../contexts/serviceContext";
 import useOption from "../../hooks/optionHook";
 import { readThemeValue } from "../../services/theme/theme";
-import _ from "lodash";
 import StatusNotification from "./statusNotification";
 
 const ContentContainer = styled.div`
@@ -51,9 +50,9 @@ let toastNotificationReducer = (notifications, action) => {
             break;
         }
         case "add": {
-            let index = _.findIndex(newNotifications, {
-                id: action.data.notification.id,
-            });
+            let index = newNotifications
+                .map(({ id }) => id === action.data.notification.id)
+                .indexOf(true);
             if (index < 0) {
                 // add completely new notification
                 newNotifications.unshift({
@@ -107,9 +106,9 @@ let statusNotificationReducer = (notifications, action) => {
             break;
         }
         case "update": {
-            let oldIndex = _.findIndex(newNotifications, {
-                id: action.data.notification.id,
-            });
+            let oldIndex = newNotifications
+                .map(({ id }) => id === action.data.notification.id)
+                .indexOf(true);
             if (oldIndex > -1) {
                 let newStatus = {
                     ...notifications[oldIndex],
@@ -156,7 +155,11 @@ let NotificationContainer = () => {
     const toastTimerStopped = useRef(false);
     const serviceContext = useContext(ServiceContext);
     const optionManger = serviceContext.optionManager;
-    const themeValue = useOption(optionManger, "theme", "global") as "light"|"dark"|"system"|null;
+    const themeValue = useOption(optionManger, "theme", "global") as
+        | "light"
+        | "dark"
+        | "system"
+        | null;
 
     const openDetailModal = (index: number) => {
         setDetailIndex(index);

@@ -4,7 +4,6 @@ import { PrimaryButton, SecondaryButton } from "../buttons";
 import SavedConnectionManager from "../../services/savedConnections/savedConnectionManager";
 import SavedConnection from "./SavedConnection";
 import ServiceContext from "../../contexts/serviceContext";
-import _ from "lodash";
 import { TrackerStateContext } from "../../contexts/contexts";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
 import EditConnectionDialog from "./EditConnection";
@@ -50,9 +49,10 @@ const SavedConnections = ({ ...props }) => {
     for (let key of connectionIds) {
         allConnections.push(connectionData.connections[key]);
     }
-    let sortedConnections = _.orderBy(allConnections, ["lastUsedTime"], "desc");
+    let sortedConnections = [...allConnections];
+    sortedConnections.sort((a, b) => b.lastUsedTime - a.lastUsedTime);
 
-    const selectId = (id) => {
+    const selectId = (id: string) => {
         if (id !== selectedConnection?.connectionId) {
             setSelectedConnection(connectionData.connections[id]);
         } else {
