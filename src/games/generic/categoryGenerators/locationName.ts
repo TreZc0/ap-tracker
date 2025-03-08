@@ -89,6 +89,7 @@ type NameTokenizationOptions = {
     /** If true, names will be split into individual character tokens, ignoring other options */
     characterSplit?: boolean,
 }
+
 const tokenizeName = (name: string, tokenizationOptions: NameTokenizationOptions): string[] => {
     let result: string[] = [];
     let currentToken = "";

@@ -1,39 +1,33 @@
-// @ts-check
 // Loads custom JSON supplied by users
-import _ from "lodash";
 import { generateId } from "../../../utility/randomIdGen";
-import TrackerDirectory from "../../TrackerDirectory";
 import NotificationManager, {
     MessageType,
 } from "../../../services/notifications/notifications";
 import { verifyTrackerConfig } from "./trackerVerification";
+import TrackerManager from "../../TrackerManager";
+import { GroupData } from "../../../services/sections/groupManager";
+import { SectionConfigData } from "../../../services/sections/sectionManager";
 const CUSTOM_TRACKER_DIRECTORY_STORAGE_KEY =
     "APChecklist_Custom_Tracker_Directory";
 const CUSTOM_TRACKER_STORAGE_KEY = "APChecklist_Custom_Tracker";
 const CUSTOM_TRACKER_VERSION = 1;
 
-/**
- * @typedef CustomCategory_V1
- * @prop {Object.<string, import("../../../services/sections/groupManager").GroupData>} groupData
- * @prop {import("../../../services/sections/sectionManager").SectionConfigData} sectionData
- * @prop {string} game
- * @prop {number} customTrackerVersion
- * @prop {string} [id]
- * @prop {string} name
- */
+interface CustomCategory_V1 {
+    groupData: { [groupKey: string]: GroupData };
+    sectionData: SectionConfigData;
+    game: string;
+    customTrackerVersion: number;
+    id?: string;
+    name: string;
+}
 
-/**
- * @typedef CustomListDirectory
- * @prop {{id: string, game:string, name: string, enabled: boolean}[]} customLists
- * @prop {number} modified
- */
+interface CustomListDirectory {
+    customLists: { id: string; game: string; name: string; enabled: boolean; }[];
+    modified: number;
+}
 
-/**
- * @param {string} gameName
- * @param {string} customGameId
- * @returns {import("../../TrackerBuilder").Tracker}
- */
-const buildCustomTracker = (gameName, customGameId) => {
+
+const buildCustomTracker = (gameName: string, customGameId: string): import("../../TrackerManager").Tracker => {
     let customGameData = getCustomTracker(customGameId);
     if (!customGameData) {
         throw new Error("Failed to load custom game with id " + customGameId);
@@ -45,8 +39,7 @@ const buildCustomTracker = (gameName, customGameId) => {
     }
     const { groupData, sectionData } = customGameData;
 
-    /** @type {import("../../TrackerBuilder")._TrackerBuilder} */
-    const buildTracker = (
+    const buildTracker: import("../../TrackerManager").TrackerBuilder = (
         checkManager,
         entranceManager,
         groupManager,
@@ -83,14 +76,9 @@ const buildCustomTracker = (gameName, customGameId) => {
     };
 };
 
-/** @type {Set<()=>void>} */
-const directoryListeners = new Set();
+const directoryListeners: Set<() => void> = new Set();
 
-/**
- *
- * @returns {(listener: () => void) =>(() => void)}a
- */
-const getDirectorySubscriberCallback = () => {
+const getDirectorySubscriberCallback = (): (listener: () => void) => (() => void) => {
     return (listener) => {
         directoryListeners.add(listener);
         return () => {
@@ -107,26 +95,21 @@ const getDirectory = () => {
     return readDirectoryFromStorage();
 };
 
-/** @type {CustomListDirectory} */
-let cachedDirectory = {
+let cachedDirectory: CustomListDirectory = {
     customLists: [],
     modified: 0,
 };
 
-/**
- *
- * @returns {CustomListDirectory}
- */
-const readDirectoryFromStorage = () => {
+const readDirectoryFromStorage = (): CustomListDirectory => {
     let directoryDataString = localStorage.getItem(
         CUSTOM_TRACKER_DIRECTORY_STORAGE_KEY
     );
     let directory = directoryDataString
         ? JSON.parse(directoryDataString)
         : {
-              customLists: [],
-              modified: 0,
-          };
+            customLists: [],
+            modified: 0,
+        };
     // React requires returning the same object if nothing has changed
     if (directory.modified !== cachedDirectory.modified) {
         cachedDirectory = directory;
@@ -134,11 +117,7 @@ const readDirectoryFromStorage = () => {
     return cachedDirectory;
 };
 
-/**
- *
- * @param {CustomListDirectory} directory
- */
-const saveDirectory = (directory) => {
+const saveDirectory = (directory: CustomListDirectory) => {
     directory.modified = Date.now();
     localStorage.setItem(
         CUSTOM_TRACKER_DIRECTORY_STORAGE_KEY,
@@ -147,12 +126,7 @@ const saveDirectory = (directory) => {
     callDirectoryListeners();
 };
 
-/**
- *
- * @param {string} id
- * @returns {CustomCategory_V1 | null}
- */
-const getCustomTracker = (id) => {
+const getCustomTracker = (id: string): CustomCategory_V1 | null => {
     let dataString = localStorage.getItem(
         `${CUSTOM_TRACKER_STORAGE_KEY}_${id}`
     );
@@ -165,7 +139,7 @@ const getCustomTracker = (id) => {
 /**
  * @param {CustomCategory_V1} data
  */
-const addCustomTracker = (data) => {
+const addCustomTracker = (data: CustomCategory_V1) => {
     let directory = { ...readDirectoryFromStorage() };
     // validate data
     if (data.customTrackerVersion > CUSTOM_TRACKER_VERSION) {
@@ -203,7 +177,7 @@ const addCustomTracker = (data) => {
             console.warn("Custom tracker has failed verification", errors);
         }
     }
-    let currentIndex = _.findIndex(directory.customLists, { id: data.id });
+    let currentIndex = directory.customLists.map(({ id }) => id === data.id).indexOf(true);
     if (currentIndex > -1) {
         // remove existing version from directory
         directory.customLists = directory.customLists.slice(0);
@@ -223,13 +197,13 @@ const addCustomTracker = (data) => {
     );
     saveDirectory(directory);
     try {
-        TrackerDirectory.registerTracker(buildCustomTracker(data.game, id));
+        TrackerManager.directory.addTracker(buildCustomTracker(data.game, id));
     } catch (e) {
         directory.customLists[directory.customLists.length - 1].enabled = false;
         saveDirectory(directory);
         NotificationManager.createToast({
             message:
-                "An error occurred registering custom tracker, it has been disabled",
+                "An error occurred adding custom tracker, it has been disabled",
             details: `Error: \n\t${e}`,
             type: MessageType.error,
             duration: 10,
@@ -241,12 +215,12 @@ const addCustomTracker = (data) => {
 /**
  * @param {string} id
  */
-const removeCustomTracker = (id) => {
+const removeCustomTracker = (id: string) => {
     let directory = { ...readDirectoryFromStorage() };
     // validate data
-    let currentIndex = _.findIndex(directory.customLists, { id });
+    let currentIndex = directory.customLists.map(({ id: itemId }) => itemId === id).indexOf(true);
     if (currentIndex > -1) {
-        TrackerDirectory.removeTracker(id);
+        TrackerManager.directory.removeTracker(id);
         // remove existing version from directory
         directory.customLists = directory.customLists.slice(0);
         directory.customLists.splice(currentIndex, 1);
@@ -261,7 +235,7 @@ const loadTrackers = () => {
     cachedDirectory.customLists.forEach((trackerInfo, index) => {
         if (trackerInfo.enabled) {
             try {
-                TrackerDirectory.registerTracker(
+                TrackerManager.directory.addTracker(
                     buildCustomTracker(trackerInfo.game, trackerInfo.id)
                 );
             } catch (e) {

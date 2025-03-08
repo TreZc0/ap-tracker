@@ -16,6 +16,10 @@ const OptionsScreen = () => {
             "No option manager provided for option screen, you should be worried"
         );
     }
+    const trackerManager = serviceContext.trackerManager;
+    if (!trackerManager) {
+        console.warn("No tracker manager provided");
+    }
 
     return (
         <div>
@@ -29,10 +33,18 @@ const OptionsScreen = () => {
                 <InventorySettings optionManager={optionManager} />
             </OptionBlock>
             <OptionBlock title="Tracker Picker">
-                <TrackerPicker />
+                {trackerManager ? (
+                    <TrackerPicker trackerManager={trackerManager} />
+                ) : (
+                    <i>Failed to initiate tracker picker</i>
+                )}
             </OptionBlock>
             <OptionBlock title="Custom Tracker Manager">
-                <CustomTrackerOptions />
+                {trackerManager ? (
+                    <CustomTrackerOptions trackerManager={trackerManager} />
+                ) : (
+                    <i>Failed to initiate tracker manager</i>
+                )}
             </OptionBlock>
             <OptionBlock title="Attributions">
                 <img

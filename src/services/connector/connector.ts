@@ -1,8 +1,7 @@
 import { API, Client } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
-import SavedConnectionManager from "../savedConnections/savedConnectionManager";
-import { TrackerBuilder } from "../../games/TrackerBuilder";
+import SavedConnectionManager, { SavedConnectionInfo } from "../savedConnections/savedConnectionManager";
 import NotificationManager, {
     MessageType,
 } from "../notifications/notifications";
@@ -14,6 +13,7 @@ import { EntranceManager } from "../entrances/entranceManager";
 import { GroupManager } from "../sections/groupManager";
 import { SectionManager } from "../sections/sectionManager";
 import { TagManager } from "../tags/tagManager";
+import TrackerManager from "../../games/TrackerManager";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -34,6 +34,7 @@ const createConnector = (
     groupManager: GroupManager,
     sectionManager: SectionManager,
     tagManager: TagManager,
+    trackerManager: TrackerManager,
 ): Connector => {
     const client = new Client();
     // @ts-ignore
@@ -151,8 +152,7 @@ const createConnector = (
                     });
                 });
 
-                /** @type {import("../savedConnections/savedConnectionManager").SavedConnectionInfo} */
-                let savedConnectionInfo = {
+                let savedConnectionInfo: SavedConnectionInfo = {
                     seed: client.room.seedName,
                     host,
                     slot,
@@ -160,6 +160,7 @@ const createConnector = (
                     game: client.players.self.game,
                     playerAlias: client.players.self.alias,
                 };
+
                 let possibleMatches =
                     SavedConnectionManager.getExistingConnections(
                         savedConnectionInfo
@@ -198,11 +199,12 @@ const createConnector = (
                         connection.slotInfo.connectionId
                     );
                 // Load groups from save data or request them from AP
-                const getGroups = async () => {
+                const getGroups = async (): Promise<{ [groupName: string]: string[] }> => {
                     if (savedConnectionData.locationGroups) {
                         return savedConnectionData.locationGroups;
                     }
-                    let groups = await client.storage
+                    // @ts-ignore, typing error in archipelago.js
+                    let groups: { [groupName: string]: string[] } = await client.storage
                         .fetchLocationNameGroups(client.game)
                         .then(
                             (a) =>
@@ -215,16 +217,17 @@ const createConnector = (
                     );
                     return savedConnectionData.locationGroups;
                 };
-                getGroups().then((groups) => {
-                    TrackerBuilder(
-                        savedConnectionInfo.game,
+                getGroups().then((groups: { [groupName: string]: string[] }) => {
+                    trackerManager.initializeTracker({
+                        gameName: savedConnectionInfo.game,
                         checkManager,
                         entranceManager,
                         groupManager,
                         sectionManager,
-                        {},
-                        // @ts-ignore, there is a typing error on Archipelago.js
+                        slotData: {},
                         groups
+                    }
+
                     );
                     tagManager.loadTags(connection.slotInfo.connectionId);
                 });

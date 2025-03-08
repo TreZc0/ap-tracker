@@ -1,17 +1,13 @@
 // @ts-check
 import { useSyncExternalStore } from "react";
-import TrackerDirectory from "../games/TrackerDirectory";
 import CustomTrackerManager from "../games/generic/categoryGenerators/customTrackerManager";
-import {
-    getGameTracker,
-    getTrackerSubscriberCallback,
-} from "../games/TrackerBuilder";
+import TrackerManager from "../games/TrackerManager";
 
 const useTrackerDirectory = () => {
     return useSyncExternalStore(
-        TrackerDirectory.getDirectorySubscriberCallback(),
-        TrackerDirectory.getDirectory,
-        TrackerDirectory.getDirectory
+        TrackerManager.directory.getSubscriberCallback(),
+        TrackerManager.directory.getDirectory,
+        TrackerManager.directory.getDirectory
     );
 };
 
@@ -23,16 +19,11 @@ const useCustomTrackerDirectory = () => {
     );
 };
 
-/**
- *
- * @param {string} game
- * @returns
- */
-const useCurrentGameTracker = (game) => {
+const useCurrentGameTracker = (game: string, trackerManager: TrackerManager) => {
     return useSyncExternalStore(
-        getTrackerSubscriberCallback(),
-        () => getGameTracker(game),
-        () => getGameTracker(game)
+        trackerManager.getTrackerSubscriberCallback(),
+        () => trackerManager.getGameTracker(game),
+        () => trackerManager.getGameTracker(game)
     );
 };
 

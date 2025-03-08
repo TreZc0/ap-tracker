@@ -18,8 +18,8 @@ import NotificationContainer from "./components/notifications/notificationContai
 import { background, textPrimary } from "./constants/colors";
 import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
-import TrackerDirectory from "./games/TrackerDirectory";
 import TrackerScreen from "./components/TrackerScreen";
+import TrackerManager from "./games/TrackerManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -51,16 +51,18 @@ const sectionManager = createSectionManager(
     groupManager
 );
 const tagManager = createTagManager(checkManager);
+const trackerManager = new TrackerManager();
+trackerManager.loadSavedTrackerChoices();
 const connector = createConnector(
     checkManager,
     inventoryManager,
     entranceManager,
     groupManager,
     sectionManager,
-    tagManager
+    tagManager,
+    trackerManager
 );
 const connection = connector.connection;
-TrackerDirectory.loadSavedTrackerChoices();
 
 let App = (): React.ReactNode => {
     const trackerConnectionState = useSyncExternalStore(
@@ -98,6 +100,7 @@ let App = (): React.ReactNode => {
                             tagManager,
                             optionManager,
                             inventoryManager,
+                            trackerManager,
                         }}
                     >
                         <NotificationContainer />

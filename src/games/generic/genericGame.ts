@@ -1,14 +1,11 @@
 // @ts-check
+import { CheckManager } from "../../services/checks/checkManager";
+import { Tracker, TrackerBuilder } from "../TrackerManager";
 import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
 import locationNameGroupGenerator from "./categoryGenerators/locationName";
 
-/**
- * @param {string} gameName
- * @param {import("../../services/checks/checkManager").CheckManager} checkManager
- * @param {Object.<string, string[]>} locationGroups
- * @returns {import("../TrackerBuilder").Tracker}
- */
-const buildGenericGame = (gameName, checkManager, locationGroups) => {
+/** Builds a generic tracker for a given game */
+const buildGenericGame = (gameName: string, checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }): Tracker => {
     // quick test, do not merge;
     let checks = checkManager.getAllExistingChecks();
     locationNameGroupGenerator.generateCategories(checks, { splitCharacters: [" ", ".", "_", "-", ":"], splitOnCase: true }, 3);
@@ -32,8 +29,7 @@ const buildGenericGame = (gameName, checkManager, locationGroups) => {
         }
     );
 
-    /** @type {import("../TrackerBuilder")._TrackerBuilder} */
-    const buildTracker = (
+    const buildTracker: TrackerBuilder = (
         checkManager,
         entranceManager,
         groupManager,

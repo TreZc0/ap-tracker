@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useCustomTrackerDirectory } from "../../hooks/trackerHooks";
-import _ from "lodash";
 import { tertiary } from "../../constants/colors";
 import { DangerButton, GhostButton, PrimaryButton } from "../buttons";
 import Icon from "../icons/icons";
@@ -9,10 +8,9 @@ import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
-import { getGameTracker } from "../../games/TrackerBuilder";
-import TrackerDirectory from "../../games/TrackerDirectory";
+import TrackerManager from "../../games/TrackerManager";
 
-const CustomTrackerOptions = () => {
+const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager}) => {
     const customTrackersDirectory = useCustomTrackerDirectory();
     const trackersByGame = useMemo(() => {
         let trackerMap: Map<
@@ -32,7 +30,8 @@ const CustomTrackerOptions = () => {
         const games = [...trackerMap.keys()];
         games.forEach((game) => {
             let list = trackerMap.get(game);
-            trackerMap.set(game, _.sortBy(list, ["name"]));
+            list.sort((a, b) => a.name < b.name ? -1 : 1);
+            trackerMap.set(game, list);
         });
         return trackerMap;
     }, [customTrackersDirectory]);
@@ -63,8 +62,8 @@ const CustomTrackerOptions = () => {
                     progress: 1,
                     duration: 4,
                 });
-                if (getGameTracker(data.game)?.id === data.id) {
-                    TrackerDirectory.setTracker(data.game, data.id);
+                if (trackerManager.getGameTracker(data.game)?.id === data.id) {
+                    trackerManager.setGameTracker(data.game, data.id);
                 }
             })
             .catch((e) => {
