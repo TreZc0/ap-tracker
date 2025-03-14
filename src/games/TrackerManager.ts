@@ -31,6 +31,7 @@ interface Tracker {
 class TrackerManager {
     #registeredTrackers: Map<string, Tracker> = new Map();
     #trackerListeners: Set<() => void> = new Set();
+    #trackerParams: TrackerInitParams = null;
     static #managers: Set<TrackerManager> = new Set();
     static #allTrackers: Map<string, Tracker> = new Map();
     static #trackersByGame: Map<string, Set<string>> = new Map();
@@ -133,6 +134,10 @@ class TrackerManager {
             this.#registeredTrackers.delete(game);
         }
 
+        if (this.#trackerParams?.gameName === game) {
+            this.reloadTracker();
+        }
+
         let savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
         let trackerChoices = savedChoicesString
             ? JSON.parse(savedChoicesString)
@@ -151,12 +156,14 @@ class TrackerManager {
         return this.#registeredTrackers.get(game) ?? null;
     };
 
-    initializeTracker = ({
-        gameName, checkManager, entranceManager, groupManager, sectionManager, slotData, groups
-    }: TrackerInitParams
-
-    ) => {
-        let tracker = null;
+    reloadTracker = () => {
+        if (!this.#trackerParams) {
+            return;
+        }
+        const {
+            gameName, checkManager, entranceManager, groupManager, sectionManager, slotData, groups
+        } = this.#trackerParams;
+        let tracker: Tracker = null;
         if (this.#registeredTrackers.has(gameName)) {
             tracker = this.#registeredTrackers.get(gameName);
         } else {
@@ -169,6 +176,11 @@ class TrackerManager {
             sectionManager,
             slotData
         );
+    }
+
+    initializeTracker = (initParams: TrackerInitParams) => {
+        this.#trackerParams = initParams;
+        this.reloadTracker();
     };
 
     /** Removes the manager from the list of managed managers */

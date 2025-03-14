@@ -37,8 +37,6 @@ const createConnector = (
     trackerManager: TrackerManager,
 ): Connector => {
     const client = new Client();
-    // @ts-ignore
-    window.APClient = client;
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
         let slotInfo = { slotName: "", alias: "", connectionId: "", name: "" };
