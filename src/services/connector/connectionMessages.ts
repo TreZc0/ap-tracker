@@ -1,29 +1,27 @@
-// @ts-check
 import { MessageType } from "../notifications/notifications";
 
-/**
- * @typedef ConnectionMessage
- * @prop {MessageType} type
- * @prop {string} message
- * @prop {string} [details]
- *
- */
+interface ConnectionMessage {
+    type: MessageType;
+    message: string;
+    details?: string;
+}
+
 
 const CONNECTION_MESSAGES = {
-    alreadyConnected: () => ({
+    alreadyConnected: (): ConnectionMessage => ({
         type: MessageType.info,
         message: "Tracker is already connected to the archipelago server.",
     }),
-    alreadyConnecting: () => ({
+    alreadyConnecting: (): ConnectionMessage => ({
         type: MessageType.info,
         message:
             "Tracker is already trying to connect to the archipelago server.",
     }),
-    connectionSuccess: ({ playerAlias, game }) => ({
+    connectionSuccess: ({ playerAlias, game }): ConnectionMessage => ({
         type: MessageType.success,
         message: `Successfully connected as ${playerAlias} playing ${game}`,
     }),
-    connectionFailed: ({ host, port, slot, game, error }) => {
+    connectionFailed: ({ host, port, slot, game, error }): ConnectionMessage => {
         let serverHelp = "";
         switch (host) {
             case "archipelago.gg": {
@@ -69,10 +67,11 @@ Please verify you have the correct slot details.`;
             details,
         };
     },
-    generalError: ({ message }) => ({
+    generalError: ({ message }): ConnectionMessage => ({
         type: MessageType.error,
         message,
     }),
 };
 
 export default CONNECTION_MESSAGES;
+export type {ConnectionMessage}

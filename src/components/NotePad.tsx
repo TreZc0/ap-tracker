@@ -212,7 +212,6 @@ const NotePad = ({
                         }}
                     >
                         <PrimaryButton
-                            //@ts-ignore
                             $small
                             onClick={storeNote}
                             disabled={
@@ -224,7 +223,6 @@ const NotePad = ({
                             Save to Server
                         </PrimaryButton>
                         <SecondaryButton
-                            //@ts-ignore
                             $small
                             onClick={retrieveNote}
                             disabled={disabled || loading}
@@ -232,7 +230,6 @@ const NotePad = ({
                             Load from Server
                         </SecondaryButton>
                         <GhostButton
-                            //@ts-ignore
                             $small
                             onClick={onClose}
                         >

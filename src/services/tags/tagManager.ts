@@ -1,43 +1,37 @@
-// @ts-check
+import { CheckManager } from "../checks/checkManager";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
 
-/**
- * @typedef TagType
- * @prop {string} displayName The name displayed to the user
- * @prop {string} id Internal name for tracking
- * @prop {string} [iconColor] Valid web color
- * @prop {string} [textColor] Valid web color
- * @prop {boolean} hideWhenChecked If true, tag will not be visible on completed checks, but not deleted
- * @prop {string | null} [convertToWhenChecked] when set, converts tag to a different type when checked
- * @prop {boolean} considerChecked If true, tag will count as collected when added
- * @prop {string} icon Which icon to use for this tag
- * @prop {number} priority When multiple tags are on a location, the one with the highest priority will show
- * @prop {string} [tagCounterId] If it exists, it will add an additional counter that decrements with the tag locations that are marked as collected
- * @prop {boolean} [internalUseOnly] if true, tag may not be modified by user
- * @prop {boolean} [doNotSave] if true, tag will not be saved to local storage when created
- */
+interface TagType {
+    displayName: string;
+    id: string;
+    iconColor?: string;
+    textColor?: string;
+    hideWhenChecked: boolean;
+    convertToWhenChecked?: string | null;
+    considerChecked: boolean;
+    icon: string;
+    priority: number;
+    tagCounterId?: string;
+    internalUseOnly?: boolean;
+    doNotSave?: boolean;
+}
 
-/**
- * @typedef Tag
- * @prop {TagType} type
- * @prop {string} [tagId]
- * @prop {string} [text]
- * @prop {string} [checkName]
- * @prop {TagCounter} [counter]
- */
+interface Tag {
+    type: TagType;
+    tagId?: string;
+    text?: string;
+    checkName?: string;
+    counter?: TagCounter;
+}
 
-/**
- * @typedef TagData
- * @prop {string} typeId
- * @prop {string} [tagId]
- * @prop {string} [text]
- * @prop {string} [checkName]
- */
+interface TagData {
+    typeId: string;
+    tagId?: string;
+    text?: string;
+    checkName?: string;
+}
 
-/**
- * @type {Object.<string, TagType>}
- */
-const builtInTagTypeDefaults = {
+const builtInTagTypeDefaults: { [s: string]: TagType; } = {
     hint: {
         displayName: "Hint",
         id: "hint",
@@ -98,23 +92,20 @@ const builtInTagTypeDefaults = {
     },
 };
 
-/** @enum {number} */
-const CounterMode = {
-    countUnchecked: 0,
-    countChecked: 1,
-    countAll: 2,
+enum CounterMode {
+    countUnchecked= 0,
+    countChecked= 1,
+    countAll= 2,
 };
 
-/**
- * @typedef TagCounter
- * @prop {string} id
- * @prop {string} displayName
- * @prop {string} color
- * @prop {string} [icon]
- * @prop {CounterMode} countMode
- * @prop {boolean} showTotal
- *
- */
+interface TagCounter {
+    id: string;
+    displayName: string;
+    color: string;
+    icon?: string;
+    countMode: CounterMode;
+    showTotal: boolean;
+}
 
 const builtInTagCounterDefaults = {
     hints: {
@@ -145,35 +136,25 @@ const generateTagId = (n = 16) => {
 
 // const TAG_ITEM_NAME = "archipelagoTrackerTagData";
 
-/**
- * @typedef TagManager
- * @prop {(tag: TagData, saveId: string | undefined) => void} removeTag Removes a tag from the manager and from any checks specified in the data
- * @prop {(tag: TagData, saveId: string | undefined) => void} addTag Adds a tag to the manger and to any checks specified in the data
- * @prop {(saveId: string | undefined) => void} loadTags Loads tags from a saved connection
- * @prop {() => void} createTagType Creates a base tag type
- * @prop {() => void} deleteTagType
- * @prop {(typeID: string) => TagType} getTagType
- * @prop {()=>TagData} createTagData Creates the minimum object to be a tag
- * @prop {(tag: Tag)=>TagData} extractTagData Extracts tag data from a full tag
- * @prop {(counterId: string)=>TagCounter} getCounter Gets
- */
-/**
- * @param {import("../checks/checkManager").CheckManager} checkManager
- * @returns {TagManager}
- */
-const createTagManager = (checkManager) => {
+interface TagManager {
+    removeTag: (tag: TagData, saveId: string | undefined) => void;
+    addTag: (tag: TagData, saveId: string | undefined) => void;
+    loadTags: (saveId: string | undefined) => void;
+    createTagType: () => void;
+    deleteTagType: () => void;
+    getTagType: (typeID: string) => TagType;
+    createTagData: () => TagData;
+    extractTagData: (tag: Tag) => TagData;
+    getCounter: (counterId: string) => TagCounter;
+}
+
+const createTagManager = (checkManager: CheckManager): TagManager => {
     /** @type {Map<string, Set<()=>void>>} */
-    const tagListenerCleanupCalls = new Map();
+    const tagListenerCleanupCalls: Map<string, Set<() => void>> = new Map();
     const createTagType = () => {};
 
-    const deleteTagType = () => {};
-
-    /**
-     *
-     * @param {TagData} tagData
-     * @returns {Tag}
-     */
-    const buildTag = (tagData) => {
+    const deleteTagType = () => {};''
+    const buildTag = (tagData: TagData): Tag => {
         const type = getTagType(tagData.typeId);
         let tag = {
             type,
@@ -192,7 +173,7 @@ const createTagManager = (checkManager) => {
      * @param {Tag} tag
      * @param {string | undefined} saveId
      */
-    const handleTagConversion = (tag, saveId) => {
+    const handleTagConversion = (tag: Tag, saveId: string | undefined) => {
         let tagData = extractTagData(tag);
         if (tag.checkName) {
             let checkStatus = checkManager.getCheckStatus(tag.checkName);
@@ -216,7 +197,7 @@ const createTagManager = (checkManager) => {
      * @param {TagData} tagData
      * @param {string | undefined} saveId
      */
-    const addTag = (tagData, saveId) => {
+    const addTag = (tagData: TagData, saveId: string | undefined) => {
         let tag = buildTag(tagData);
         // clear any existing listeners about the tag in case of duplicates.
         removeTag(tagData, saveId);
@@ -271,7 +252,7 @@ const createTagManager = (checkManager) => {
      * @param {TagData} tagData
      * @param {string} saveId
      */
-    const saveTag = (tagData, saveId) => {
+    const saveTag = (tagData: TagData, saveId: string) => {
         let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
         if (!saveData) {
             saveData = {};
@@ -290,7 +271,7 @@ const createTagManager = (checkManager) => {
      * @param {TagData} tag
      * @param {string | undefined} saveId
      */
-    const removeTag = (tag, saveId) => {
+    const removeTag = (tag: TagData, saveId: string | undefined) => {
         // Delete tag from data if it exists there
         if (saveId && tag.tagId) {
             let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
@@ -339,7 +320,7 @@ const createTagManager = (checkManager) => {
      *
      * @returns {TagData}
      */
-    const createTagData = () => {
+    const createTagData = (): TagData => {
         return {
             typeId: "",
         };
@@ -348,7 +329,7 @@ const createTagManager = (checkManager) => {
      * @param {Tag} tag
      * @returns {TagData}
      */
-    const extractTagData = (tag) => {
+    const extractTagData = (tag: Tag): TagData => {
         return {
             typeId: tag.type.id,
             tagId: tag.tagId,
@@ -361,7 +342,7 @@ const createTagManager = (checkManager) => {
      *
      * @param {string} typeID
      */
-    const getTagType = (typeID) => {
+    const getTagType = (typeID: string) => {
         // TODO, make this use an internal state of tags, instead of these built in defaults
         return builtInTagTypeDefaults[typeID];
     };
@@ -371,7 +352,7 @@ const createTagManager = (checkManager) => {
      * @param {string} counterId
      * @returns {TagCounter}
      */
-    const getCounter = (counterId) => {
+    const getCounter = (counterId: string): TagCounter => {
         // TODO, make this use an internal state of tags, instead of these built in defaults
         return builtInTagCounterDefaults[counterId];
     };
@@ -380,7 +361,7 @@ const createTagManager = (checkManager) => {
      *
      * @param {string | undefined} saveId
      */
-    const loadTags = (saveId) => {
+    const loadTags = (saveId: string | undefined) => {
         let saveData = SavedConnectionManager.getConnectionSaveData(saveId);
         if (!saveData) {
             saveData = {};
@@ -408,3 +389,4 @@ const createTagManager = (checkManager) => {
 };
 
 export { createTagManager, CounterMode };
+export type {Tag, TagData, TagCounter, TagManager, TagType}

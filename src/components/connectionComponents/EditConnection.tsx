@@ -1,4 +1,3 @@
-// @ts-check
 import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Input } from "../inputs";
@@ -26,8 +25,7 @@ const ContentContainer = styled.div`
 `;
 
 const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
-    /** @type {React.ForwardedRef<HTMLDialogElement | null>} */
-    const dialog = useRef(null);
+    const dialog: React.ForwardedRef<HTMLDialogElement | null> = useRef(null);
     const [data, setData] = useState(connection);
     useEffect(() => {
         if (open) {
@@ -47,7 +45,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
         <Dialog ref={dialog}>
             <ContentContainer>
                 <h2 style={{ gridArea: "title" }}>Edit Connection</h2>
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "name" }}
                     type="text"
@@ -56,7 +53,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     onChange={defaultChangeHandler}
                     label="Name"
                 />
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "host" }}
                     type="text"
@@ -65,7 +61,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     onChange={defaultChangeHandler}
                     label="Host"
                 />
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "port" }}
                     type="text"
@@ -74,7 +69,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     onChange={defaultChangeHandler}
                     label="Port"
                 />
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "game" }}
                     type="text"
@@ -84,7 +78,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     label="Game"
                     disabled
                 />
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "slot" }}
                     type="text"
@@ -94,7 +87,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     label="Slot"
                     disabled
                 />
-                {/** @ts-ignore */}
                 <Input
                     style={{ gridArea: "password" }}
                     type="text"
@@ -105,7 +97,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                 />
                 <PrimaryButton
                     style={{ gridArea: "save" }}
-                    // @ts-ignore
                     $small
                     onClick={() => {
                         SavedConnectionManager.saveConnectionData(data);
@@ -115,7 +106,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     Save
                 </PrimaryButton>
                 <SecondaryButton
-                    // @ts-ignore
                     $small
                     style={{ gridArea: "close" }}
                     onClick={onClose}
@@ -123,7 +113,6 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     Close
                 </SecondaryButton>
                 <DangerButton
-                    // @ts-ignore
                     $small
                     style={{ gridArea: "delete" }}
                     onClick={() => {

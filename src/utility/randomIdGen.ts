@@ -1,10 +1,9 @@
-// @ts-check
 /**
  * Generates a random sequence of numbers and letters
- * @param {number} n number of characters in id
- * @returns {string} random values
+ * @param n number of characters in id
+ * @returns random values
  */
-const generateId = (n = 16) => {
+const generateId = (n: number = 16): string => {
     let result = "";
     while (n-- > 0) {
         result += Math.floor(Math.random() * 36).toString(36);

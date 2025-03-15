@@ -4,9 +4,7 @@ import { tertiary } from "../../constants/colors";
 import { DangerButton, GhostButton, PrimaryButton } from "../buttons";
 import Icon from "../icons/icons";
 import Modal from "../shared/Modal";
-import NotificationManager, {
-    MessageType,
-} from "../../services/notifications/notifications";
+import NotificationManager, { MessageType } from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import TrackerManager from "../../games/TrackerManager";
 
@@ -110,7 +108,6 @@ const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager})
                                         {tracker.name}
                                         {!tracker.enabled && "(Disabled)"}{" "}
                                         <DangerButton
-                                            // @ts-ignore
                                             $tiny
                                             onClick={() => {
                                                 if (
@@ -141,7 +138,6 @@ const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager})
                 )}
             </div>
             <PrimaryButton
-                // @ts-ignore
                 $tiny
                 onClick={() => {
                     setModalOpen(true);

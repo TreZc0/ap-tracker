@@ -1,42 +1,37 @@
 // @ts-check
 
-/** Data that can be used to create a new Saved Connection
- * @typedef SavedConnectionInfo
- * @prop {string} seed
- * @prop {string} host
- * @prop {string} port
- * @prop {string} slot
- * @prop {string} game
- * @prop {string} [password]
- * @prop {string} [playerAlias]
- */
+/** Data that can be used to create a new Saved Connection */
+interface SavedConnectionInfo {
+    seed: string;
+    host: string;
+    port: string;
+    slot: string;
+    game: string;
+    password?: string;
+    playerAlias?: string;
+}
 
-/**
- * @typedef SavedConnection
- * @prop {string} connectionId A unique identifier for the connection
- * @prop {string} name
- * @prop {string} seed
- * @prop {string} host
- * @prop {string} port
- * @prop {string} slot
- * @prop {string} game
- * @prop {string} [password]
- * @prop {string} [playerAlias]
- * @prop {number} lastUsedTime
- * @prop {number} createdTime
- * @prop {number} version
- * @prop {*} settings
- * @prop {*} saveData
- */
+interface SavedConnection {
+    connectionId: string;
+    name: string;
+    seed: string;
+    host: string;
+    port: string;
+    slot: string;
+    game: string;
+    password?: string;
+    playerAlias?: string;
+    lastUsedTime: number;
+    createdTime: number;
+    version: number;
+    settings: any;
+    saveData: any;
+}
 
-/** @type {Set<()=>void>} */
-const connectionListeners = new Set();
-/**
- * Returns a function that can be called to subscribe to saved connection updates
- * @returns
- */
+const connectionListeners: Set<() => void> = new Set();
+/** Returns a function that can be called to subscribe to saved connection updates*/
 const getSubscriberCallback = () => {
-    return (/** @type {()=>void} */ listener) => {
+    return (listener: () => void) => {
         connectionListeners.add(listener);
         // return a function to clean up the subscription
         return () => {
@@ -48,15 +43,12 @@ const getSubscriberCallback = () => {
 const SAVED_CONNECTION_VERSION = 2;
 const CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
 
-/** @type {{connections:Object.<string, SavedConnection>, version:number, modified:number} | null}*/
-let cachedConnectionData = null;
+let cachedConnectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } | null = null;
 
 const loadSavedConnectionData = () => {
     let connectionDataString = localStorage.getItem(CONNECTION_ITEM_NAME);
-    /**
-     * @type {{connections:Object.<string, SavedConnection>, version:number, modified:number}}
-     */
-    let connectionData = connectionDataString
+ 
+    let connectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } = connectionDataString
         ? JSON.parse(connectionDataString)
         : {
               connections: {},
@@ -69,7 +61,6 @@ const loadSavedConnectionData = () => {
         const connection = connectionData.connections[id];
 
         // Load and convert from ap-oot tracker
-
         connectionData.connections[id] = {
             ...connectionData.connections[id],
             connectionId:
@@ -98,21 +89,14 @@ const loadSavedConnectionData = () => {
     cachedConnectionData = connectionData;
     return connectionData;
 };
-/**
- *
- * @param {{connections:Object.<string, SavedConnection>, version:number, modified:number}} saveData
- */
-const save = (saveData) => {
+
+const save = (saveData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; }) => {
     saveData.modified = Date.now();
     localStorage.setItem(CONNECTION_ITEM_NAME, JSON.stringify(saveData));
     connectionListeners.forEach((listener) => listener());
 };
 
-/**
- *
- * @param {SavedConnection} data
- */
-const saveConnectionData = (data) => {
+const saveConnectionData = (data: SavedConnection) => {
     let currentSaveData = loadSavedConnectionData();
     if (!data.connectionId) {
         data.connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
@@ -124,12 +108,7 @@ const saveConnectionData = (data) => {
     save(currentSaveData);
 };
 
-/**
- *
- * @param {SavedConnectionInfo} data
- * @returns {SavedConnection}
- */
-const createNewSavedConnection = (data) => {
+const createNewSavedConnection = (data: SavedConnectionInfo): SavedConnection => {
     const connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
     return {
         connectionId,
@@ -149,13 +128,10 @@ const createNewSavedConnection = (data) => {
     };
 };
 
-/**
- * @param {SavedConnectionInfo} data
- */
-const getExistingConnections = (data) => {
+const getExistingConnections = (data: SavedConnectionInfo) => {
     const currentSaveData = loadSavedConnectionData();
     /** @type {Set<SavedConnection>} */
-    const existingConnections = new Set();
+    const existingConnections: Set<SavedConnection> = new Set();
     let connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
 
     for (const id of connectionIds) {
@@ -172,10 +148,10 @@ const getExistingConnections = (data) => {
 
 /**
  * Gets information that can be passed to the connector to connect to archipelago out of a SavedConnection
- * @param {SavedConnection} data
- * @returns {{ host:string, port:string, slot:string, game:string, password:string }}
+ * @param data
+ * @returns Object with info for connecting to Archipelago
  */
-const getConnectionInfo = (data) => {
+const getConnectionInfo = (data: SavedConnection): { host: string; port: string; slot: string; game: string; password: string; } => {
     return {
         host: data.host,
         port: data.port.toString(),
@@ -189,7 +165,7 @@ const getConnectionInfo = (data) => {
  *
  * @param {string} id
  */
-const deleteConnection = (id) => {
+const deleteConnection = (id: string) => {
     const currentSaveData = loadSavedConnectionData();
     delete currentSaveData.connections[id];
     save(currentSaveData);
@@ -200,7 +176,7 @@ const deleteConnection = (id) => {
  * @param {string} id Id of the connection
  * @returns
  */
-const getConnectionSaveData = (id) => {
+const getConnectionSaveData = (id: string) => {
     const currentSaveData = loadSavedConnectionData();
     return currentSaveData.connections[id]?.saveData;
 };
@@ -210,7 +186,7 @@ const getConnectionSaveData = (id) => {
  * @param {string} id Id of the connection
  * @returns
  */
-const updateConnectionSaveData = (id, newSaveData) => {
+const updateConnectionSaveData = (id: string, newSaveData) => {
     const currentSaveData = loadSavedConnectionData();
     currentSaveData.connections[id].saveData = newSaveData;
     save(currentSaveData);
@@ -229,3 +205,4 @@ const SavedConnectionManager = {
 };
 
 export default SavedConnectionManager;
+export type { SavedConnection, SavedConnectionInfo}

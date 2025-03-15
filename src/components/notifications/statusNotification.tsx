@@ -1,19 +1,47 @@
-// @ts-check
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { MessageType } from "../../services/notifications/notifications";
 import { filledTextPrimary, secondary } from "../../constants/colors";
-const TOAST_HEIGHT = 85;
-const Toast = ({
+const STATUS_HEIGHT_EM = 4;
+const StatusNotification = ({
     message,
     type,
     index,
-    remainingTime,
-    duration,
-    details,
-    mouseEnter,
-    mouseLeave,
-    click,
+    progress,
+    hide,
+}: {
+    /** The text to display for the notification */
+    message: string;
+    /** The type of styling to apply to the message */
+    type: MessageType;
+    /** Determines the position of the notification on the screen */
+    index: number;
+    /** A value between 0 and 1 representing how much work has been done. Use -1 to create a spinner instead */
+    progress: number;
+    /** Makes the notification invisible and off screen, toggle this to animate the notification appearing/leaving */
+    hide: boolean;
 }) => {
+    const animationFrameRef = useRef(0);
+    const timeRef = useRef(0);
+    const [animationTime, setAnimationTime] = useState(0);
+
+    useEffect(() => {
+        let update = (time: number) => {
+            animationFrameRef.current = requestAnimationFrame(update);
+            if (!timeRef.current) {
+                timeRef.current = time;
+                return;
+            }
+            let delta = time - timeRef.current;
+            timeRef.current = time;
+            setAnimationTime((prev) => prev + delta);
+        };
+
+        animationFrameRef.current = requestAnimationFrame(update);
+        return () => {
+            cancelAnimationFrame(animationFrameRef.current);
+        };
+    });
+
     let boxColor = "grey";
     let icon = "ⓘ";
     switch (type) {
@@ -25,6 +53,11 @@ const Toast = ({
         case MessageType.info: {
             boxColor = "blue";
             icon = "ⓘ";
+            break;
+        }
+        case MessageType.progress: {
+            boxColor = "blue";
+            icon = "";
             break;
         }
         case MessageType.success: {
@@ -44,38 +77,38 @@ const Toast = ({
             break;
         }
     }
-    let bottom = 10 + TOAST_HEIGHT * index;
-    let onScreen = !(remainingTime === duration || remainingTime < 0);
+    let top = 4 + STATUS_HEIGHT_EM * index;
+    let onScreen = !hide;
     let right = onScreen ? 10 : -600;
-    let timePercent = remainingTime / duration;
-    timePercent = timePercent < 0 ? 0 : timePercent;
-    const radius = 40;
+    let animationValue = (animationTime % 1000) / 1000;
+    let arc = 2;
+    if (progress >= 0) {
+        animationValue = 0;
+        arc = Math.PI * 2 * progress;
+    }
+    const radius = 20;
     return (
         <div
             style={{
                 display: "grid",
-                bottom: `${bottom}px`,
+                top: `${top}em`,
                 right: `${right}px`,
                 position: "absolute",
                 columnGap: "5px",
-                gridTemplateColumns: "75px auto",
-                width: "600px",
-                maxWidth: "90%",
-                height: "75px",
+                gridTemplateColumns: "40px auto",
+                width: "400px",
+                maxWidth: "70%",
+                height: "3em",
                 backgroundColor: secondary,
                 color: filledTextPrimary,
                 boxShadow: `3px 5px 0px ${boxColor}`,
                 opacity: onScreen ? 1 : 0,
                 transition: "all 0.25s ease-in-out",
                 pointerEvents: "all",
-                cursor: details ? "pointer" : "auto",
             }}
-            onMouseLeave={mouseLeave}
-            onMouseEnter={mouseEnter}
-            onClick={details ? click : () => {}}
         >
             <svg
-                viewBox="-50 -50 100 100"
+                viewBox="-25 -25 50 50"
                 style={{
                     gridColumn: "1 / span 1",
                     gridRow: "1 /span 1",
@@ -86,14 +119,12 @@ const Toast = ({
             >
                 <circle
                     stroke="black"
-                    strokeDasharray={`${radius * timePercent * Math.PI * 2} ${
-                        7 * radius
-                    }`}
+                    strokeDasharray={`${radius * arc} ${7 * radius}`}
                     strokeOpacity={0.25}
                     strokeWidth={5}
                     r={radius}
                     fill="none"
-                    transform="rotate(-90)"
+                    transform={`rotate(${animationValue * 360})`}
                 />
             </svg>
             <div
@@ -103,7 +134,7 @@ const Toast = ({
                     justifySelf: "center",
                     alignSelf: "center",
                     textAlign: "center",
-                    fontSize: "XX-large",
+                    fontSize: "large",
                 }}
             >
                 {icon}
@@ -118,19 +149,9 @@ const Toast = ({
                 }}
             >
                 {message}
-                {details ? (
-                    <>
-                        <br />
-                        <i style={{ textDecoration: "underline" }}>
-                            Click for details
-                        </i>
-                    </>
-                ) : (
-                    <></>
-                )}
             </div>
         </div>
     );
 };
 
-export default Toast;
+export default StatusNotification;

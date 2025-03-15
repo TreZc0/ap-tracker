@@ -1,15 +1,9 @@
-// @ts-check
-/**
- * Enum for message Types
- * @readonly
- * @enum {string}
- */
-const MessageType = {
-    info: "info",
-    progress: "progress",
-    error: "error",
-    warning: "warning",
-    success: "success",
+enum MessageType {
+    info = "info",
+    progress = "progress",
+    error = "error",
+    warning = "warning",
+    success = "success",
 };
 
 const randomId = () => {
@@ -20,45 +14,35 @@ const randomId = () => {
     return result;
 };
 
-/**
- * @typedef StatusNotification A message indicating the current status of something in progress appears to the user
- * @prop {MessageType} type
- * @prop {string} message
- * @prop {number} [duration] in milliseconds, if defined, message will auto clear after this amount of time
- * @prop {number} progress [0-1] 1 being complete. Put -1 to have a spinner instead of progress bar
- * @prop {string} id
- *
- */
+interface StatusNotification {
+    type: MessageType;
+    message: string;
+    duration?: number;
+    progress: number;
+    id: string;
+}
 
-/**
- * @typedef StatusNotificationUpdate An update for a notification, specify any values that need to be updated
- * @prop {MessageType} [type]
- * @prop {string} [message]
- * @prop {number} [duration] in milliseconds, if defined, message will auto clear after this amount of time
- * @prop {number} [progress] [0-1] 1 being complete. Put -1 to have a spinner instead of progress bar
- *
- */
+interface StatusNotificationUpdate {
+    type?: MessageType;
+    message?: string;
+    duration?: number;
+    progress?: number;
+}
 
-/**
- * @typedef StatusNotificationHandel
- * @prop {(newInfo: StatusNotificationUpdate) => void} update
- */
+interface StatusNotificationHandel {
+    update: (newInfo: StatusNotificationUpdate) => void;
+}
 
-/**
- * @typedef ToastNotification A timed pop up message appears to the user
- * @prop {MessageType} type
- * @prop {string} message
- * @prop {string} [details]
- * @prop {number} duration in Milliseconds
- * @prop {string} id
- *
- */
+interface ToastNotification {
+    type: MessageType;
+    message: string;
+    details?: string;
+    duration: number;
+    id: string;
+}
 const NotificationManager = (() => {
-    /** @type {Set<(status:StatusNotification) => void>} */
-    const statusListeners = new Set();
-
-    /** @type {Set<(toast:ToastNotification)=>void>} */
-    const toastListeners = new Set();
+    const statusListeners: Set<(status: StatusNotification) => void> = new Set();
+    const toastListeners: Set<(toast: ToastNotification) => void> = new Set();
     /**
      *
      * @param {Object} params
@@ -68,9 +52,8 @@ const NotificationManager = (() => {
      * @param {string} [params.id]
      * @param {number} [params.duration] Number of seconds message should pop up, defaults to 5
      */
-    const createToast = ({ message, type, details, id, duration = 7 }) => {
-        /** @type {ToastNotification} */
-        const toast = {
+    const createToast = ({ message, type, details, id, duration = 7 }: { message: string; details?: string; type: MessageType; id?: string; duration?: number; }) => {
+        const toast: ToastNotification = {
             type,
             message,
             details,
@@ -83,18 +66,11 @@ const NotificationManager = (() => {
         });
     };
 
-    /**
-     *
-     * @param {(toast:ToastNotification)=>void} listener
-     */
-    const addToastListener = (listener) => {
+    const addToastListener = (listener: (toast: ToastNotification) => void) => {
         toastListeners.add(listener);
     };
-    /**
-     *
-     * @param {(toast:ToastNotification)=>void} listener
-     */
-    const removeToastListener = (listener) => {
+
+    const removeToastListener = (listener: (toast: ToastNotification) => void) => {
         toastListeners.delete(listener);
     };
 
@@ -108,9 +84,9 @@ const NotificationManager = (() => {
      * @param {number} [params.progress] [0-1] on how much progress has been made, defaults to -1 (spinner)
      * @returns {StatusNotificationHandel}
      */
-    const createStatus = ({ message, type, id, duration, progress=-1 }) => {
+    const createStatus = ({ message, type, id, duration, progress=-1 }: { message: string; type: MessageType; id?: string; duration?: number; progress?: number; }): StatusNotificationHandel => {
         /** @type {StatusNotification} */
-        let status = {
+        let status: StatusNotification = {
             type,
             message,
             progress,
@@ -138,18 +114,11 @@ const NotificationManager = (() => {
 
     };
 
-    /**
-     *
-     * @param {(status:StatusNotification)=>void} listener
-     */
-    const addStatusListener = (listener) => {
+    const addStatusListener = (listener: (status: StatusNotification) => void) => {
         statusListeners.add(listener);
     };
-    /**
-     *
-     * @param {(status:StatusNotification)=>void} listener
-     */
-    const removeStatusListener = (listener) => {
+
+    const removeStatusListener = (listener: (status: StatusNotification) => void) => {
         statusListeners.delete(listener);
     };
 

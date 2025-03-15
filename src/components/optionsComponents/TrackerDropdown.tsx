@@ -40,6 +40,7 @@ const TrackerDropdown = ({
                         trackerManager.setGameTracker(game, null);
                     }
                 } catch (e) {
+                    console.error(e);
                     NotificationManager.createToast({
                         message: "An error occurred",
                         type: MessageType.error,

@@ -1,17 +1,20 @@
-// @ts-check
-import React, { useRef, useReducer, useEffect } from "react";
+import React, { useRef, useReducer, useEffect, ComponentProps } from "react";
 import { textPrimary } from "../../constants/colors";
 
-/**
- *
- * @param {number} time
- * @param {number} delta
- */
-const timerReducer = (time, delta) => {
+const timerReducer = (time: number, delta: number) => {
     return time + delta;
 };
 
-const Spinner = ({ size = 28, arc = 2, color = textPrimary, ...props }) => {
+const Spinner = ({
+    size = 28,
+    arc = 2,
+    color = textPrimary,
+    ...props
+}: {
+    size?: number;
+    arc?: number;
+    color?: string;
+}) => {
     const radius = size / 2 - 5;
     const [timer, updateTimer] = useReducer(timerReducer, 0);
     const frameRef = useRef(null);

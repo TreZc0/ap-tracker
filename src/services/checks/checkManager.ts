@@ -1,22 +1,19 @@
-// @ts-check
 // A class that is able to give information about checks.
-/**
- * @typedef CheckStatus
- * @prop {boolean} exists
- * @prop {import("../tags/tagManager").Tag[]} tags
- * @prop {boolean} ignored
- * @prop {boolean} checked
- * @prop {number} id
- */
+interface CheckStatus {
+    exists: boolean;
+    tags: import("../tags/tagManager").Tag[];
+    ignored: boolean;
+    checked: boolean;
+    id: number;
+}
 
-/**
- * @typedef CheckStatusUpdate
- * @prop {boolean} [exists]
- * @prop {import("../tags/tagManager").Tag[]} [tags]
- * @prop {boolean} [ignored]
- * @prop {boolean} [checked]
- * @prop {number} [id]
- */
+interface CheckStatusUpdate {
+    exists?: boolean;
+    tags?: import("../tags/tagManager").Tag[];
+    ignored?: boolean;
+    checked?: boolean;
+    id?: number;
+}
 
 const defaultCheckStatus = {
     exists: false,
@@ -26,31 +23,20 @@ const defaultCheckStatus = {
     id: 0,
 };
 
-/**
- * @typedef CheckManager
- * @prop {(checkName: string, status: CheckStatusUpdate) => void} updateCheckStatus
- * @prop {() => void} deleteAllChecks
- * @prop {(checkName: string) => void} deleteCheck
- * @prop {(checkName: string) => CheckStatus} getCheckStatus
- * @prop {(checkName: string) => (listener: () => void) => () => void} getSubscriberCallback
- * @prop {() => Set<String>} getAllExistingChecks
- */
-/**
- *
- * @returns {CheckManager}
- */
-const createCheckManager = () => {
-    /** @type {Map<String, CheckStatus>} */
-    const checkData = new Map();
-    /** @type {Map<String, Set<()=>void>>} */
-    const checkSubscribers = new Map();
+interface CheckManager {
+    updateCheckStatus: (checkName: string, status: CheckStatusUpdate) => void;
+    deleteAllChecks: () => void;
+    deleteCheck: (checkName: string) => void;
+    getCheckStatus: (checkName: string) => CheckStatus;
+    getSubscriberCallback: (checkName: string) => (listener: () => void) => () => void;
+    getAllExistingChecks: () => Set<string>;
+}
 
-    /**
-     *
-     * @param {string} checkName
-     * @param {CheckStatusUpdate} status
-     */
-    const updateCheckStatus = (checkName, status) => {
+const createCheckManager = () : CheckManager => {
+    const checkData: Map<string, CheckStatus> = new Map();
+    const checkSubscribers: Map<string, Set<() => void>> = new Map();
+
+    const updateCheckStatus = (checkName: string, status: CheckStatusUpdate) => {
         checkData.set(checkName, {
             ...(checkData.get(checkName) ?? defaultCheckStatus),
             ...status,
@@ -58,20 +44,11 @@ const createCheckManager = () => {
         checkSubscribers.get(checkName)?.forEach((listener) => listener());
     };
 
-    /**
-     *
-     * @param {String} checkName
-     * @returns {CheckStatus}
-     */
-    const getCheckStatus = (checkName) => {
+    const getCheckStatus = (checkName: string): CheckStatus => {
         return checkData.get(checkName) ?? defaultCheckStatus;
     };
 
-    /**
-     *
-     * @param {string} checkName
-     */
-    const deleteCheck = (checkName) => {
+    const deleteCheck = (checkName: string) => {
         checkData.delete(checkName);
         checkSubscribers.get(checkName)?.forEach((listener) => listener());
     };
@@ -83,7 +60,7 @@ const createCheckManager = () => {
 
     /** Gets a list of all checks that exist in the tracker */
     const getAllExistingChecks = () => {
-        let checks = new Set();
+        let checks: Set<string> = new Set();
         checkData.forEach((status, checkName) => {
             if (status.exists) {
                 checks.add(checkName);
@@ -93,11 +70,11 @@ const createCheckManager = () => {
     };
     /**
      * Returns a function that can be called to subscribe to a specific check, used for syncing state with react.
-     * @param {string} checkName
+     * @param checkName
      * @returns
      */
-    const getSubscriberCallback = (checkName) => {
-        return (/** @type {()=>void} */ listener) => {
+    const getSubscriberCallback = (checkName: string) => {
+        return (listener: () => void) => {
             if (!checkSubscribers.has(checkName)) {
                 checkSubscribers.set(checkName, new Set());
             }
@@ -120,3 +97,4 @@ const createCheckManager = () => {
 };
 
 export { createCheckManager, defaultCheckStatus };
+export type {CheckManager, CheckStatus, CheckStatusUpdate};

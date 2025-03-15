@@ -267,7 +267,6 @@ let NotificationContainer = () => {
                                 </div>
                                 <SecondaryButton
                                     style={{ gridArea: "close" }}
-                                    // @ts-ignore
                                     $small
                                     onClick={() => {
                                         setDetailModalOpen(false);

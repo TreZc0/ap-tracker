@@ -1,11 +1,10 @@
-// @ts-check
 // syncs checks with check manager
 
-/**
- * @param {import("archipelago.js").Client } client
- * @param {import("archipelago.js").Hint} hint
- */
-let hintToText = (client, hint) => {
+import { Client, Hint } from "archipelago.js";
+import { TagManager } from "../tags/tagManager";
+import { CheckManager } from "../checks/checkManager";
+
+let hintToText = (client: Client, hint: Hint) => {
     let ownerString = `${hint.item.receiver.alias}'s`;
     if (hint.item.receiver.slot === client.players.self.slot) {
         ownerString = "Your";
@@ -20,14 +19,7 @@ let hintToText = (client, hint) => {
     return `${ownerString} ${hint.item.name} is at ${hint.item.locationName} in ${finderString} world. ${entranceString}`;
 };
 
-/**
- *
- * @param {import("archipelago.js").Client} client
- * @param {import("archipelago.js").Hint} hint
- * @param {import("../tags/tagManager").TagManager} tagManager
- * @param {string} saveId
- */
-let addHint = (client, hint, tagManager, saveId) => {
+let addHint = (client: Client, hint: Hint, tagManager: TagManager, saveId: string) => {
     if (hint.item.sender.slot === client.players.self.slot) {
         // console.log(hintToText(client, hint));
         const tagData = tagManager.createTagData();
@@ -39,12 +31,7 @@ let addHint = (client, hint, tagManager, saveId) => {
     }
 };
 
-/**
- *
- * @param {import("archipelago.js").Client} client
- * @param {import("../checks/checkManager").CheckManager} checkManager
- */
-const setAPLocations = (client, checkManager) => {
+const setAPLocations = (client: Client, checkManager: CheckManager) => {
     checkManager.deleteAllChecks();
     client.room.allLocations.forEach((locationId) =>
         checkManager.updateCheckStatus(
@@ -59,14 +46,8 @@ const setAPLocations = (client, checkManager) => {
         )
     );
 };
-/**
- *
- * @param {import("archipelago.js").Client} client
- * @param {import("../checks/checkManager").CheckManager} checkManager
- * @param {import("../tags/tagManager").TagManager} tagManager
- * @param {{slotInfo:{connectionId: string}}} connection
- */
-const setupAPCheckSync = (client, checkManager, tagManager, connection) => {
+
+const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager: TagManager, connection: { slotInfo: { connectionId: string; }; }) => {
     client.room.on("locationsChecked", (locationIds) => {
         locationIds.forEach((id) =>
             checkManager.updateCheckStatus(

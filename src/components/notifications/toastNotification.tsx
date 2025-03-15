@@ -1,30 +1,28 @@
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import { MessageType } from "../../services/notifications/notifications";
 import { filledTextPrimary, secondary } from "../../constants/colors";
-const STATUS_HEIGHT = 4;
-const StatusNotification = ({ message, type, index, progress, hide }) => {
-    const animationFrameRef = useRef(0);
-    const timeRef = useRef(0);
-    const [animationTime, setAnimationTime] = useState(0);
-
-    useEffect(() => {
-        let update = (time) => {
-            animationFrameRef.current = requestAnimationFrame(update);
-            if (!timeRef.current) {
-                timeRef.current = time;
-                return;
-            }
-            let delta = time - timeRef.current;
-            timeRef.current = time;
-            setAnimationTime((x) => x + delta);
-        };
-
-        animationFrameRef.current = requestAnimationFrame(update);
-        return () => {
-            cancelAnimationFrame(animationFrameRef.current);
-        };
-    });
-
+const TOAST_HEIGHT_PX = 85;
+const Toast = ({
+    message,
+    type,
+    index,
+    remainingTime,
+    duration,
+    details,
+    mouseEnter,
+    mouseLeave,
+    click,
+}: {
+    message: string;
+    type: MessageType;
+    index: number;
+    remainingTime: number;
+    duration: number;
+    details?: string;
+    mouseEnter?: (e: React.MouseEvent) => void;
+    mouseLeave?: (e: React.MouseEvent) => void;
+    click?: (e: React.MouseEvent) => void;
+}) => {
     let boxColor = "grey";
     let icon = "ⓘ";
     switch (type) {
@@ -36,11 +34,6 @@ const StatusNotification = ({ message, type, index, progress, hide }) => {
         case MessageType.info: {
             boxColor = "blue";
             icon = "ⓘ";
-            break;
-        }
-        case MessageType.progress: {
-            boxColor = "blue";
-            icon = "";
             break;
         }
         case MessageType.success: {
@@ -60,38 +53,38 @@ const StatusNotification = ({ message, type, index, progress, hide }) => {
             break;
         }
     }
-    let top = 4 + STATUS_HEIGHT * index;
-    let onScreen = !hide;
+    let bottom = 10 + TOAST_HEIGHT_PX * index;
+    let onScreen = !(remainingTime === duration || remainingTime < 0);
     let right = onScreen ? 10 : -600;
-    let animationValue = (animationTime % 1000) / 1000;
-    let arc = 2;
-    if (progress >= 0) {
-        animationValue = 0;
-        arc = Math.PI * 2 * progress;
-    }
-    const radius = 20;
+    let timePercent = remainingTime / duration;
+    timePercent = timePercent < 0 ? 0 : timePercent;
+    const radius = 40;
     return (
         <div
             style={{
                 display: "grid",
-                top: `${top}em`,
+                bottom: `${bottom}px`,
                 right: `${right}px`,
                 position: "absolute",
                 columnGap: "5px",
-                gridTemplateColumns: "40px auto",
-                width: "400px",
-                maxWidth: "70%",
-                height: "3em",
+                gridTemplateColumns: "75px auto",
+                width: "600px",
+                maxWidth: "90%",
+                height: "75px",
                 backgroundColor: secondary,
                 color: filledTextPrimary,
                 boxShadow: `3px 5px 0px ${boxColor}`,
                 opacity: onScreen ? 1 : 0,
                 transition: "all 0.25s ease-in-out",
                 pointerEvents: "all",
+                cursor: details ? "pointer" : "auto",
             }}
+            onMouseLeave={mouseLeave}
+            onMouseEnter={mouseEnter}
+            onClick={details ? click : () => {}}
         >
             <svg
-                viewBox="-25 -25 50 50"
+                viewBox="-50 -50 100 100"
                 style={{
                     gridColumn: "1 / span 1",
                     gridRow: "1 /span 1",
@@ -102,12 +95,14 @@ const StatusNotification = ({ message, type, index, progress, hide }) => {
             >
                 <circle
                     stroke="black"
-                    strokeDasharray={`${radius * arc} ${7 * radius}`}
+                    strokeDasharray={`${radius * timePercent * Math.PI * 2} ${
+                        7 * radius
+                    }`}
                     strokeOpacity={0.25}
                     strokeWidth={5}
                     r={radius}
                     fill="none"
-                    transform={`rotate(${animationValue * 360})`}
+                    transform="rotate(-90)"
                 />
             </svg>
             <div
@@ -117,7 +112,7 @@ const StatusNotification = ({ message, type, index, progress, hide }) => {
                     justifySelf: "center",
                     alignSelf: "center",
                     textAlign: "center",
-                    fontSize: "large",
+                    fontSize: "XX-large",
                 }}
             >
                 {icon}
@@ -132,9 +127,19 @@ const StatusNotification = ({ message, type, index, progress, hide }) => {
                 }}
             >
                 {message}
+                {details ? (
+                    <>
+                        <br />
+                        <i style={{ textDecoration: "underline" }}>
+                            Click for details
+                        </i>
+                    </>
+                ) : (
+                    <></>
+                )}
             </div>
         </div>
     );
 };
 
-export default StatusNotification;
+export default Toast;

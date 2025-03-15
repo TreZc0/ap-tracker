@@ -1,13 +1,13 @@
-// @ts-check
 import { useSyncExternalStore } from "react";
+import { EntranceManager } from "../services/entrances/entranceManager";
 
 /**
  * Gets the destination of an entrance
- * @param {string} entrance 
- * @param {import("../services/entrances/entranceManager").EntranceManager} entranceManager 
+ * @param entrance 
+ * @param entranceManager 
  * @returns 
  */
-const useEntrance = (entrance, entranceManager) => {
+const useEntrance = (entrance: string, entranceManager: EntranceManager) => {
     return useSyncExternalStore(
         entranceManager.getEntranceSubscriber(entrance),
         () => entranceManager.getEntranceDestRegion(entrance),

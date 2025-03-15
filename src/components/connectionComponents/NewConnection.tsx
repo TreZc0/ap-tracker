@@ -1,4 +1,3 @@
-// @ts-check
 import React, { useContext, useState } from "react";
 import styled from "styled-components";
 import { PrimaryButton } from "../buttons";
@@ -50,8 +49,6 @@ const NewConnection = ({ ...props }) => {
     return (
         <Container {...props}>
             <h2>New Connection</h2>
-            {/** The input forward ref is poorly typed in my jsdoc, raising errors */}
-            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="host"
@@ -60,7 +57,6 @@ const NewConnection = ({ ...props }) => {
                 label="Host"
                 disabled={disabled}
             />
-            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="port"
@@ -69,7 +65,6 @@ const NewConnection = ({ ...props }) => {
                 label="Port"
                 disabled={disabled}
             />
-            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="slot"
@@ -78,7 +73,6 @@ const NewConnection = ({ ...props }) => {
                 label="Slot"
                 disabled={disabled}
             />
-            {/** @ts-ignore */}
             <Input
                 type="text"
                 name="password"

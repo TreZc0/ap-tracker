@@ -1,48 +1,33 @@
-// @ts-check
 // Builds a static tree about different areas in the game
-// TODO: Make this less specific to OOT
 
-/**
- * @typedef Group
- * @prop {Set<string>} checks
- * @prop {Set<String>} exits
- * @prop {string} name
- * @prop {boolean} adoptable
- */
+import { EntranceManager } from "../entrances/entranceManager";
 
-/**
- * @typedef GroupData
- * @prop {String[]} checks
- * @prop {String[]} [portals]
- */
+interface Group {
+    checks: Set<string>;
+    exits: Set<string>;
+    name: string;
+    adoptable: boolean;
+}
 
-/**
- * @typedef GroupManager
- * @prop { Map<string, Group>} groups
- * @prop {() => Group} createNullGroup
- * @prop {(data: {[x: string]: GroupData}) => void} loadGroups
- */
+interface GroupData {
+    checks: string[];
+    portals?: string[];
+}
 
-/**
- *
- * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
- * @returns {GroupManager}
- */
-let createGroupManager = (entranceManager) => {
-    /** @type {Map<String, Group>} */
-    let groups = new Map();
+interface GroupManager {
+    groups: Map<string, Group>;
+    createNullGroup: () => Group;
+    loadGroups: (data: { [x: string]: GroupData; }) => void;
+}
 
-    /** @type {Map<String, String>} */
-    let checkToGroup = new Map();
+let createGroupManager = (entranceManager: EntranceManager): GroupManager => {
+    let groups: Map<string, Group> = new Map();
 
-    /**
-     * @param {String} groupName
-     * @param {GroupData} groupData
-     * @returns {Group}
-     */
-    let loadGroup = (groupName, groupData) => {
-        let checks = new Set();
-        let exits = new Set();
+    let checkToGroup: Map<string, string> = new Map();
+
+    let loadGroup = (groupName: string, groupData: GroupData): Group => {
+        let checks: Set<string> = new Set();
+        let exits: Set<string> = new Set();
         let adoptable = false;
 
         for (let check of groupData.checks) {
@@ -77,11 +62,11 @@ let createGroupManager = (entranceManager) => {
 
     /**
      * Used to create a warning and not crash, do not use unless in an error state
-     * @returns {Group}
+     * @returns
      */
-    let createNullGroup = () => {
-        let checks = new Set();
-        let exits = new Set();
+    let createNullGroup = (): Group => {
+        let checks: Set<string> = new Set();
+        let exits: Set<string> = new Set();
         console.warn("Null Group created");
         return {
             get checks() {
@@ -99,17 +84,14 @@ let createGroupManager = (entranceManager) => {
         };
     };
 
-    /**
-     *
-     * @param {Object.<string, GroupData>} data
-     */
-    const loadGroups = (data) => {
+
+    const loadGroups = (data: { [s: string]: GroupData; }) => {
         for (let key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
-        // console.log("Loaded groups:", groups);
     };
     return { groups, loadGroups, createNullGroup };
 };
 
 export { createGroupManager };
+export type {GroupManager, GroupData};

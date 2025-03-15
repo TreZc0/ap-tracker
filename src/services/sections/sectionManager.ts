@@ -1,18 +1,17 @@
-// @ts-check
-
+import { CheckManager, CheckStatus } from "../checks/checkManager";
+import { EntranceManager } from "../entrances/entranceManager";
 import { CounterMode } from "../tags/tagManager";
+import { GroupManager } from "./groupManager";
 
-/**
- * @typedef CheckReport
- * @prop {Set<String>} exist
- * @prop {Set<String>} checked
- * @prop {Set<String>} ignored
- * @prop {Map<String, Set<String>>} tagCounts
- * @prop {Map<String, Set<String>>} tagTotals
- */
+interface CheckReport {
+    exist: Set<string>;
+    checked: Set<string>;
+    ignored: Set<string>;
+    tagCounts: Map<string, Set<string>>;
+    tagTotals: Map<string, Set<string>>;
+}
 
-/** @returns {CheckReport} */
-const createNewCheckReport = () => {
+const createNewCheckReport = (): CheckReport => {
     return {
         exist: new Set(),
         checked: new Set(),
@@ -24,10 +23,10 @@ const createNewCheckReport = () => {
 
 /**
  * Adds reported values from one check report to another
- * @param {CheckReport} sourceReport
- * @param {CheckReport} destinationReport
+ * @param sourceReport
+ * @param destinationReport
  */
-const addCheckReport = (sourceReport, destinationReport) => {
+const addCheckReport = (sourceReport: CheckReport, destinationReport: CheckReport) => {
     sourceReport.exist.forEach((check) => destinationReport.exist.add(check));
     sourceReport.checked.forEach((check) =>
         destinationReport.checked.add(check)
@@ -53,8 +52,7 @@ const defaultTheme = {
     color: "black",
 };
 
-/** @type {Section} */
-const defaultSectionStatus = {
+const defaultSectionStatus: Section = {
     title: "No Title",
     checks: new Map(),
     checkReport: createNewCheckReport(),
@@ -62,15 +60,14 @@ const defaultSectionStatus = {
     children: null,
 };
 
-/**
- * @typedef SectionCondition
- * @prop {string} [option]
- * @prop {string} [state]
- * @prop {*} [is]
- * @prop {SectionCondition} [and]
- * @prop {SectionCondition} [or]
- * @prop {SectionCondition} [not]
- */
+interface SectionCondition {
+    option?: string;
+    state?: string;
+    is?: any;
+    and?: SectionCondition;
+    or?: SectionCondition;
+    not?: SectionCondition;
+}
 
 const sectionDefaults = {
     title: "Untitled Section",
@@ -84,99 +81,78 @@ const themeDefaults = {
     color: "black",
 };
 
-/**
- * @typedef SectionTypeDef
- * @prop {boolean | SectionCondition} show_when
- * @prop {string[] | null} [portal_categories]
- */
+interface SectionTypeDef {
+    show_when: boolean | SectionCondition;
+    portal_categories?: string[] | null;
+}
 
-/**
- * @typedef SectionDef
- * @prop {string} title
- * @prop {string | null} groupKey
- * @prop {string} theme
- * @prop {string[] | null} children
- */
+interface SectionDef {
+    title: string;
+    type?: null;
+    groupKey: string | null;
+    theme: string;
+    children: string[] | null;
+}
 
-/**
- * @typedef SectionConfig
- * @prop {string} title
- * @prop {string | string[] | null} groupKey
- * @prop {SectionTheme} theme
- * @prop {String[] | null} children
- */
+interface SectionConfig {
+    title: string;
+    groupKey: string | string[] | null;
+    theme: SectionTheme;
+    children: string[] | null;
+}
 
-/**
- * @typedef SectionConfigData
- * @prop {Object.<String, SectionDef>} categories
- * @prop {*} options
- * @prop {Object.<string, SectionThemeDef>} themes
- */
+interface SectionConfigData {
+    categories: {[categoryKey: string]: SectionDef};
+    options: any;
+    themes: {[themeKey: string]: SectionThemeDef};
+}
 
-/**
- * @typedef Section
- * @prop {string} title
- * @prop {CheckReport} checkReport
- * @prop {Map<string, import("../checks/checkManager").CheckStatus>} checks
- * @prop {*} [portals]
- * @prop {SectionTheme} theme
- * @prop {String[] | null} children
- */
+interface Section {
+    title: string;
+    checkReport: CheckReport;
+    checks: Map<string, CheckStatus>;
+    portals?: any;
+    theme: SectionTheme;
+    children: string[] | null;
+}
 
-/**
- * @typedef SectionThemeDef
- * @prop {string} color
- */
+interface SectionThemeDef {
+    color: string;
+}
 
-/**
- * @typedef SectionTheme
- * @prop {string} color
- */
+interface SectionTheme {
+    color: string;
+}
 
-/**
- * @typedef SectionUpdateTreeNode
- * @prop {string} sectionName
- * @prop {Set<String>} checks
- * @prop {CheckReport} checkReport
- * @prop {boolean} shouldFlatten
- * @prop {Set<SectionUpdateTreeNode>} children
- * @prop {Set<SectionUpdateTreeNode>} parents
- * @prop {()=>void} remove
- * @prop {()=>void} update
- */
+interface SectionUpdateTreeNode {
+    sectionName: string;
+    checks: Set<string>;
+    checkReport: CheckReport;
+    shouldFlatten: boolean;
+    children: Set<SectionUpdateTreeNode>;
+    parents: Set<SectionUpdateTreeNode>;
+    remove: () => void;
+    update: () => void;
+}
 
-/**
- * @typedef SectionManager
- * @prop {(sectionName: string, section: any) => void} updateSectionStatus
- * @prop {(configData: SectionConfigData) => void} setConfiguration
- * @prop {() => void} deleteAllSections
- * @prop {(sectionName: string) => void} deleteSection
- * @prop {(sectionName: string) => Section | null} getSectionStatus
- * @prop {(sectionName: string) => (listener: () => void) => () => void} getSubscriberCallback
- */
+interface SectionManager {
+    updateSectionStatus: (sectionName: string, section: any) => void;
+    setConfiguration: (configData: SectionConfigData) => void;
+    deleteAllSections: () => void;
+    deleteSection: (sectionName: string) => void;
+    getSectionStatus: (sectionName: string) => Section | null;
+    getSubscriberCallback: (sectionName: string) => (listener: () => void) => () => void;
+}
 
-/**
- *
- * @param {import("../checks/checkManager").CheckManager} checkManager
- * @param {import("../entrances/entranceManager").EntranceManager} entranceManager
- * @param {import("./groupManager").GroupManager} groupManager
- * @returns {SectionManager}
- */
-const createSectionManager = (checkManager, entranceManager, groupManager) => {
-    /** @type {Map<String, Section>} */
-    const sectionData = new Map();
-    /** @type {Map<String, SectionConfig>} */
-    const sectionConfigData = new Map();
-    /** @type {Map<String, Set<()=>void>>} */
-    const sectionSubscribers = new Map();
-    /** @type {SectionUpdateTreeNode | null} */
-    let updateTreeRoot = null;
+
+const createSectionManager = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
+    const sectionData: Map<string, Section> = new Map();
+    const sectionConfigData: Map<string, SectionConfig> = new Map();
+    const sectionSubscribers: Map<string, Set<() => void>> = new Map();
+    let updateTreeRoot: SectionUpdateTreeNode | null = null;
     const groups = groupManager.groups;
-    /**
-     *
-     * @param {string} sectionName
-     */
-    const deleteSection = (sectionName) => {
+
+    const deleteSection = (sectionName: string) => {
         sectionData.delete(sectionName);
         sectionSubscribers.get(sectionName)?.forEach((listener) => listener());
     };
@@ -186,12 +162,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         names.map((name) => deleteSection(name));
     };
 
-    /**
-     *
-     * @param {string} sectionName
-     * @param {*} section
-     */
-    const updateSectionStatus = (sectionName, section) => {
+    const updateSectionStatus = (sectionName: string, section: any) => {
         sectionData.set(sectionName, {
             ...(sectionData.get(sectionName) ?? defaultSectionStatus),
             ...section,
@@ -199,13 +170,8 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         sectionSubscribers.get(sectionName)?.forEach((listener) => listener());
     };
 
-    /**
-     *
-     * @param {String} sectionName
-     * @returns
-     */
-    const getSubscriberCallback = (sectionName) => {
-        return (/** @type {()=>void} */ listener) => {
+    const getSubscriberCallback = (sectionName: string) => {
+        return (listener: () => void) => {
             if (!sectionSubscribers.has(sectionName)) {
                 sectionSubscribers.set(sectionName, new Set());
             }
@@ -220,29 +186,18 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         };
     };
 
-    /**
-     *
-     * @param {String} sectionName
-     * @returns
-     */
-    const getSectionStatus = (sectionName) =>
+    const getSectionStatus = (sectionName: string) =>
         sectionData.get(sectionName) ?? null;
     // Builds a tree from the section config data that can be compiled into hard categories with options and state
-    /**
-     *
-     * @param {SectionConfigData} configData
-     * @returns
-     */
-    const readSectionConfig = (configData) => {
-        /** @type {Map<String, SectionTheme>} */
-        const sectionThemes = new Map();
+    const readSectionConfig = (configData: SectionConfigData) => {
+        const sectionThemes: Map<string, SectionTheme> = new Map();
 
         /**
          * Doesn't do much at the moment, reads types into section types
-         * @param {string} name
-         * @param {SectionThemeDef} theme
+         * @param name
+         * @param theme
          */
-        const readTheme = (name, theme) => {
+        const readTheme = (name: string, theme: SectionThemeDef) => {
             const fullTheme = {
                 ...themeDefaults,
                 ...theme,
@@ -252,10 +207,10 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
         /**
          * Assemble the categories
-         * @param {string} categoryName
-         * @param {Set<string>} parents
+         * @param categoryName
+         * @param parents
          */
-        const readCategory = (categoryName, parents = new Set()) => {
+        const readCategory = (categoryName: string, parents: Set<string> = new Set()) => {
             if (parents.has(categoryName)) {
                 console.warn(
                     `Circular dependency detected, ${categoryName} had a descendant that was itself. Parents: \n${[
@@ -268,13 +223,11 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 console.warn(`Failed to find category ${categoryName}`);
                 return null;
             }
-            /** @type {SectionDef} */
-            const category = {
+            const category: SectionDef = {
                 ...sectionDefaults,
                 ...configData.categories[categoryName],
             };
-            /** @type {SectionConfig} */
-            let result = {
+            let result: SectionConfig = {
                 title: category.title,
                 children: [],
                 groupKey: category.groupKey,
@@ -317,11 +270,11 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
     /**
      * Adds reported values from one check report to another
-     * @param {CheckReport} report
-     * @param {String} checkName
-     * @returns {import("../checks/checkManager").CheckStatus} The status of the related check
+     * @param report
+     * @param checkName
+     * @returns The status of the related check
      */
-    const addCheckToReport = (report, checkName) => {
+    const addCheckToReport = (report: CheckReport, checkName: string): CheckStatus => {
         let status = checkManager.getCheckStatus(checkName);
         if (status.exists) {
             report.exist.add(checkName);
@@ -368,25 +321,24 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
     const buildSectionUpdateTree = () => {
         const buildPortalNode = (
-            portalName,
-            parents = [],
-            lineage = new Set()
+            portalName: string,
+            parents: SectionUpdateTreeNode[] = [],
+            lineage: Set<string> = new Set()
         ) => {
             if (lineage.has(portalName)) {
                 return null;
             }
 
-            const listenerCleanUpCalls = new Set();
+            const listenerCleanUpCalls: Set<()=>void> = new Set();
 
             const cleanUpListeners = () => {
                 listenerCleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             };
 
-            /** @returns  */
             const buildCheckReport = () => {
                 let checkReport = createNewCheckReport();
                 /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
-                let checks = new Map();
+                let checks: Map<string, import("../checks/checkManager").CheckStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );
@@ -398,7 +350,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
             const setChecks = () => {
                 node.checks.clear();
-                let checkGroups = [];
+                let checkGroups: string[] = [];
                 if (typeof groupKey == "string") {
                     checkGroups.push(groupKey);
                 } else if (groupKey) {
@@ -406,8 +358,8 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 }
                 // Build a list of checks for the area
                 for (const groupName of checkGroups) {
-                    /** @type {String[]} */
-                    let checks = [
+                    /** @type {string[]} */
+                    let checks: string[] = [
                         ...(groups.get(groupName)?.checks.values() ?? []),
                     ];
                     checks.forEach((check) => node.checks.add(check));
@@ -480,7 +432,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
             let processedAreaKey = null;
 
             /** @type {SectionUpdateTreeNode} */
-            const node = {
+            const node: SectionUpdateTreeNode = {
                 sectionName: portalName,
                 checks: new Set(),
                 checkReport: createNewCheckReport(),
@@ -502,15 +454,15 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         };
         /**
          *
-         * @param {String} sectionName
+         * @param {string} sectionName
          * @param {SectionUpdateTreeNode[]} parents
-         * @param {Set<String>} lineage
+         * @param {Set<string>} lineage
          * @returns
          */
         const buildSectionUpdateTreeNode = (
-            sectionName,
-            parents = [],
-            lineage = new Set()
+            sectionName: string,
+            parents: SectionUpdateTreeNode[] = [],
+            lineage: Set<string> = new Set()
         ) => {
             if (lineage.has(sectionName)) {
                 return null;
@@ -526,17 +478,15 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 return null;
             }
 
-            let listenerCleanUpCalls = new Set();
+            let listenerCleanUpCalls: Set<()=>void> = new Set();
 
             let cleanUpListeners = () => {
                 listenerCleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             };
 
-            /** @returns  */
             let buildCheckReport = () => {
                 let checkReport = createNewCheckReport();
-                /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
-                let checks = new Map();
+                let checks: Map<string, CheckStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );
@@ -575,8 +525,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
                 });
             };
 
-            /** @type {SectionUpdateTreeNode} */
-            let node = {
+            let node: SectionUpdateTreeNode = {
                 sectionName,
                 checks: new Set(),
                 checkReport: createNewCheckReport(),
@@ -596,8 +545,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 
             // Build a list of checks for the area
             for (const groupName of checkGroups) {
-                /** @type {String[]} */
-                let checks = [
+                let checks: string[] = [
                     ...(groups.get(groupName)?.checks.values() ?? []),
                 ];
                 checks.forEach((check) => node.checks.add(check));
@@ -647,11 +595,7 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
         return buildSectionUpdateTreeNode("root");
     };
 
-    /**
-     *
-     * @param {SectionConfigData} rawSectionConfigData
-     */
-    const setConfiguration = (rawSectionConfigData) => {
+    const setConfiguration = (rawSectionConfigData: SectionConfigData) => {
         deleteAllSections();
         updateTreeRoot?.remove();
         readSectionConfig(rawSectionConfigData);
@@ -671,3 +615,4 @@ const createSectionManager = (checkManager, entranceManager, groupManager) => {
 };
 
 export { createSectionManager };
+export type {Section, SectionCondition, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef}

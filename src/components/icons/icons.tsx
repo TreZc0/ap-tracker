@@ -1,4 +1,3 @@
-// @ts-check
 import React from "react";
 const supportedIcons = [
     "home",
@@ -56,12 +55,16 @@ link.href = `https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:o
     .join(",")}&display=block`;
 document.head.appendChild(link);
 
-/**
- *
- * @param {*} param0
- * @returns
- */
-const Icon = ({ type, fontSize, style }) => {
+/** Creates an icon of the specified type */
+const Icon = ({
+    type,
+    fontSize,
+    style,
+}: {
+    type: string;
+    fontSize?: string;
+    style?: React.CSSProperties;
+}) => {
     return (
         <span
             className={"material-symbols-rounded"}

@@ -1,14 +1,14 @@
-// @ts-check
 import { useSyncExternalStore } from "react";
+import { OptionManager } from "../services/options/optionManager";
 
 /**
- * Gets the destination of an entrance
- * @param {import("../services/options/optionManager").OptionManager} optionManager 
- * @param {string} optionName
- * @param {string} scope
+ * Gets the value of an option in a scope
+ * @param optionManager 
+ * @param optionName
+ * @param scope
  * @returns 
  */
-const useOption = (optionManager, optionName, scope) => {
+const useOption = (optionManager: OptionManager, optionName: string, scope:string) => {
     return useSyncExternalStore(
             optionManager.getSubscriberCallback(optionName, scope),
             () => optionManager.getOptionValue(optionName, scope),

@@ -1,3 +1,4 @@
+// This file must be left as a .js file for the GitHub workflow to properly update it
 /** @import { NextConfig } from 'next' */
 /** @type {NextConfig} */
 const nextConfig = {

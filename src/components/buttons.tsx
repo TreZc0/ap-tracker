@@ -1,4 +1,3 @@
-// @ts-check
 import styled from "styled-components";
 import {
     filledTextPrimary,
@@ -9,19 +8,19 @@ import {
     background,
 } from "../constants/colors";
 
-const BaseButton = styled.button.attrs({ className: "interactive" })`
+const BaseButton = styled.button.attrs({ className: "interactive" })<{
+    $tiny?: boolean;
+    $small?: boolean;
+}>`
     border: none;
     padding:
         ${(props) =>
-            // @ts-ignore
             props.$tiny ? "0.125rem 0.125rem" : props.$small ? "0.5rem 0.5rem" : "0.5rem 1.5rem"};
     margin: ${(props) =>
-        // @ts-ignore
         props.$tiny
             ? "0rem 0.25rem"
             : "0.25rem 0.75rem"};
     font-size: ${(props) =>
-        // @ts-ignore
         props.$tiny ? "0.5em" : "1em"};
     background-color: transparent;
 `;

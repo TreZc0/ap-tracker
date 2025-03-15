@@ -1,4 +1,3 @@
-// @ts-check
 import React, {
     Fragment,
     useContext,
@@ -69,7 +68,6 @@ const CheckView = ({ check }) => {
                             <>
                                 {!status.checked && (
                                     <GhostButton
-                                        // @ts-ignore
                                         $tiny
                                         onClick={(event) => {
                                             event.stopPropagation();
@@ -118,7 +116,6 @@ const CheckView = ({ check }) => {
                                     </GhostButton>
                                 )}
                                 <GhostButton
-                                    // @ts-ignore
                                     $tiny
                                     onClick={(event) => {
                                         event.stopPropagation();

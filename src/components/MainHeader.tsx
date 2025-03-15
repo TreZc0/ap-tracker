@@ -45,7 +45,6 @@ const MainHeader = ({ optionsCallback, ...props }) => {
                         trackerState.connectionStatus !==
                         CONNECTION_STATUS.connected
                     }
-                    // @ts-ignore
                     $small
                     onClick={() => {
                         setNotePadOpen(true);
@@ -54,7 +53,6 @@ const MainHeader = ({ optionsCallback, ...props }) => {
                     <Icon type="sticky_note" />
                 </PrimaryButton>
                 <SecondaryButton
-                    // @ts-ignore
                     $small
                     onClick={optionsCallback}
                 >

@@ -1,15 +1,15 @@
-// @ts-check
 import React from "react";
 import styled from "styled-components";
 import { primary, secondary, filledTextPrimary } from "../../constants/colors";
 
-const SavedConnectionContainer = styled.div.attrs({ className: "interactive" })`
+const SavedConnectionContainer = styled.div.attrs({ className: "interactive" })<{
+    $selected?: boolean;
+}>`
     box-sizing: border-box;
     width: 80%;
     justify-self:center;
     color: ${filledTextPrimary};
     background-color: ${(props) =>
-        // @ts-ignore
         props.$selected ? primary : secondary};
     margin: 0.5rem 0.75rem;
     padding: 0.5rem;
@@ -32,7 +32,6 @@ const SavedConnection = ({
 }) => {
     return (
         <SavedConnectionContainer
-            // @ts-ignore don't know how to jsdoc it properly
             $selected={selected}
             data-focused={selected.toString()}
             data-disabled={disabled.toString()}

@@ -1,11 +1,15 @@
-// @ts-check
+import { CheckManager } from "../../../services/checks/checkManager";
+import { GroupData } from "../../../services/sections/groupManager";
+import { SectionConfigData } from "../../../services/sections/sectionManager";
+
 /**
- * Performs validation checks on section and group data provided.
- * @param {import("../../../services/sections/sectionManager").SectionConfigData} sectionData
- * @param {Object<string, import("../../../services/sections/groupManager").GroupData>} groupData
- * @param {import("../../../services/checks/checkManager").CheckManager} [checkManager] If not provided, no validation can be done on checks
+ * Performs validation checks on section and group data provided
+ * @param sectionData 
+ * @param groupData 
+ * @param checkManager If not present, validation for check completeness will not be performed
+ * @returns 
  */
-const verifyTrackerConfig = (sectionData, groupData, checkManager) => {
+const verifyTrackerConfig = (sectionData: SectionConfigData, groupData: {[groupKey: string]:GroupData}, checkManager?: CheckManager) => {
     const errors = [];
     // Do verification
     let remainingChecks = checkManager?.getAllExistingChecks() ?? new Set();
@@ -44,12 +48,7 @@ const verifyTrackerConfig = (sectionData, groupData, checkManager) => {
     });
 
     // Verify all sections are reachable
-    /**
-     *
-     * @param {string} name
-     * @param {string[]} parents
-     */
-    const traverseCategoryTree = (name, parents) => {
+    const traverseCategoryTree = (name: string, parents: string[]) => {
         if (!name) {
             errors.push(
                 `Name error: "${name}" was specified as a child category.\n\tReferenced by ${

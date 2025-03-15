@@ -2,9 +2,7 @@ import { API, Client } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
 import SavedConnectionManager, { SavedConnectionInfo } from "../savedConnections/savedConnectionManager";
-import NotificationManager, {
-    MessageType,
-} from "../notifications/notifications";
+import NotificationManager, { MessageType } from "../notifications/notifications";
 import { enableDataSync } from "./remoteSync";
 import { setupAPInventorySync } from "./inventorySync";
 import { CheckManager } from "../checks/checkManager";

@@ -100,7 +100,6 @@ const InventoryItemCollectionView = ({
                                             );
                                         }
                                     }}
-                                    // @ts-ignore
                                     $tiny
                                 >
                                     <Icon fontSize="12pt" type={"star"} />
