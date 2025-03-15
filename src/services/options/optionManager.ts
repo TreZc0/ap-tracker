@@ -45,7 +45,7 @@ class OptionManager {
      * @returns The value of the option, null if no value was found
      */
     getOptionValue = (optionName: string, scope: string): number|string|boolean|number[]|string[]|boolean[]|null => {
-        let value = this.#options.get(scope)?.get(optionName) ?? null
+        const value = this.#options.get(scope)?.get(optionName) ?? null
         if(DEBUG){
             console.info(`Retrieved option ${scope}.${optionName} as ${value}`)
         }
@@ -84,8 +84,8 @@ class OptionManager {
      * @param scope The scope to export
      * @returns JSON version of data
      */
-     exportScope = (scope: string): any => {
-        let result = {};
+     exportScope = (scope: string): unknown => {
+        const result = {};
         for(const option of (this.#options.get(scope) ?? new Map()).keys()){
             result[option] = this.#options.get(scope)?.get(option);
             if(Array.isArray(result[option])){
@@ -137,8 +137,8 @@ class OptionManager {
      * @param scope 
      * @param values 
      */
-    setScope = (scope:string, values:any) => {
-        for(let optionName of Object.getOwnPropertyNames(values)){
+    setScope = (scope:string, values:unknown) => {
+        for(const optionName of Object.getOwnPropertyNames(values)){
             this.setOptionValue(optionName, scope, values[optionName]);
         }
     };
@@ -163,7 +163,7 @@ class OptionManager {
     clone = () : OptionManager => {
         const newManager = new OptionManager();
         this.#options.forEach( (_, scope) => {
-            let exportedValues = this.exportScope(scope);
+            const exportedValues = this.exportScope(scope);
             newManager.setScope(scope, exportedValues);
         });
 

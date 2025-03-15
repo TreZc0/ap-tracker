@@ -15,20 +15,30 @@ const SavedConnectionContainer = styled.div.attrs({ className: "interactive" })<
     padding: 0.5rem;
 `;
 
-const SavedConnection = ({
+const SavedConnectionView = ({
     name,
     connectionId,
-    playerAlias,
     slot,
     host,
     port,
     game,
-    createdTime,
     lastUsedTime,
     selected,
     onClick,
     disabled,
-    ...props
+}:{
+    name: string,
+    connectionId: string,
+    playerAlias?: string,
+    slot: string,
+    host: string, 
+    port: string,
+    game: string,
+    createdTime: number,
+    lastUsedTime: number,
+    selected: boolean,
+    onClick: (connectionId: string) => void,
+    disabled: boolean
 }) => {
     return (
         <SavedConnectionContainer
@@ -59,4 +69,4 @@ const SavedConnection = ({
     );
 };
 
-export default SavedConnection;
+export default SavedConnectionView;

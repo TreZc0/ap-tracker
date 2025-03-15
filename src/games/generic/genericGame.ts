@@ -7,7 +7,7 @@ import locationNameGroupGenerator from "./categoryGenerators/locationName";
 /** Builds a generic tracker for a given game */
 const buildGenericGame = (gameName: string, checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }): Tracker => {
     // quick test, do not merge;
-    let checks = checkManager.getAllExistingChecks();
+    const checks = checkManager.getAllExistingChecks();
     locationNameGroupGenerator.generateCategories(checks, { splitCharacters: [" ", ".", "_", "-", ":"], splitOnCase: true }, 3);
 
     const { groupConfig, categoryConfig } =
@@ -30,11 +30,11 @@ const buildGenericGame = (gameName: string, checkManager: CheckManager, location
     );
 
     const buildTracker: TrackerBuilder = (
-        checkManager,
-        entranceManager,
+        _checkManager,
+        _entranceManager,
         groupManager,
         sectionManager,
-        slotData
+        _slotData
     ) => {
         // configure groups and sections
         groupManager.loadGroups(groupConfig);

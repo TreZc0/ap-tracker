@@ -7,7 +7,7 @@ import { globalOptionManager } from "../../services/options/optionManager";
 import useOption from "../../hooks/optionHook";
 import { InventoryItemOrder } from "../optionsComponents/InventorySettings";
 
-const InventoryView = ({}) => {
+const InventoryView = () => {
     const services = useContext(ServiceContext);
     const inventoryManager = services.inventoryManager;
     const optionManager = services.optionManager ?? globalOptionManager;

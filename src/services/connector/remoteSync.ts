@@ -1,15 +1,8 @@
 import { Client } from "archipelago.js";
 import { TagManager } from "../tags/tagManager";
 
-interface NoteData {
-    bytes?: number[];
-    compression: string | null;
-    timestamp: number;
-}
-
 let client: Client = null;
-// /** @type {import("../tags/tagManager").TagManager} */
-// let tagManager = null;
+let _tagManager: TagManager = null;
 
 const NOTE_KEY = "_tracker_note";
 
@@ -19,7 +12,7 @@ const saveNote = async (note: string) => {
             "Failed to save note, no connection to Archipelago Server."
         );
     }
-    let key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
+    const key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
     await client.storage
         .prepare(key, { text: "", timestamp: Date.now() })
         .update({ text: note, timestamp: Date.now() })
@@ -32,8 +25,8 @@ const loadNote = async () => {
             "Failed to load note, no connection to Archipelago Server."
         );
     }
-    let key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
-    let value = await client.storage.fetch([key], true);
+    const key = `${NOTE_KEY}_${client.players.self.team}_${client.players.self.slot}`;
+    const value = await client.storage.fetch([key], true);
     return (value[key] ?? { text: "" })["text"];
 };
 
@@ -47,7 +40,7 @@ const loadNote = async () => {
 
 const enableDataSync = (client_: Client, tagManager_: TagManager) => {
     client = client_;
-    // tagManager = tagManager_;
+    _tagManager = tagManager_;
 };
 
 export { saveNote, loadNote, enableDataSync };

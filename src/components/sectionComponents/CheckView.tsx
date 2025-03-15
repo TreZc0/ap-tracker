@@ -8,7 +8,9 @@ import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
 import { GhostButton } from "../buttons";
-const CheckView = ({ check }) => {
+const CheckView = ({ check } : {
+    check: string
+}) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
     const checkManager = serviceContext.checkManager;
@@ -23,7 +25,7 @@ const CheckView = ({ check }) => {
     );
     const connection = serviceContext.connector;
 
-    let classes = new Set(["section_check"]);
+    const classes = new Set(["section_check"]);
     if (status.checked || status.ignored) {
         classes.add("checked");
         if (status.ignored) {
@@ -78,7 +80,7 @@ const CheckView = ({ check }) => {
                                                 ) &&
                                                 tagManager
                                             ) {
-                                                let ignoreTag =
+                                                const ignoreTag =
                                                     tagManager.createTagData();
                                                 ignoreTag.typeId = "ignore";
                                                 ignoreTag.checkName = check;
@@ -93,7 +95,7 @@ const CheckView = ({ check }) => {
                                                 !status.checked &&
                                                 tagManager
                                             ) {
-                                                let ignoreTag =
+                                                const ignoreTag =
                                                     tagManager.createTagData();
                                                 ignoreTag.typeId = "ignore";
                                                 ignoreTag.checkName = check;
@@ -126,24 +128,24 @@ const CheckView = ({ check }) => {
                                             }
                                         });
                                         if (tagManager && !found) {
-                                            let tagData =
+                                            const starTag =
                                                 tagManager.createTagData();
-                                            tagData.typeId = "star";
-                                            tagData.checkName = check;
-                                            tagData.tagId = `${check}-star`;
+                                            starTag.typeId = "star";
+                                            starTag.checkName = check;
+                                            starTag.tagId = `${check}-star`;
                                             tagManager.addTag(
-                                                tagData,
+                                                starTag,
                                                 connection.connection.slotInfo
                                                     .connectionId
                                             );
                                         } else if (tagManager && found) {
-                                            let ignoreTag =
+                                            const starTag =
                                                 tagManager.createTagData();
-                                            ignoreTag.typeId = "star";
-                                            ignoreTag.checkName = check;
-                                            ignoreTag.tagId = `${check}-star`;
+                                            starTag.typeId = "star";
+                                            starTag.checkName = check;
+                                            starTag.tagId = `${check}-star`;
                                             tagManager.removeTag(
-                                                ignoreTag,
+                                                starTag,
                                                 connection.connection.slotInfo
                                                     .connectionId
                                             );

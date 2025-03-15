@@ -20,9 +20,16 @@ const CONNECTION_STATUS = {
     error: "Error", // unrecoverable state
 };
 
+interface SlotInfo {
+    slotName: string;
+    alias?: string;
+    connectionId: string;
+    name: string;
+}
+
 interface Connector {
     connectToAP: ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string; }) => Promise<void>;
-    connection: { status: string; readonly subscribe: (listener: () => void) => () => void; readonly unsubscribe: (listener: () => void) => void; readonly client: Client; readonly slotInfo: any; };
+    connection: { status: string; readonly subscribe: (listener: () => void) => () => void; readonly unsubscribe: (listener: () => void) => void; readonly client: Client; readonly slotInfo: SlotInfo; };
 }
 
 const createConnector = (
@@ -37,8 +44,8 @@ const createConnector = (
     const client = new Client();
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo = { slotName: "", alias: "", connectionId: "", name: "" };
-        let listeners: Set<() => void> = new Set();
+        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "" };
+        const listeners: Set<() => void> = new Set();
         const subscribe = (listener: () => void) => {
             listeners.add(listener);
             return () => unsubscribe(listener);
@@ -111,7 +118,7 @@ const createConnector = (
         }
 
         connection.status = CONNECTION_STATUS.connecting;
-        let statusMessageHandle = NotificationManager.createStatus({
+        const statusMessageHandle = NotificationManager.createStatus({
             message: `Connecting to ${host}:${port} ...`,
             type: MessageType.progress,
             id: "ap-connection",
@@ -122,7 +129,7 @@ const createConnector = (
                 password,
                 items: API.itemsHandlingFlags.all,
             })
-            .then((packet) => {
+            .then((_packet) => {
                 statusMessageHandle.update({
                     ...CONNECTION_MESSAGES.connectionSuccess({
                         playerAlias: client.players.self.alias,
@@ -148,7 +155,7 @@ const createConnector = (
                     });
                 });
 
-                let savedConnectionInfo: SavedConnectionInfo = {
+                const savedConnectionInfo: SavedConnectionInfo = {
                     seed: client.room.seedName,
                     host,
                     slot,
@@ -157,14 +164,14 @@ const createConnector = (
                     playerAlias: client.players.self.alias,
                 };
 
-                let possibleMatches =
+                const possibleMatches =
                     SavedConnectionManager.getExistingConnections(
                         savedConnectionInfo
                     );
 
                 if (possibleMatches.size > 0) {
                     // Update existing entry
-                    let chosenConnection = [...possibleMatches.values()][0];
+                    const chosenConnection = [...possibleMatches.values()][0];
                     chosenConnection.lastUsedTime = Date.now();
                     chosenConnection.host = savedConnectionInfo.host;
                     chosenConnection.port = savedConnectionInfo.port;
@@ -177,7 +184,7 @@ const createConnector = (
                     };
                 } else {
                     // Create a new entry
-                    let newConnectionData =
+                    const newConnectionData =
                         SavedConnectionManager.createNewSavedConnection(
                             savedConnectionInfo
                         );
@@ -190,7 +197,7 @@ const createConnector = (
                     };
                 }
                 setAPLocations(client, checkManager);
-                let savedConnectionData =
+                const savedConnectionData =
                     SavedConnectionManager.getConnectionSaveData(
                         connection.slotInfo.connectionId
                     );
@@ -199,8 +206,8 @@ const createConnector = (
                     if (savedConnectionData.locationGroups) {
                         return savedConnectionData.locationGroups;
                     }
-                    // @ts-ignore, typing error in archipelago.js
-                    let groups: { [groupName: string]: string[] } = await client.storage
+                    // @ts-expect-error, typing error in archipelago.js
+                    const groups: { [groupName: string]: string[] } = await client.storage
                         .fetchLocationNameGroups(client.game)
                         .then(
                             (a) =>

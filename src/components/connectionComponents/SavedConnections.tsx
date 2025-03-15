@@ -1,8 +1,8 @@
 import React, { useContext, useState, useSyncExternalStore } from "react";
 import styled from "styled-components";
 import { PrimaryButton, SecondaryButton } from "../buttons";
-import SavedConnectionManager from "../../services/savedConnections/savedConnectionManager";
-import SavedConnection from "./SavedConnection";
+import SavedConnectionManager, { SavedConnection } from "../../services/savedConnections/savedConnectionManager";
+import SavedConnectionView from "./SavedConnectionView";
 import ServiceContext from "../../contexts/serviceContext";
 import { TrackerStateContext } from "../../contexts/contexts";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
@@ -33,8 +33,8 @@ const SavedConnections = ({ ...props }) => {
         () => SavedConnectionManager.loadSavedConnectionData(),
         () => SavedConnectionManager.loadSavedConnectionData()
     );
-    let allConnections = [];
-    let connectionIds = Object.getOwnPropertyNames(connectionData.connections);
+    const allConnections: SavedConnection[] = [];
+    const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
 
     const serviceContext = useContext(ServiceContext);
     const connector = serviceContext.connector;
@@ -46,10 +46,10 @@ const SavedConnections = ({ ...props }) => {
         disabled = true;
     }
 
-    for (let key of connectionIds) {
+    for (const key of connectionIds) {
         allConnections.push(connectionData.connections[key]);
     }
-    let sortedConnections = [...allConnections];
+    const sortedConnections = [...allConnections];
     sortedConnections.sort((a, b) => b.lastUsedTime - a.lastUsedTime);
 
     const selectId = (id: string) => {
@@ -62,7 +62,7 @@ const SavedConnections = ({ ...props }) => {
 
     const connect = () => {
         if (selectedConnection) {
-            let connectionInfo =
+            const connectionInfo =
                 SavedConnectionManager.getConnectionInfo(selectedConnection);
             connector
                 .connectToAP(connectionInfo)
@@ -99,7 +99,7 @@ const SavedConnections = ({ ...props }) => {
                 {sortedConnections.length > 0 ? (
                     <>
                         {sortedConnections.map((connection) => (
-                            <SavedConnection
+                            <SavedConnectionView
                                 key={connection.connectionId}
                                 {...connection}
                                 disabled={disabled}

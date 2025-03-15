@@ -135,3 +135,4 @@ const NotificationManager = (() => {
 
 export default NotificationManager;
 export { MessageType };
+export type {ToastNotification, StatusNotification}

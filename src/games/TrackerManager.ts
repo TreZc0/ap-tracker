@@ -7,14 +7,14 @@ import { buildGenericGame } from "./generic/genericGame";
 const modified = Symbol("modified");
 const TRACKER_CHOICE_KEY = "Archipelago_Checklist_saved_tracker_choices";
 
-type TrackerBuilder = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager, sectionManager: SectionManager, slotData: any) => void;
+type TrackerBuilder = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager, sectionManager: SectionManager, slotData: unknown) => void;
 type TrackerInitParams = {
     gameName: string
     checkManager: CheckManager,
     entranceManager: EntranceManager,
     groupManager: GroupManager,
     sectionManager: SectionManager,
-    slotData?: any,
+    slotData?: unknown,
     groups: { [groupName: string]: string[] },
 }
 
@@ -56,7 +56,7 @@ class TrackerManager {
         },
         getDirectory: (): { games: string[]; trackers: Tracker[]; } => {
             if (TrackerManager.#directoryModified > TrackerManager.#cachedDirectory[modified]) {
-                let result = {
+                const result = {
                     games: [...TrackerManager.#trackersByGame.keys()],
                     trackers: [...TrackerManager.#allTrackers.values()],
                     [modified]: Date.now(),
@@ -72,7 +72,7 @@ class TrackerManager {
                 );
             }
             TrackerManager.#allTrackers.set(tracker.id, tracker);
-            let currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
+            const currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
             currentTrackers.add(tracker.id);
             TrackerManager.#trackersByGame.set(tracker.gameName, currentTrackers);
             TrackerManager.#directoryModified = Date.now();
@@ -80,10 +80,10 @@ class TrackerManager {
         },
         removeTracker: (trackerId: string) => {
 
-            let tracker = TrackerManager.#allTrackers.get(trackerId);
+            const tracker = TrackerManager.#allTrackers.get(trackerId);
             if (tracker) {
                 TrackerManager.#allTrackers.delete(trackerId);
-                let currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
+                const currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
                 currentTrackers.delete(tracker.id);
                 if (currentTrackers.size > 0) {
                     TrackerManager.#trackersByGame.set(tracker.gameName, currentTrackers);
@@ -123,7 +123,7 @@ class TrackerManager {
             );
         }
 
-        let tracker: Tracker = typeof _tracker === "string" ? TrackerManager.#allTrackers.get(_tracker) : _tracker;
+        const tracker: Tracker = typeof _tracker === "string" ? TrackerManager.#allTrackers.get(_tracker) : _tracker;
         if (!tracker && _tracker === "string") {
             throw new Error(`Failed to find tracker with id ${_tracker}`);
         }
@@ -138,8 +138,8 @@ class TrackerManager {
             this.reloadTracker();
         }
 
-        let savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
-        let trackerChoices = savedChoicesString
+        const savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
+        const trackerChoices = savedChoicesString
             ? JSON.parse(savedChoicesString)
             : {};
         if (tracker) {
@@ -189,12 +189,12 @@ class TrackerManager {
     }
 
     loadSavedTrackerChoices = () => {
-        let savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
-        let trackerChoices = savedChoicesString
+        const savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
+        const trackerChoices = savedChoicesString
             ? JSON.parse(savedChoicesString)
             : {};
         Object.getOwnPropertyNames(trackerChoices).forEach((gameName) => {
-            let tracker = TrackerManager.#allTrackers.get(trackerChoices[gameName]);
+            const tracker = TrackerManager.#allTrackers.get(trackerChoices[gameName]);
             if (tracker) {
                 this.setGameTracker(gameName, tracker);
             }

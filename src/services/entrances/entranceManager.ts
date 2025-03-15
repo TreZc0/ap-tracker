@@ -16,24 +16,24 @@ interface EntranceManager {
     setAdoptableEntrances: (data: string[]) => void;
     setReverseCategoryMap: (data: { [x: string]: string; }) => void;
     addEntrance: (entranceData: EntranceData) => void;
-    importString: (stringData: any) => boolean;
+    importString: (stringData: string) => boolean;
     exportToString: () => string;
     getEntranceVanillaDestRegion: (name: string) => string | null;
     getEntranceDestRegion: (name: string) => string | null;
     getEntrancesInRegion: (regionName: string) => Set<string>;
     getEntranceCategory: (entrance: string) => string | null;
     getEntrancesInCategory: (category: string) => Set<string>;
-    getEntrancesInCategories: (categories: Set<string>) => Set<any>;
+    getEntrancesInCategories: (categories: Set<string>) => Set<string>;
     getEntranceAdoptability: (entrance: string) => boolean;
 }
 
 
 const createEntranceManager = (): EntranceManager => {
-    let onChangeListeners: Map<string, Set<() => void>> = new Map();
+    const onChangeListeners: Map<string, Set<() => void>> = new Map();
 
     const getEntranceSubscriber = (entrance: string) => {
         return (listener: () => void) => {
-            let listeners = onChangeListeners.get(entrance) ?? new Set();
+            const listeners = onChangeListeners.get(entrance) ?? new Set();
             listeners.add(listener);
             onChangeListeners.set(entrance, listeners);
             return () => {
@@ -49,26 +49,25 @@ const createEntranceManager = (): EntranceManager => {
 
     // These tables take an entrance name (ex: A -> B) as the key,
     // and give a region (C) as the output, connecting Region A a to region C
-    let vanillaTable: Map<string, string> = new Map();
+    const vanillaTable: Map<string, string> = new Map();
 
     let entranceTable: Map<string, string | null> = new Map();
 
     // entrance name -> category
-    let categoryTable: Map<string, string> = new Map();
+    const categoryTable: Map<string, string> = new Map();
 
     // category -> entrances
-    /** @type {Map<String, Set<String>>} */
-    let categoryToEntrances: Map<string, Set<string>> = new Map();
+    const categoryToEntrances: Map<string, Set<string>> = new Map();
 
     // Grabs the vanilla reverse entrance for a given entrance
-    let vanillaReverseTable: Map<string, string> = new Map();
+    const vanillaReverseTable: Map<string, string> = new Map();
     let reverseTable: Map<string, string> = new Map();
 
     // Maps regions to the entrances they contain
-    let regionToEntrances: Map<string, Set<string>> = new Map();
+    const regionToEntrances: Map<string, Set<string>> = new Map();
 
     // Sets the category of the reverse of entrances
-    let reverseCategoryMap: Map<string, string> = new Map();
+    const reverseCategoryMap: Map<string, string> = new Map();
     let adoptableEntrances: Set<string> = new Set();
 
     /**
@@ -76,7 +75,7 @@ const createEntranceManager = (): EntranceManager => {
      * TODO, Make this Less OOT specific
      * @param name
      */
-    let getRegionsFromEntranceName = (name: string) => {
+    const getRegionsFromEntranceName = (name: string) => {
         return name.split(" -> ");
     };
 
@@ -84,8 +83,8 @@ const createEntranceManager = (): EntranceManager => {
     /**
      * @param {EntranceData} entranceData
      */
-    let addEntrance = (entranceData: EntranceData) => {
-        let regions = getRegionsFromEntranceName(entranceData.name);
+    const addEntrance = (entranceData: EntranceData) => {
+        const regions = getRegionsFromEntranceName(entranceData.name);
         console.assert(
             regions.length === 2,
             `Incorrect number of regions in ${entranceData.name}`
@@ -99,7 +98,7 @@ const createEntranceManager = (): EntranceManager => {
 
         if (entranceData.category) {
             categoryTable.set(entranceData.name, entranceData.category);
-            let entrancesInCategory =
+            const entrancesInCategory =
                 categoryToEntrances.get(entranceData.category) ?? new Set();
             entrancesInCategory.add(entranceData.name);
             categoryToEntrances.set(entranceData.category, entrancesInCategory);
@@ -107,7 +106,7 @@ const createEntranceManager = (): EntranceManager => {
         if (entranceData.reverse) {
             vanillaReverseTable.set(entranceData.name, entranceData.reverse);
             vanillaReverseTable.set(entranceData.reverse, entranceData.name);
-            let reverseRegions = getRegionsFromEntranceName(
+            const reverseRegions = getRegionsFromEntranceName(
                 entranceData.reverse
             );
             entranceTable.set(entranceData.reverse, null);
@@ -120,11 +119,11 @@ const createEntranceManager = (): EntranceManager => {
             }
             regionToEntrances.get(reverseRegions[0])?.add(entranceData.reverse);
             if (entranceData.category) {
-                let reverseCategory =
+                const reverseCategory =
                     reverseCategoryMap.get(entranceData.category) ??
                     entranceData.category;
                 categoryTable.set(entranceData.reverse, reverseCategory);
-                let entrancesInCategory =
+                const entrancesInCategory =
                     categoryToEntrances.get(reverseCategory) ?? new Set();
                 entrancesInCategory.add(entranceData.reverse);
                 categoryToEntrances.set(reverseCategory, entrancesInCategory);
@@ -137,7 +136,7 @@ const createEntranceManager = (): EntranceManager => {
      * @param data 
      */
     const setReverseCategoryMap = (data: { [entranceName: string]: string; }) => {
-        for (let category of Object.getOwnPropertyNames(
+        for (const category of Object.getOwnPropertyNames(
             data
         )) {
             reverseCategoryMap.set(
@@ -159,15 +158,15 @@ const createEntranceManager = (): EntranceManager => {
      * Clears entries from table
      * @param {Set<string|undefined>} [categories] If set, only entrances in these categories will be reset
      */
-    let clearEntranceTable = (categories: Set<string | undefined>) => {
+    const clearEntranceTable = (categories: Set<string | undefined>) => {
         if (!categories) {
-            for (let key of entranceTable.keys()) {
+            for (const key of entranceTable.keys()) {
                 entranceTable.set(key, null);
                 reverseTable.delete(key);
                 onChange(key);
             }
         } else {
-            for (let key of entranceTable.keys()) {
+            for (const key of entranceTable.keys()) {
                 if (categories.has(categoryTable.get(key))) {
                     entranceTable.set(key, null);
                     reverseTable.delete(key);
@@ -181,23 +180,23 @@ const createEntranceManager = (): EntranceManager => {
      * Sets entries to vanilla
      * @param {Set<string|undefined>} [categories] If set, only entrances in these categories will be reset
      */
-    let resetEntranceTable = (categories: Set<string | undefined>) => {
+    const resetEntranceTable = (categories: Set<string | undefined>) => {
         if (!categories) {
-            for (let entrance of entranceTable.keys()) {
+            for (const entrance of entranceTable.keys()) {
                 entranceTable.set(entrance, vanillaTable.get(entrance) || "");
-                let reverseKey = vanillaReverseTable.get(entrance);
+                const reverseKey = vanillaReverseTable.get(entrance);
                 if (reverseKey) {
                     reverseTable.set(entrance, reverseKey);
                 }
                 onChange(entrance);
             }
         } else {
-            for (let entrance of entranceTable.keys()) {
+            for (const entrance of entranceTable.keys()) {
                 if (!categories.has(categoryTable.get(entrance))) {
                     continue;
                 }
                 entranceTable.set(entrance, vanillaTable.get(entrance) || "");
-                let reverseKey = vanillaReverseTable.get(entrance);
+                const reverseKey = vanillaReverseTable.get(entrance);
                 if (reverseKey) {
                     reverseTable.set(entrance, reverseKey);
                 }
@@ -212,13 +211,13 @@ const createEntranceManager = (): EntranceManager => {
      * @param entranceRole The role the entrance will play
      * @param [doReverse] If true, if a reverse exists, it will be set as well
      */
-    let setEntrance = (entrance: string, entranceRole: string, doReverse: boolean = true) => {
-        let doingReverse = doReverse && vanillaReverseTable.has(entrance);
+    const setEntrance = (entrance: string, entranceRole: string, doReverse: boolean = true) => {
+        const doingReverse = doReverse && vanillaReverseTable.has(entrance);
         entranceTable.set(entrance, vanillaTable.get(entranceRole) ?? null);
         if (doingReverse) {
             // when setting the reverse, the opposite of the entranceRole has it role set to the entrances role
-            let reverseRole = vanillaReverseTable.get(entrance);
-            let reverseEntrance = vanillaReverseTable.get(entranceRole);
+            const reverseRole = vanillaReverseTable.get(entrance);
+            const reverseEntrance = vanillaReverseTable.get(entranceRole);
             if (reverseRole && reverseEntrance) {
                 reverseTable.set(entrance, reverseEntrance);
                 reverseTable.set(reverseEntrance, entrance);
@@ -228,9 +227,9 @@ const createEntranceManager = (): EntranceManager => {
         onChange(entrance);
     };
 
-    let resetEntrance = (entrance: string, doReverse: boolean = true) => {
+    const resetEntrance = (entrance: string, doReverse: boolean = true) => {
         entranceTable.set(entrance, vanillaTable.get(entrance) || "");
-        let reverseKey = vanillaReverseTable.get(entrance);
+        const reverseKey = vanillaReverseTable.get(entrance);
         if (reverseKey && doReverse) {
             reverseTable.set(entrance, reverseKey);
             resetEntrance(reverseKey, false);
@@ -243,10 +242,10 @@ const createEntranceManager = (): EntranceManager => {
      * @param entrance The name of the entrance to clear
      * @param doReverse If true, the currently set reverse will be cleared as well.
      */
-    let clearEntrance = (entrance: string, doReverse: boolean = true) => {
+    const clearEntrance = (entrance: string, doReverse: boolean = true) => {
         entranceTable.set(entrance, null);
-        let doingReverse = doReverse && reverseTable.has(entrance);
-        let reverse = reverseTable.get(entrance);
+        const doingReverse = doReverse && reverseTable.has(entrance);
+        const reverse = reverseTable.get(entrance);
         reverseTable.delete(entrance);
         if (doingReverse && reverse) {
             clearEntrance(reverse, false);
@@ -259,7 +258,7 @@ const createEntranceManager = (): EntranceManager => {
      * @param name
      * @returns
      */
-    let getEntranceDestRegion = (name: string) => {
+    const getEntranceDestRegion = (name: string) => {
         return entranceTable.get(name) ?? null;
     };
 
@@ -268,7 +267,7 @@ const createEntranceManager = (): EntranceManager => {
      * @param name
      * @returns
      */
-    let getEntranceVanillaDestRegion = (name: string) => {
+    const getEntranceVanillaDestRegion = (name: string) => {
         return vanillaTable.get(name) ?? null;
     };
 
@@ -277,20 +276,20 @@ const createEntranceManager = (): EntranceManager => {
      * @param regionName
      * @returns
      */
-    let getEntrancesInRegion = (regionName: string) => {
+    const getEntrancesInRegion = (regionName: string) => {
         return regionToEntrances.get(regionName) ?? new Set();
     };
 
-    let getEntranceCategory = (entrance: string) => {
+    const getEntranceCategory = (entrance: string) => {
         return categoryTable.get(entrance) ?? null;
     };
 
-    let getEntrancesInCategory = (category: string) => {
+    const getEntrancesInCategory = (category: string) => {
         return categoryToEntrances.get(category) ?? new Set();
     };
 
-    let getEntrancesInCategories = (categories: Set<string>) => {
-        let entrances = new Set();
+    const getEntrancesInCategories = (categories: Set<string>) => {
+        const entrances: Set<string> = new Set();
         categories.forEach((category) =>
             getEntrancesInCategory(category).forEach((entrance) =>
                 entrances.add(entrance)
@@ -299,8 +298,8 @@ const createEntranceManager = (): EntranceManager => {
         return entrances;
     };
 
-    let getEntranceAdoptability = (entrance: string) => {
-        let category = categoryTable.get(entrance);
+    const getEntranceAdoptability = (entrance: string) => {
+        const category = categoryTable.get(entrance);
         if (category && adoptableEntrances.has(category)) {
             return true;
         }
@@ -308,7 +307,7 @@ const createEntranceManager = (): EntranceManager => {
     };
 
     // https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map
-    let jsonReplacer = (key: string, value: any) => {
+    const jsonReplacer = (_key: string, value: unknown) => {
         if (value instanceof Map) {
             return {
                 dataType: "Map",
@@ -324,7 +323,7 @@ const createEntranceManager = (): EntranceManager => {
         }
     };
 
-    let jsonReviver = (key: string, value: any) => {
+    const jsonReviver = (_key: string, value: {dataType:"Map", value: [string, string][]} | {dataType:"Set", value:string[]}) => {
         if (typeof value === "object" && value !== null) {
             if (value.dataType === "Map") {
                 return new Map(value.value);
@@ -335,8 +334,8 @@ const createEntranceManager = (): EntranceManager => {
         return value;
     };
 
-    let exportToString = () => {
-        let data = {
+    const exportToString = () => {
+        const data = {
             version: 1,
             entranceTable,
             reverseTable,
@@ -344,8 +343,8 @@ const createEntranceManager = (): EntranceManager => {
         return JSON.stringify(data, jsonReplacer);
     };
 
-    let importString = (stringData: string) => {
-        let data = JSON.parse(stringData, jsonReviver);
+    const importString = (stringData: string) => {
+        const data = JSON.parse(stringData, jsonReviver);
         if (!(data.version === 1)) {
             console.error(
                 `Unrecognized entrance data version: ${data.version}`

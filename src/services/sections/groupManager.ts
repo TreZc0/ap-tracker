@@ -20,17 +20,17 @@ interface GroupManager {
     loadGroups: (data: { [x: string]: GroupData; }) => void;
 }
 
-let createGroupManager = (entranceManager: EntranceManager): GroupManager => {
-    let groups: Map<string, Group> = new Map();
+const createGroupManager = (_entranceManager: EntranceManager): GroupManager => {
+    const groups: Map<string, Group> = new Map();
 
-    let checkToGroup: Map<string, string> = new Map();
+    const checkToGroup: Map<string, string> = new Map();
 
-    let loadGroup = (groupName: string, groupData: GroupData): Group => {
-        let checks: Set<string> = new Set();
-        let exits: Set<string> = new Set();
-        let adoptable = false;
+    const loadGroup = (groupName: string, groupData: GroupData): Group => {
+        const checks: Set<string> = new Set();
+        const exits: Set<string> = new Set();
+        const adoptable = false;
 
-        for (let check of groupData.checks) {
+        for (const check of groupData.checks) {
             checks.add(check);
             // entranceManager
             //     .getEntrancesInRegion(region)
@@ -64,9 +64,9 @@ let createGroupManager = (entranceManager: EntranceManager): GroupManager => {
      * Used to create a warning and not crash, do not use unless in an error state
      * @returns
      */
-    let createNullGroup = (): Group => {
-        let checks: Set<string> = new Set();
-        let exits: Set<string> = new Set();
+    const createNullGroup = (): Group => {
+        const checks: Set<string> = new Set();
+        const exits: Set<string> = new Set();
         console.warn("Null Group created");
         return {
             get checks() {
@@ -86,7 +86,7 @@ let createGroupManager = (entranceManager: EntranceManager): GroupManager => {
 
 
     const loadGroups = (data: { [s: string]: GroupData; }) => {
-        for (let key of Object.getOwnPropertyNames(data)) {
+        for (const key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
     };

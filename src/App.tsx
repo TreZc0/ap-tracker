@@ -64,7 +64,7 @@ const connector = createConnector(
 );
 const connection = connector.connection;
 
-let App = (): React.ReactNode => {
+const App = (): React.ReactNode => {
     const trackerConnectionState = useSyncExternalStore(
         connection.subscribe,
         () => connection.status,

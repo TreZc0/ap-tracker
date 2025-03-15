@@ -1,5 +1,7 @@
 // @ts-check
 
+import { TagData } from "../tags/tagManager";
+
 /** Data that can be used to create a new Saved Connection */
 interface SavedConnectionInfo {
     seed: string;
@@ -24,8 +26,13 @@ interface SavedConnection {
     lastUsedTime: number;
     createdTime: number;
     version: number;
-    settings: any;
-    saveData: any;
+    settings: unknown;
+    saveData?: {
+        locationGroups?: {[groupName:string] : string[]},
+        tagData?: {
+            [tagId:string]: TagData
+        },
+    };
 }
 
 const connectionListeners: Set<() => void> = new Set();
@@ -46,9 +53,9 @@ const CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
 let cachedConnectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } | null = null;
 
 const loadSavedConnectionData = () => {
-    let connectionDataString = localStorage.getItem(CONNECTION_ITEM_NAME);
+    const connectionDataString = localStorage.getItem(CONNECTION_ITEM_NAME);
  
-    let connectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } = connectionDataString
+    const connectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } = connectionDataString
         ? JSON.parse(connectionDataString)
         : {
               connections: {},
@@ -56,7 +63,7 @@ const loadSavedConnectionData = () => {
               modified: Date.now(),
           };
 
-    let connectionIds = Object.getOwnPropertyNames(connectionData.connections);
+    const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
     for (const id of connectionIds) {
         const connection = connectionData.connections[id];
 
@@ -97,7 +104,7 @@ const save = (saveData: { connections: { [s: string]: SavedConnection; }; versio
 };
 
 const saveConnectionData = (data: SavedConnection) => {
-    let currentSaveData = loadSavedConnectionData();
+    const currentSaveData = loadSavedConnectionData();
     if (!data.connectionId) {
         data.connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
         console.warn(
@@ -132,7 +139,7 @@ const getExistingConnections = (data: SavedConnectionInfo) => {
     const currentSaveData = loadSavedConnectionData();
     /** @type {Set<SavedConnection>} */
     const existingConnections: Set<SavedConnection> = new Set();
-    let connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
+    const connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
 
     for (const id of connectionIds) {
         const connection = currentSaveData.connections[id];
@@ -186,7 +193,7 @@ const getConnectionSaveData = (id: string) => {
  * @param {string} id Id of the connection
  * @returns
  */
-const updateConnectionSaveData = (id: string, newSaveData) => {
+const updateConnectionSaveData = (id: string, newSaveData: unknown) => {
     const currentSaveData = loadSavedConnectionData();
     currentSaveData.connections[id].saveData = newSaveData;
     save(currentSaveData);

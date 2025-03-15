@@ -53,9 +53,9 @@ const Toast = ({
             break;
         }
     }
-    let bottom = 10 + TOAST_HEIGHT_PX * index;
-    let onScreen = !(remainingTime === duration || remainingTime < 0);
-    let right = onScreen ? 10 : -600;
+    const bottom = 10 + TOAST_HEIGHT_PX * index;
+    const onScreen = !(remainingTime === duration || remainingTime < 0);
+    const right = onScreen ? 10 : -600;
     let timePercent = remainingTime / duration;
     timePercent = timePercent < 0 ? 0 : timePercent;
     const radius = 40;

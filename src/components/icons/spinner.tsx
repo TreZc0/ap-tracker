@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useEffect, ComponentProps } from "react";
+import React, { useRef, useReducer, useEffect } from "react";
 import { textPrimary } from "../../constants/colors";
 
 const timerReducer = (time: number, delta: number) => {
@@ -21,17 +21,12 @@ const Spinner = ({
     const timeRef = useRef(null);
     const animationValue = ((timer * 2) % 1000) / 1000;
     useEffect(() => {
-        /**
-         *
-         * @param {number} time
-         * @returns
-         */
-        const update = (time) => {
+        const update = (time: number) => {
             if (!timeRef.current) {
                 timeRef.current = time;
                 return;
             }
-            let delta = time - timeRef.current;
+            const delta = time - timeRef.current;
             timeRef.current = time;
             updateTimer(delta);
             frameRef.current = requestAnimationFrame(update);

@@ -3,11 +3,11 @@ import { GroupData } from "../../../services/sections/groupManager";
 import { SectionConfigData } from "../../../services/sections/sectionManager";
 
 const GROUP_DEBUG = false;
-const DEBUG_PARENT_GROUP_ORGANIZATION = true && GROUP_DEBUG;
-const DEBUG_GROUP_CLASSIFICATION = true && GROUP_DEBUG;
+const DEBUG_PARENT_GROUP_ORGANIZATION = GROUP_DEBUG;
+const DEBUG_GROUP_CLASSIFICATION = GROUP_DEBUG;
 
 const generateCategories = (checkManager: CheckManager, groups: { [s: string]: string[]; }) => {
-    let unclassifiedLocations = checkManager.getAllExistingChecks();
+    const unclassifiedLocations = checkManager.getAllExistingChecks();
     if (GROUP_DEBUG) {
         console.log("Location groups provided:", groups);
     }
@@ -43,18 +43,18 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
         "theme6",
     ];
 
-    let checkMembership: Map<string, Set<string>> = new Map();
-    let groupSets: Map<string, Set<string>> = new Map();
+    const checkMembership: Map<string, Set<string>> = new Map();
+    const groupSets: Map<string, Set<string>> = new Map();
 
-    for (let groupName of Object.getOwnPropertyNames(groups)) {
+    for (const groupName of Object.getOwnPropertyNames(groups)) {
         if (groupName === "Everywhere") {
             continue;
         }
         groupSets.set(groupName, new Set(groups[groupName]));
-        let checks = groups[groupName];
+        const checks = groups[groupName];
         checks.forEach((check) => {
             unclassifiedLocations.delete(check);
-            let membership = checkMembership.get(check) ?? new Set();
+            const membership = checkMembership.get(check) ?? new Set();
             membership.add(groupName);
             checkMembership.set(check, membership);
         });
@@ -68,11 +68,11 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
     const possibleMetaLocationGroups: Set<string> = new Set();
 
     // Go through all groups and determine how they relate to one another
-    for (let [groupName, group] of groupSets.entries()) {
-        let parentGroups: Set<string> = new Set();
-        let childGroups: Set<string> = new Set();
+    for (const [groupName, group] of groupSets.entries()) {
+        const parentGroups: Set<string> = new Set();
+        const childGroups: Set<string> = new Set();
         let overlappingGroups: Set<string> = new Set();
-        for (let [otherGroupName, otherGroup] of groupSets.entries()) {
+        for (const [otherGroupName, otherGroup] of groupSets.entries()) {
             if (otherGroupName === groupName) {
                 continue;
             }
@@ -112,8 +112,8 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
             .difference(childGroups)
             .difference(parentGroups);
         let isKeyGroup = false;
-        for (let check of group) {
-            let membership = checkMembership.get(check) ?? new Set();
+        for (const check of group) {
+            const membership = checkMembership.get(check) ?? new Set();
             if (
                 membership.difference(parentGroups).difference(childGroups)
                     .size === 1
@@ -143,10 +143,10 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
 
     const metaLocationGroups: Set<string> = new Set();
     // Resolve edge cases where a key group may be completely made up of meta groups
-    for (let groupName of possibleMetaLocationGroups) {
+    for (const groupName of possibleMetaLocationGroups) {
         // A meta group must also be a part of one key group in which it is not a complete subset of
         let isMeta = false;
-        for (let otherGroupName of groupOverlappingSets.get(groupName) ??
+        for (const otherGroupName of groupOverlappingSets.get(groupName) ??
             new Set()) {
             if (keyLocationGroups.has(otherGroupName)) {
                 isMeta = true;
@@ -173,10 +173,10 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
     const computeKeyGroupConflicts = () => {
         /** @type {Map<string, Set<string>>} */
         const conflictGroups: Map<string, Set<string>> = new Map();
-        for (let groupName of [...keyLocationGroups.values()]) {
+        for (const groupName of [...keyLocationGroups.values()]) {
             /** @type {Set<string>} */
-            let localConflicts: Set<string> = new Set();
-            for (let otherGroupName of keyLocationGroups) {
+            const localConflicts: Set<string> = new Set();
+            for (const otherGroupName of keyLocationGroups) {
                 if (groupOverlappingSets.get(groupName)?.has(otherGroupName)) {
                     localConflicts.add(otherGroupName);
                 }
@@ -185,8 +185,8 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
                 conflictGroups.set(groupName, localConflicts);
             }
         }
-        let result = [...conflictGroups.entries()];
-        result.sort(([_, a], [_2, b]) => b.size - a.size);
+        const result = [...conflictGroups.entries()];
+        result.sort(([_1, a], [_2, b]) => b.size - a.size);
         return result;
     };
 
@@ -195,7 +195,7 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
         console.log("Conflicts", orderedConflicts);
     }
     while (orderedConflicts.length > 0) {
-        let [groupName, conflicts] = orderedConflicts[0];
+        const [groupName, conflicts] = orderedConflicts[0];
         if (conflicts.size <= 1) {
             if (DEBUG_GROUP_CLASSIFICATION) {
                 console.log("Skipping remaining conflicts");
@@ -221,21 +221,17 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
     }
 
     // resolve parent/child relationships for key groups
-    /** @type {Map<string, Set<string>>} */
     const finalGroups: Map<string, Set<string>> = new Map();
     groupSets.forEach((value, key) => finalGroups.set(key, value));
-    /** @type {Map<string, Set<string>>} */
     const locationGroupToFinalGroups: Map<string, Set<string>> = new Map();
-    groupSets.forEach((value, key) =>
+    groupSets.forEach((_value, key) =>
         locationGroupToFinalGroups.set(key, new Set([key]))
     );
 
-    /** @type {Map<string, Set<string>>} */
     const childTable: Map<string, Set<string>> = new Map();
-    /** @type {Set<string>} */
     const roots: Set<string> = new Set();
-    for (let groupName of keyLocationGroups) {
-        let possibleParents = (
+    for (const groupName of keyLocationGroups) {
+        const possibleParents = (
             possibleParentGroups.get(groupName) ?? new Set()
         ).difference(metaLocationGroups);
         if (possibleParents.size === 0) {
@@ -244,11 +240,11 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
                 console.log(`Added ${groupName} to root`);
             }
         } else {
-            let parents = [...possibleParents.values()];
+            const parents = [...possibleParents.values()];
             // sort the list ascending order
-            parents.sort((a, b) => groupSets.get(a)?.size ?? Infinity - groupSets.get(b)?.size ?? Infinity);
-            let parent = parents[0];
-            let siblings = childTable.get(parent) ?? new Set();
+            parents.sort((a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size);
+            const parent = parents[0];
+            const siblings = childTable.get(parent) ?? new Set();
             siblings.add(groupName);
             childTable.set(parent, siblings);
             // remove checks from parent
@@ -268,8 +264,8 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
 
     // same for meta groups for now, will make it better later
     if (metaLocationGroups.size > 0) {
-        for (let groupName of metaLocationGroups) {
-            let possibleParents = (
+        for (const groupName of metaLocationGroups) {
+            const possibleParents = (
                 possibleParentGroups.get(groupName) ?? new Set()
             ).difference(keyLocationGroups);
             if (possibleParents.size === 0) {
@@ -278,11 +274,11 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
                     console.log(`Added ${groupName} to root`);
                 }
             } else {
-                let parents = [...possibleParents.values()];
+                const parents = [...possibleParents.values()];
                 // sort the list ascending order
-                parents.sort((a, b) => groupSets.get(a)?.size ?? Infinity - groupSets.get(b)?.size ?? Infinity);
-                let parent = parents[0];
-                let siblings = childTable.get(parent) ?? new Set();
+                parents.sort((a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size);
+                const parent = parents[0];
+                const siblings = childTable.get(parent) ?? new Set();
                 siblings.add(groupName);
                 childTable.set(parent, siblings);
                 // remove checks from parent
@@ -300,7 +296,7 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
     }
 
     // build group tree
-    for (let [groupName, checks] of finalGroups.entries()) {
+    for (const [groupName, checks] of finalGroups.entries()) {
         groupConfig[groupName] = {
             checks: [...checks.values()],
         };
@@ -308,10 +304,10 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
 
     // build category tree
     const getChildList = (parentName) => {
-        let children = childTable.get(parentName) ?? new Set();
-        let childList = [];
+        const children = childTable.get(parentName) ?? new Set();
+        const childList = [];
         children.forEach((childName) => {
-            let allNames = locationGroupToFinalGroups.get(childName);
+            const allNames = locationGroupToFinalGroups.get(childName);
             allNames.forEach((x) => childList.push(x));
         });
         return childList;
@@ -319,7 +315,7 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
 
     // place nodes in tree
     let themeCounter = 0;
-    for (let groupName of keyLocationGroups.union(metaLocationGroups)) {
+    for (const groupName of keyLocationGroups.union(metaLocationGroups)) {
         categoryConfig.categories[groupName] = {
             title: groupName,
             theme: keyLocationGroups.has(groupName)
@@ -334,9 +330,9 @@ const generateCategories = (checkManager: CheckManager, groups: { [s: string]: s
     }
 
     // sort the root
-    categoryConfig.categories.root.children.sort((a: string, b:string) => {
-        let aIsKey = keyLocationGroups.has(a);
-        let bIsKey = keyLocationGroups.has(b);
+    categoryConfig.categories.root.children.sort((a: string, b: string) => {
+        const aIsKey = keyLocationGroups.has(a);
+        const bIsKey = keyLocationGroups.has(b);
         if (aIsKey === bIsKey) {
             return a < b ? -1 : 1;
         } else if (aIsKey) {

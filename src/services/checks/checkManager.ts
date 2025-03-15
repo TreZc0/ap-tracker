@@ -54,13 +54,13 @@ const createCheckManager = () : CheckManager => {
     };
 
     const deleteAllChecks = () => {
-        let names = [...checkData.keys()];
+        const names = [...checkData.keys()];
         names.map((name) => deleteCheck(name));
     };
 
     /** Gets a list of all checks that exist in the tracker */
     const getAllExistingChecks = () => {
-        let checks: Set<string> = new Set();
+        const checks: Set<string> = new Set();
         checkData.forEach((status, checkName) => {
             if (status.exists) {
                 checks.add(checkName);

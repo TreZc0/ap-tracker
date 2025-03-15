@@ -19,7 +19,7 @@ class TrieTree {
             return node.count;
         }
         if (node.children.has(tokens[0])) {
-            let removalCount = this.#remove_r(node.children.get(tokens[0]), tokens.slice(1));
+            const removalCount = this.#remove_r(node.children.get(tokens[0]), tokens.slice(1));
             node.count -= removalCount;
             if (tokens.length === 1 || node.children.get(tokens[0]).count === 0) {
                 node.children.delete(tokens[0]);
@@ -29,16 +29,14 @@ class TrieTree {
         return 0;
     }
     remove = (prefix: string): boolean => {
-        let removedCount = this.#remove_r(this.#root, tokenizeName(prefix, this.#nameOptions));
+        const removedCount = this.#remove_r(this.#root, tokenizeName(prefix, this.#nameOptions));
         return removedCount > 0;
     }
     insert = (word: string) => {
         let currentNode = this.#root;
-        let prefix = "";
-        let wordSegments = tokenizeName(word, this.#nameOptions);
+        const wordSegments = tokenizeName(word, this.#nameOptions);
         for (let i = 0; i < wordSegments.length; i++) {
-            let segment = wordSegments[i];
-            prefix += segment;
+            const segment = wordSegments[i];
             if (!currentNode.children.has(segment)) {
                 currentNode.children.set(segment, new TrieNode());
             }
@@ -48,7 +46,7 @@ class TrieTree {
     }
 
     mostFrequentPrefix = () => {
-        let result: { prefix: string, count: number }[] = [];
+        const result: { prefix: string, count: number }[] = [];
         const depthFirstSearch = (node: TrieNode, tokens: string[]) => {
             if (node.count > 1) {
                 result.push({
@@ -57,7 +55,7 @@ class TrieTree {
                 })
             }
             for (const [token, child] of node.children.entries()) {
-                let newPrefix = tokens.slice(0);
+                const newPrefix = tokens.slice(0);
                 newPrefix.push(token);
                 depthFirstSearch(child, newPrefix);
             }
@@ -91,7 +89,7 @@ type NameTokenizationOptions = {
 }
 
 const tokenizeName = (name: string, tokenizationOptions: NameTokenizationOptions): string[] => {
-    let result: string[] = [];
+    const result: string[] = [];
     let currentToken = "";
     if (tokenizationOptions.characterSplit) {
         return name.split("");
@@ -116,13 +114,13 @@ const tokenizeName = (name: string, tokenizationOptions: NameTokenizationOptions
 }
 
 const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTokenizationOptions, minGroupSize: number): Map<string, Set<string>> => {
-    let tree = new TrieTree(nameTokenizationOptions);
+    const tree = new TrieTree(nameTokenizationOptions);
     checks.forEach(check => tree.insert(check));
-    let groups: Map<string, Set<string>> = new Map();
+    const groups: Map<string, Set<string>> = new Map();
     let commonPrefix = tree.mostFrequentPrefix();
     console.log(commonPrefix);
     while (commonPrefix && commonPrefix.count >= minGroupSize) {
-        let prefix = commonPrefix.prefix;
+        const prefix = commonPrefix.prefix;
         groups.set(prefix, new Set());
         groups.set(prefix, new Set(checks.values().filter(checkName => checkName.indexOf(prefix) === 0)));
         checks = checks.difference(groups.get(prefix));

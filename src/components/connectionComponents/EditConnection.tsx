@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Input } from "../inputs";
 import { PrimaryButton, SecondaryButton, DangerButton } from "../buttons";
-import SavedConnectionManager from "../../services/savedConnections/savedConnectionManager";
-import Dialog from "../shared/Dialog";
+import SavedConnectionManager, { SavedConnection } from "../../services/savedConnections/savedConnectionManager";
+import Modal from "../shared/Modal";
 
 const ContentContainer = styled.div`
     width: fit-content;
@@ -24,25 +24,25 @@ const ContentContainer = styled.div`
     grid-template-columns: repeat(3, 5em);
 `;
 
-const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
-    const dialog: React.ForwardedRef<HTMLDialogElement | null> = useRef(null);
+const EditConnectionDialog = ({ connection, onClose, open }:{
+    connection: SavedConnection,
+    onClose: () => void,
+    open: boolean,
+}) => {
     const [data, setData] = useState(connection);
     useEffect(() => {
         if (open) {
-            dialog.current?.showModal();
             setData(connection);
-        } else {
-            dialog.current?.close();
         }
     }, [open, connection]);
-    const defaultChangeHandler = (event) => {
+    const defaultChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setData({
             ...data,
             [event.target.name]: event.target.value,
         });
     };
     return (
-        <Dialog ref={dialog}>
+        <Modal open={open}>
             <ContentContainer>
                 <h2 style={{ gridArea: "title" }}>Edit Connection</h2>
                 <Input
@@ -131,7 +131,7 @@ const EditConnectionDialog = ({ connection, onClose, open, ...props }) => {
                     Delete
                 </DangerButton>
             </ContentContainer>
-        </Dialog>
+        </Modal>
     );
 };
 

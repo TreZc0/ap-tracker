@@ -4,14 +4,20 @@ import { tertiary } from "../../constants/colors";
 import { DangerButton, GhostButton, PrimaryButton } from "../buttons";
 import Icon from "../icons/icons";
 import Modal from "../shared/Modal";
-import NotificationManager, { MessageType } from "../../services/notifications/notifications";
+import NotificationManager, {
+    MessageType,
+} from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import TrackerManager from "../../games/TrackerManager";
 
-const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager}) => {
+const CustomTrackerOptions = ({
+    trackerManager,
+}: {
+    trackerManager: TrackerManager;
+}) => {
     const customTrackersDirectory = useCustomTrackerDirectory();
     const trackersByGame = useMemo(() => {
-        let trackerMap: Map<
+        const trackerMap: Map<
             string,
             {
                 id: string;
@@ -21,21 +27,21 @@ const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager})
             }[]
         > = new Map();
         customTrackersDirectory.customLists.forEach((tracker) => {
-            let gameList = trackerMap.get(tracker.game) ?? [];
+            const gameList = trackerMap.get(tracker.game) ?? [];
             gameList.push(tracker);
             trackerMap.set(tracker.game, gameList);
         });
         const games = [...trackerMap.keys()];
         games.forEach((game) => {
-            let list = trackerMap.get(game);
-            list.sort((a, b) => a.name < b.name ? -1 : 1);
+            const list = trackerMap.get(game);
+            list.sort((a, b) => (a.name < b.name ? -1 : 1));
             trackerMap.set(game, list);
         });
         return trackerMap;
     }, [customTrackersDirectory]);
 
     const sortedGames = useMemo(() => {
-        let games = [...trackersByGame.keys()];
+        const games = [...trackersByGame.keys()];
         games.sort();
         return games;
     }, [trackersByGame]);
@@ -44,8 +50,8 @@ const CustomTrackerOptions = ({trackerManager}:{trackerManager: TrackerManager})
     /**
      * Passes the contents of a file to the CustomTrackerManager
      */
-    let loadCustomTracker = (file: File) => {
-        let statusHandle = NotificationManager.createStatus({
+    const loadCustomTracker = (file: File) => {
+        const statusHandle = NotificationManager.createStatus({
             message: "Loading Custom Tracker",
             type: MessageType.info,
             progress: -1,

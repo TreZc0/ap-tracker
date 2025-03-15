@@ -153,10 +153,10 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
     const tagListenerCleanupCalls: Map<string, Set<() => void>> = new Map();
     const createTagType = () => {};
 
-    const deleteTagType = () => {};''
+    const deleteTagType = () => {};
     const buildTag = (tagData: TagData): Tag => {
         const type = getTagType(tagData.typeId);
-        let tag = {
+        const tag = {
             type,
             tagId: tagData.tagId,
             text: tagData.text,
@@ -174,15 +174,15 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
      * @param {string | undefined} saveId
      */
     const handleTagConversion = (tag: Tag, saveId: string | undefined) => {
-        let tagData = extractTagData(tag);
+        const tagData = extractTagData(tag);
         if (tag.checkName) {
-            let checkStatus = checkManager.getCheckStatus(tag.checkName);
+            const checkStatus = checkManager.getCheckStatus(tag.checkName);
             if (checkStatus.checked) {
                 if (tag.type.convertToWhenChecked === null) {
                     removeTag(tagData, saveId);
                 } else if (tag.type.convertToWhenChecked) {
                     removeTag(tagData, saveId);
-                    let newTagData = createTagData();
+                    const newTagData = createTagData();
                     newTagData.checkName = tagData.checkName;
                     newTagData.tagId = tagData.tagId;
                     newTagData.typeId = tag.type.convertToWhenChecked;
@@ -198,7 +198,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
      * @param {string | undefined} saveId
      */
     const addTag = (tagData: TagData, saveId: string | undefined) => {
-        let tag = buildTag(tagData);
+        const tag = buildTag(tagData);
         // clear any existing listeners about the tag in case of duplicates.
         removeTag(tagData, saveId);
 
@@ -208,7 +208,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
 
         // Add the tag to any relevant checks, set up conversion listeners
         if (tagData.checkName) {
-            let checkStatus = checkManager.getCheckStatus(tagData.checkName);
+            const checkStatus = checkManager.getCheckStatus(tagData.checkName);
             const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
@@ -223,14 +223,14 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
             }
 
             if (tag.type.convertToWhenChecked !== undefined) {
-                let convertTag = () => {
+                const convertTag = () => {
                     handleTagConversion(tag, saveId);
                 };
 
-                let checkSubscriber = checkManager.getSubscriberCallback(
+                const checkSubscriber = checkManager.getSubscriberCallback(
                     tag.checkName
                 );
-                let cleanUpCalls =
+                const cleanUpCalls =
                     tagListenerCleanupCalls.get(tag.tagId) ?? new Set();
                 cleanUpCalls.add(checkSubscriber(convertTag));
                 tagListenerCleanupCalls.set(tag.tagId, cleanUpCalls);
@@ -287,8 +287,8 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
 
         // Remove tag from checks
         if (tag.tagId && tag.checkName) {
-            let checkStatus = checkManager.getCheckStatus(tag.checkName);
-            let checkTags = checkStatus.tags.slice();
+            const checkStatus = checkManager.getCheckStatus(tag.checkName);
+            const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
             let keepIgnore = false;
@@ -302,7 +302,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
                 }
             }
 
-            let cleanUpCalls = tagListenerCleanupCalls.get(tag.tagId);
+            const cleanUpCalls = tagListenerCleanupCalls.get(tag.tagId);
             if (cleanUpCalls) {
                 cleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             }
@@ -369,7 +369,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
         if (!saveData.tagData) {
             saveData.tagData = {};
         }
-        let tagNames = Object.getOwnPropertyNames(saveData.tagData);
+        const tagNames = Object.getOwnPropertyNames(saveData.tagData);
         tagNames.forEach((tagName) => {
             addTag(saveData.tagData[tagName], saveId);
         });

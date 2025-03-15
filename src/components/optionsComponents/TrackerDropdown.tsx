@@ -22,7 +22,7 @@ const TrackerDropdown = ({
     const directory = useTrackerDirectory();
     const currentSelection = useCurrentGameTracker(game, trackerManager);
     const trackers = useMemo(() => {
-        let list = directory.trackers.filter(
+        const list = directory.trackers.filter(
             (tracker) => tracker.gameName === game
         );
         list.sort((a, b) => (a.name < b.name ? -1 : 1));

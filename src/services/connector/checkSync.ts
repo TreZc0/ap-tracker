@@ -4,7 +4,7 @@ import { Client, Hint } from "archipelago.js";
 import { TagManager } from "../tags/tagManager";
 import { CheckManager } from "../checks/checkManager";
 
-let hintToText = (client: Client, hint: Hint) => {
+const hintToText = (client: Client, hint: Hint) => {
     let ownerString = `${hint.item.receiver.alias}'s`;
     if (hint.item.receiver.slot === client.players.self.slot) {
         ownerString = "Your";
@@ -14,14 +14,13 @@ let hintToText = (client: Client, hint: Hint) => {
         finderString = "your";
     }
 
-    let entranceString =
+    const entranceString =
         hint.entrance !== "Vanilla" ? `(${hint.entrance})` : "";
     return `${ownerString} ${hint.item.name} is at ${hint.item.locationName} in ${finderString} world. ${entranceString}`;
 };
 
-let addHint = (client: Client, hint: Hint, tagManager: TagManager, saveId: string) => {
+const addHint = (client: Client, hint: Hint, tagManager: TagManager, saveId: string) => {
     if (hint.item.sender.slot === client.players.self.slot) {
-        // console.log(hintToText(client, hint));
         const tagData = tagManager.createTagData();
         tagData.checkName = hint.item.locationName;
         tagData.typeId = "hint";

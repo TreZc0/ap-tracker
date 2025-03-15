@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { MessageType } from "../../services/notifications/notifications";
 import { filledTextPrimary, secondary } from "../../constants/colors";
 const STATUS_HEIGHT_EM = 4;
-const StatusNotification = ({
+const StatusNotificationView = ({
     message,
     type,
     index,
@@ -25,13 +25,13 @@ const StatusNotification = ({
     const [animationTime, setAnimationTime] = useState(0);
 
     useEffect(() => {
-        let update = (time: number) => {
+        const update = (time: number) => {
             animationFrameRef.current = requestAnimationFrame(update);
             if (!timeRef.current) {
                 timeRef.current = time;
                 return;
             }
-            let delta = time - timeRef.current;
+            const delta = time - timeRef.current;
             timeRef.current = time;
             setAnimationTime((prev) => prev + delta);
         };
@@ -77,9 +77,9 @@ const StatusNotification = ({
             break;
         }
     }
-    let top = 4 + STATUS_HEIGHT_EM * index;
-    let onScreen = !hide;
-    let right = onScreen ? 10 : -600;
+    const top = 4 + STATUS_HEIGHT_EM * index;
+    const onScreen = !hide;
+    const right = onScreen ? 10 : -600;
     let animationValue = (animationTime % 1000) / 1000;
     let arc = 2;
     if (progress >= 0) {
@@ -154,4 +154,4 @@ const StatusNotification = ({
     );
 };
 
-export default StatusNotification;
+export default StatusNotificationView;

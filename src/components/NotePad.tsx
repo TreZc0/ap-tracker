@@ -25,21 +25,20 @@ const NotePad = ({
     open,
     onClose,
     disabled,
-    ...props
 }: {
     open: boolean;
     onClose: () => void;
     disabled: boolean;
 }) => {
-    let textArea = useRef(null);
-    let [noteContent, setNoteContent] = useState("");
-    let [loading, setLoading] = useState(false);
-    let [unsavedChanges, setUnsavedChanges] = useState(false);
-    let [initialLoad, setInitialLoad] = useState(false);
+    const textArea = useRef(null);
+    const [noteContent, setNoteContent] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [unsavedChanges, setUnsavedChanges] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(false);
 
     const retrieveNote = useCallback(() => {
         if (unsavedChanges) {
-            let confirmation = window.confirm(
+            const confirmation = window.confirm(
                 "You have changes that will be overwritten, are you sure?"
             );
             if (!confirmation) {
@@ -47,7 +46,7 @@ const NotePad = ({
             }
         }
         setLoading(true);
-        let noteStatusHandle = NotificationManager.createStatus({
+        const noteStatusHandle = NotificationManager.createStatus({
             message: "Syncing Notes",
             type: MessageType.info,
             id: "note-status",
@@ -82,7 +81,7 @@ const NotePad = ({
 
     const storeNote = useCallback(() => {
         if (!loading && noteContent.length <= MAX_NOTE_LENGTH) {
-            let statusHandle = NotificationManager.createStatus({
+            const statusHandle = NotificationManager.createStatus({
                 message: "Uploading note...",
                 type: MessageType.progress,
             });
@@ -164,9 +163,9 @@ const NotePad = ({
                     onKeyDown={(e) => {
                         if (e.key === "Tab" && !e.shiftKey) {
                             e.preventDefault();
-                            let start = textArea.current?.selectionStart;
-                            let end = textArea.current?.selectionEnd;
-                            let value = textArea.current?.value;
+                            const start = textArea.current?.selectionStart;
+                            const end = textArea.current?.selectionEnd;
+                            const value = textArea.current?.value;
                             if (textArea.current) {
                                 textArea.current.value =
                                     value.substring(0, start) +
@@ -229,10 +228,7 @@ const NotePad = ({
                         >
                             Load from Server
                         </SecondaryButton>
-                        <GhostButton
-                            $small
-                            onClick={onClose}
-                        >
+                        <GhostButton $small onClick={onClose}>
                             Close
                         </GhostButton>
                     </div>

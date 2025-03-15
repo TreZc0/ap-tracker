@@ -21,7 +21,7 @@ const CONNECTION_MESSAGES = {
         type: MessageType.success,
         message: `Successfully connected as ${playerAlias} playing ${game}`,
     }),
-    connectionFailed: ({ host, port, slot, game, error }): ConnectionMessage => {
+    connectionFailed: ({ host, port, slot, game: _game, error }): ConnectionMessage => {
         let serverHelp = "";
         switch (host) {
             case "archipelago.gg": {
@@ -46,7 +46,7 @@ To use the tracker you will need to host the tracker locally, instructions can b
         let message = `Failed to connect to server ${host}:${port}.`;
         let details = serverHelp;
         if (error.errors) {
-            let e = error.errors[0];
+            const e = error.errors[0];
             switch (e) {
                 case "InvalidSlot": {
                     message = `Failed to connect to slot. The slot name "${slot}" was invalid.`;

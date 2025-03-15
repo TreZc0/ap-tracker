@@ -4,7 +4,7 @@ import SectionView from "./sectionComponents/SectionView";
 import InventoryView from "./inventoryComponents/InventoryView";
 import StickySpacer from "./shared/StickySpacer";
 
-const TrackerScreen = ({}) => {
+const TrackerScreen = () => {
     return (
         <SplitScreen
             style={{

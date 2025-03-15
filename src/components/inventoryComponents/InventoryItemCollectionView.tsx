@@ -1,13 +1,9 @@
 import React, { useContext, useState } from "react";
-import {
-    InventoryItem,
-    InventoryItemCollection,
-} from "../../services/inventory/inventoryManager";
+import { InventoryItemCollection } from "../../services/inventory/inventoryManager";
 import {
     normalItem,
     progressionItem,
     tertiary,
-    textPrimary,
     trapItem,
     usefulItem,
 } from "../../constants/colors";
@@ -66,8 +62,8 @@ const InventoryItemCollectionView = ({
                             {item.local && checkManager && tagManager && (
                                 <GhostButton
                                     onClick={(event) => {
-                                        let check = item.location;
-                                        let status =
+                                        const check = item.location;
+                                        const status =
                                             checkManager.getCheckStatus(check);
                                         event.stopPropagation();
                                         let found = false;
@@ -77,7 +73,7 @@ const InventoryItemCollectionView = ({
                                             }
                                         });
                                         if (!found) {
-                                            let tagData =
+                                            const tagData =
                                                 tagManager.createTagData();
                                             tagData.typeId = "star";
                                             tagData.checkName = check;
@@ -88,7 +84,7 @@ const InventoryItemCollectionView = ({
                                                     .connectionId
                                             );
                                         } else if (found) {
-                                            let starTag =
+                                            const starTag =
                                                 tagManager.createTagData();
                                             starTag.typeId = "star";
                                             starTag.checkName = check;

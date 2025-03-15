@@ -59,7 +59,7 @@ const ConnectionIcon = ({ status }: { status: string }) => {
                 timeRef.current = time;
                 return;
             }
-            let delta = time - timeRef.current;
+            const delta = time - timeRef.current;
             timeRef.current = time;
             setTime((t) => t + delta);
             frameRef.current = requestAnimationFrame(update);

@@ -12,22 +12,22 @@ import { SectionConfigData } from "../../../services/sections/sectionManager";
 const verifyTrackerConfig = (sectionData: SectionConfigData, groupData: {[groupKey: string]:GroupData}, checkManager?: CheckManager) => {
     const errors = [];
     // Do verification
-    let remainingChecks = checkManager?.getAllExistingChecks() ?? new Set();
-    let remainingGroups = new Set(Object.getOwnPropertyNames(groupData));
-    let allGroups = new Set(Object.getOwnPropertyNames(groupData));
-    let remainingSections = new Set(
+    const remainingChecks = checkManager?.getAllExistingChecks() ?? new Set();
+    const remainingGroups = new Set(Object.getOwnPropertyNames(groupData));
+    const allGroups = new Set(Object.getOwnPropertyNames(groupData));
+    const remainingSections = new Set(
         Object.getOwnPropertyNames(sectionData.categories)
     );
 
     // verify all checks are covered, any left are in remaining checks
     remainingGroups.forEach((groupName) => {
-        let { checks } = groupData[groupName];
+        const { checks } = groupData[groupName];
         checks.forEach((check) => remainingChecks.delete(check));
     });
 
     // verify all groups are in at least one section
     remainingSections.forEach((sectionName) => {
-        let { groupKey } = sectionData.categories[sectionName];
+        const { groupKey } = sectionData.categories[sectionName];
         if (groupKey && typeof groupKey === "string") {
             if (!allGroups.has(groupKey)) {
                 errors.push(
@@ -80,9 +80,9 @@ const verifyTrackerConfig = (sectionData: SectionConfigData, groupData: {[groupK
             return;
         }
 
-        let section = sectionData.categories[name];
+        const section = sectionData.categories[name];
         if (section.children) {
-            let lineage = [...parents];
+            const lineage = [...parents];
             lineage.push(name);
             section.children.forEach((childName) =>
                 traverseCategoryTree(childName, lineage)

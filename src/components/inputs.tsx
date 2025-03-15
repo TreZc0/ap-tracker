@@ -50,6 +50,7 @@ const Input = forwardRef(
         );
     }
 );
+Input.displayName = "Input";
 
 const Checkbox = forwardRef(
     (
@@ -99,5 +100,6 @@ const Checkbox = forwardRef(
         );
     }
 );
+Checkbox.displayName = "CheckBox";
 
 export { Input, Checkbox };

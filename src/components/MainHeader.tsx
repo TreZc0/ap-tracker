@@ -4,11 +4,12 @@ import { PrimaryButton, SecondaryButton } from "./buttons";
 import Icon from "./icons/icons";
 import { background } from "../constants/colors";
 import NotePad from "./NotePad";
-import ServiceContext from "../contexts/serviceContext";
 import { CONNECTION_STATUS } from "../services/connector/connector";
 import ConnectionIcon from "./icons/ConnectionIcon";
 
-const MainHeader = ({ optionsCallback, ...props }) => {
+const MainHeader = ({ optionsCallback, ...props }:{
+    optionsCallback: React.MouseEventHandler
+}) => {
     const trackerState = useContext(TrackerStateContext);
     const [notePadOpen, setNotePadOpen] = useState(false);
     const slot = trackerState.slotData;

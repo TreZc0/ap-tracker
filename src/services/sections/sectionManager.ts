@@ -35,13 +35,13 @@ const addCheckReport = (sourceReport: CheckReport, destinationReport: CheckRepor
         destinationReport.ignored.add(check)
     );
     sourceReport.tagCounts.forEach((sourceCounter, counterName) => {
-        let destinationCounter =
+        const destinationCounter =
             destinationReport.tagCounts.get(counterName) ?? new Set();
         sourceCounter.forEach((check) => destinationCounter.add(check));
         destinationReport.tagCounts.set(counterName, destinationCounter);
     });
     sourceReport.tagTotals.forEach((sourceCounter, counterName) => {
-        let destinationCounter =
+        const destinationCounter =
             destinationReport.tagTotals.get(counterName) ?? new Set();
         sourceCounter.forEach((check) => destinationCounter.add(check));
         destinationReport.tagTotals.set(counterName, destinationCounter);
@@ -60,15 +60,6 @@ const defaultSectionStatus: Section = {
     children: null,
 };
 
-interface SectionCondition {
-    option?: string;
-    state?: string;
-    is?: any;
-    and?: SectionCondition;
-    or?: SectionCondition;
-    not?: SectionCondition;
-}
-
 const sectionDefaults = {
     title: "Untitled Section",
     groupKey: null,
@@ -81,10 +72,6 @@ const themeDefaults = {
     color: "black",
 };
 
-interface SectionTypeDef {
-    show_when: boolean | SectionCondition;
-    portal_categories?: string[] | null;
-}
 
 interface SectionDef {
     title: string;
@@ -103,7 +90,7 @@ interface SectionConfig {
 
 interface SectionConfigData {
     categories: {[categoryKey: string]: SectionDef};
-    options: any;
+    options: unknown;
     themes: {[themeKey: string]: SectionThemeDef};
 }
 
@@ -111,9 +98,18 @@ interface Section {
     title: string;
     checkReport: CheckReport;
     checks: Map<string, CheckStatus>;
-    portals?: any;
+    portals?: unknown;
     theme: SectionTheme;
     children: string[] | null;
+}
+
+interface SectionUpdate {
+    title?: string;
+    checkReport?: CheckReport;
+    checks?: Map<string, CheckStatus>;
+    portals?: unknown;
+    theme?: SectionTheme;
+    children?: string[] | null;
 }
 
 interface SectionThemeDef {
@@ -136,7 +132,7 @@ interface SectionUpdateTreeNode {
 }
 
 interface SectionManager {
-    updateSectionStatus: (sectionName: string, section: any) => void;
+    updateSectionStatus: (sectionName: string, section: SectionUpdate) => void;
     setConfiguration: (configData: SectionConfigData) => void;
     deleteAllSections: () => void;
     deleteSection: (sectionName: string) => void;
@@ -158,11 +154,11 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
     };
 
     const deleteAllSections = () => {
-        let names = [...sectionData.keys()];
+        const names = [...sectionData.keys()];
         names.map((name) => deleteSection(name));
     };
 
-    const updateSectionStatus = (sectionName: string, section: any) => {
+    const updateSectionStatus = (sectionName: string, section: SectionUpdate) => {
         sectionData.set(sectionName, {
             ...(sectionData.get(sectionName) ?? defaultSectionStatus),
             ...section,
@@ -227,7 +223,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 ...sectionDefaults,
                 ...configData.categories[categoryName],
             };
-            let result: SectionConfig = {
+            const result: SectionConfig = {
                 title: category.title,
                 children: [],
                 groupKey: category.groupKey,
@@ -235,7 +231,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             };
 
             if (category.theme) {
-                let theme = sectionThemes.get(category.theme);
+                const theme = sectionThemes.get(category.theme);
                 if (!theme) {
                     console.warn(
                         `Failed to find theme ${category.theme} for ${category.title}, using default theme`
@@ -246,9 +242,9 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             }
 
             if (category.children) {
-                let parentage = new Set(parents);
+                const parentage = new Set(parents);
                 parentage.add(categoryName);
-                for (let childName of category.children) {
+                for (const childName of category.children) {
                     readCategory(childName, parentage);
                     result.children?.push(childName);
                 }
@@ -258,7 +254,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
         };
 
         if (configData.themes) {
-            for (let themeName of Object.keys(configData.themes)) {
+            for (const themeName of Object.keys(configData.themes)) {
                 readTheme(themeName, configData.themes[themeName]);
             }
         } else {
@@ -275,7 +271,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
      * @returns The status of the related check
      */
     const addCheckToReport = (report: CheckReport, checkName: string): CheckStatus => {
-        let status = checkManager.getCheckStatus(checkName);
+        const status = checkManager.getCheckStatus(checkName);
         if (status.exists) {
             report.exist.add(checkName);
             if (status.checked) {
@@ -287,9 +283,9 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             status.tags.forEach((tag) => {
                 const counter = tag.counter;
                 if (counter) {
-                    let counterTotal =
+                    const counterTotal =
                         report.tagTotals.get(counter.id) ?? new Set();
-                    let counterCount =
+                    const counterCount =
                         report.tagCounts.get(counter.id) ?? new Set();
                     counterTotal.add(checkName);
 
@@ -336,9 +332,9 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             };
 
             const buildCheckReport = () => {
-                let checkReport = createNewCheckReport();
+                const checkReport = createNewCheckReport();
                 /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
-                let checks: Map<string, import("../checks/checkManager").CheckStatus> = new Map();
+                const checks: Map<string, import("../checks/checkManager").CheckStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );
@@ -359,7 +355,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 // Build a list of checks for the area
                 for (const groupName of checkGroups) {
                     /** @type {string[]} */
-                    let checks: string[] = [
+                    const checks: string[] = [
                         ...(groups.get(groupName)?.checks.values() ?? []),
                     ];
                     checks.forEach((check) => node.checks.add(check));
@@ -368,17 +364,17 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 
             const setCheckListeners = () => {
                 node.checks.forEach((checkName) => {
-                    let subscribe =
+                    const subscribe =
                         checkManager.getSubscriberCallback(checkName);
-                    let cleanUpCall = subscribe(update);
+                    const cleanUpCall = subscribe(update);
                     listenerCleanUpCalls.add(cleanUpCall);
                 });
             };
 
             const setEntranceListener = () => {
-                let subscribe =
+                const subscribe =
                     entranceManager.getEntranceSubscriber(portalName);
-                let cleanUpCall = subscribe(update);
+                const cleanUpCall = subscribe(update);
                 listenerCleanUpCalls.add(cleanUpCall);
             };
 
@@ -410,13 +406,13 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 });
             };
 
-            let remove = () => {
+            const remove = () => {
                 cleanUpListeners();
                 node.parents.forEach((parent) => {
                     parent.children.delete(node);
                     parent.update();
                 });
-                let children = [...node.children.values()];
+                const children = [...node.children.values()];
                 children.forEach((child) => {
                     child.parents.delete(node);
                     if (child.parents.size === 0) {
@@ -467,7 +463,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             if (lineage.has(sectionName)) {
                 return null;
             }
-            let sectionConfig = sectionConfigData.get(sectionName);
+            const sectionConfig = sectionConfigData.get(sectionName);
 
             if (!sectionConfig) {
                 console.warn(
@@ -478,15 +474,15 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 return null;
             }
 
-            let listenerCleanUpCalls: Set<()=>void> = new Set();
+            const listenerCleanUpCalls: Set<()=>void> = new Set();
 
-            let cleanUpListeners = () => {
+            const cleanUpListeners = () => {
                 listenerCleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             };
 
-            let buildCheckReport = () => {
-                let checkReport = createNewCheckReport();
-                let checks: Map<string, CheckStatus> = new Map();
+            const buildCheckReport = () => {
+                const checkReport = createNewCheckReport();
+                const checks: Map<string, CheckStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );
@@ -496,7 +492,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 return { checkReport, checks };
             };
 
-            let update = () => {
+            const update = () => {
                 let checkValues;
                 ({ checkReport: node.checkReport, checks: checkValues } =
                     buildCheckReport());
@@ -510,13 +506,13 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 });
             };
 
-            let remove = () => {
+            const remove = () => {
                 cleanUpListeners();
                 node.parents.forEach((parent) => {
                     parent.children.delete(node);
                     parent.update();
                 });
-                let children = [...node.children.values()];
+                const children = [...node.children.values()];
                 children.forEach((child) => {
                     child.parents.delete(node);
                     if (child.parents.size === 0) {
@@ -525,7 +521,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 });
             };
 
-            let node: SectionUpdateTreeNode = {
+            const node: SectionUpdateTreeNode = {
                 sectionName,
                 checks: new Set(),
                 checkReport: createNewCheckReport(),
@@ -545,7 +541,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 
             // Build a list of checks for the area
             for (const groupName of checkGroups) {
-                let checks: string[] = [
+                const checks: string[] = [
                     ...(groups.get(groupName)?.checks.values() ?? []),
                 ];
                 checks.forEach((check) => node.checks.add(check));
@@ -553,15 +549,15 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 
             // set up listeners on checks
             node.checks.forEach((checkName) => {
-                let subscribe = checkManager.getSubscriberCallback(checkName);
-                let cleanUpCall = subscribe(update);
+                const subscribe = checkManager.getSubscriberCallback(checkName);
+                const cleanUpCall = subscribe(update);
                 listenerCleanUpCalls.add(cleanUpCall);
             });
 
             // create children
-            let childLineage = new Set([...lineage.values(), sectionName]);
+            const childLineage = new Set([...lineage.values(), sectionName]);
             sectionConfig.children?.forEach((childName) => {
-                let child = buildSectionUpdateTreeNode(
+                const child = buildSectionUpdateTreeNode(
                     childName,
                     [node],
                     childLineage
@@ -576,7 +572,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 const group = groups.get(groupName);
                 if (group) {
                     group.exits.forEach((exit) => {
-                        let child = buildPortalNode(exit, [node], childLineage);
+                        const child = buildPortalNode(exit, [node], childLineage);
                         if (child) {
                             node.children.add(child);
                         }
@@ -615,4 +611,4 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 };
 
 export { createSectionManager };
-export type {Section, SectionCondition, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef}
+export type {Section, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef}
