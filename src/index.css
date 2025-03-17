@@ -32,6 +32,10 @@ a {
     color: var(--text-primary);
 }
 
+.documentation > p {
+    margin-left: 1em;
+}
+
 .App {
     background-color: var(--background);
 }

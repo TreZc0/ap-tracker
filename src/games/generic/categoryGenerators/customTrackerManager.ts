@@ -267,3 +267,4 @@ const CustomTrackerManager = {
 };
 
 export default CustomTrackerManager;
+export type {CustomCategory_V1 };

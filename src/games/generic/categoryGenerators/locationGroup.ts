@@ -1,4 +1,3 @@
-import { CheckManager } from "../../../services/checks/checkManager";
 import { GroupData } from "../../../services/sections/groupManager";
 import { SectionConfigData } from "../../../services/sections/sectionManager";
 
@@ -6,8 +5,8 @@ const GROUP_DEBUG = false;
 const DEBUG_PARENT_GROUP_ORGANIZATION = GROUP_DEBUG;
 const DEBUG_GROUP_CLASSIFICATION = GROUP_DEBUG;
 
-const generateCategories = (checkManager: CheckManager, groups: { [s: string]: string[]; }) => {
-    const unclassifiedLocations = checkManager.getAllExistingChecks();
+const generateCategories = (groups: { [s: string]: string[]; }) => {
+    const unclassifiedLocations = new Set(groups["Everywhere"]);
     if (GROUP_DEBUG) {
         console.log("Location groups provided:", groups);
     }

@@ -1,33 +1,32 @@
-// @ts-check
 import { CheckManager } from "../../services/checks/checkManager";
+import { generateId } from "../../utility/randomIdGen";
 import { Tracker, TrackerBuilder } from "../TrackerManager";
+import { CustomCategory_V1 } from "./categoryGenerators/customTrackerManager";
+import { GenericGameMethod } from "./categoryGenerators/genericGameEnums";
 import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
-import locationNameGroupGenerator from "./categoryGenerators/locationName";
+import locationNameGroupGenerator, { NameTokenizationOptions } from "./categoryGenerators/locationName";
 
 /** Builds a generic tracker for a given game */
-const buildGenericGame = (gameName: string, checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }): Tracker => {
-    // quick test, do not merge;
-    const checks = checkManager.getAllExistingChecks();
-    locationNameGroupGenerator.generateCategories(checks, { splitCharacters: [" ", ".", "_", "-", ":"], splitOnCase: true }, 3);
+const buildGenericGame = (gameName: string, _checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }, method: GenericGameMethod = GenericGameMethod.locationGroup, parameters: { tokenizationOptions?: NameTokenizationOptions, groupingOptions?: { minChecksPerGroup?: number, maxDepth?: number } } = {}): Tracker => {
+    const checks = new Set(locationGroups["Everywhere"]);
 
     const { groupConfig, categoryConfig } =
-        LocationGroupCategoryGenerator.generateCategories(
-            checkManager,
-            locationGroups
-        );
+        method === GenericGameMethod.locationGroup ?
+            LocationGroupCategoryGenerator.generateCategories(
+                locationGroups
+            ) :
+            locationNameGroupGenerator.generateCategories(checks, { splitCharacters: [" ", ".", "_", "-", ":"], splitOnCase: true, ...parameters.tokenizationOptions }, {maxDepth: 3, minGroupSize: 3, minTokenCount: 1, ...parameters.groupingOptions});
 
-    // so others can use templates
-    console.info(
-        "Result of tracker generation, copy this object for a template as needed.",
-        {
-            id: `Auto-generated-${gameName}-tracker-LG`,
-            name: `${gameName} - Location Grouped Tracker`,
+    const exportTracker = (): CustomCategory_V1 => {
+        return {
+            id: `Auto-generated-${gameName}-tracker-${generateId(8)}`,
+            name: `${gameName} - ${method === GenericGameMethod.locationGroup ? "Location Grouped" : "Name Grouped"} Tracker`,
             game: gameName,
             customTrackerVersion: 1,
             groupData: groupConfig,
             sectionData: categoryConfig,
         }
-    );
+    };
 
     const buildTracker: TrackerBuilder = (
         _checkManager,
@@ -46,6 +45,7 @@ const buildGenericGame = (gameName: string, checkManager: CheckManager, location
         id: `${gameName}-LocationGroupGenerated`,
         gameName: gameName,
         buildTracker,
+        exportTracker,
     };
 };
 

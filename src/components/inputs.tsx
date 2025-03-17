@@ -102,4 +102,44 @@ const Checkbox = forwardRef(
 );
 Checkbox.displayName = "CheckBox";
 
-export { Input, Checkbox };
+const FileInput = forwardRef(
+    (
+        {
+            label,
+            style,
+            className,
+            renderAsDrop,
+            ...props
+        }: {
+            label?: string;
+            style?: React.CSSProperties;
+            renderAsDrop?: boolean;
+            className?: string;
+        } & ComponentProps<"input">,
+        ref: React.ForwardedRef<HTMLInputElement>
+    ) => {
+        return <div>
+            <label htmlFor={props.id}>{label}</label>
+            <br/>
+            <input type="file" ref={ref} {...props} style={renderAsDrop ? {display:'none'} : style} className={renderAsDrop ? "" : "interactive " + className}/>
+            {renderAsDrop && <div onDrop={(e)=>{
+                e.preventDefault();
+                if(e.dataTransfer.items){
+                    console.log("items");
+                }else{
+                    console.log("files");
+                }
+            }}
+            onDragOver={(e) => {
+                e.preventDefault();
+            }}
+            >
+                Drag and drop file here.
+                </div>}
+        </div>;
+    }
+);
+
+FileInput.displayName = "FileInput";
+
+export { Input, Checkbox, FileInput };

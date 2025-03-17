@@ -2,6 +2,7 @@ import { CheckManager } from "../services/checks/checkManager";
 import { EntranceManager } from "../services/entrances/entranceManager";
 import { GroupManager } from "../services/sections/groupManager";
 import { SectionManager } from "../services/sections/sectionManager";
+import { GenericGameMethod } from "./generic/categoryGenerators/genericGameEnums";
 import { buildGenericGame } from "./generic/genericGame";
 
 const modified = Symbol("modified");
@@ -25,6 +26,7 @@ interface Tracker {
     gameTitle?: string;
     gameAbbreviation?: string;
     buildTracker: TrackerBuilder;
+    exportTracker?: () => import("./generic/categoryGenerators/customTrackerManager").CustomCategory_V1;
 }
 
 /** Manages list of registered trackers and can be used to initialize them */
@@ -167,7 +169,7 @@ class TrackerManager {
         if (this.#registeredTrackers.has(gameName)) {
             tracker = this.#registeredTrackers.get(gameName);
         } else {
-            tracker = buildGenericGame(gameName, checkManager, groups);
+            tracker = buildGenericGame(gameName, checkManager, groups, GenericGameMethod.nameAnalysis);
         }
         tracker.buildTracker(
             checkManager,
