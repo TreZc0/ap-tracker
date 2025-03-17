@@ -8,8 +8,6 @@ import { setupAPInventorySync } from "./inventorySync";
 import { CheckManager } from "../checks/checkManager";
 import { InventoryManager } from "../inventory/inventoryManager";
 import { EntranceManager } from "../entrances/entranceManager";
-import { GroupManager } from "../sections/groupManager";
-import { SectionManager } from "../sections/sectionManager";
 import { TagManager } from "../tags/tagManager";
 import TrackerManager from "../../games/TrackerManager";
 
@@ -25,6 +23,7 @@ interface SlotInfo {
     alias?: string;
     connectionId: string;
     name: string;
+    game: string;
 }
 
 interface Connector {
@@ -36,15 +35,13 @@ const createConnector = (
     checkManager: CheckManager,
     inventoryManger: InventoryManager,
     entranceManager: EntranceManager,
-    groupManager: GroupManager,
-    sectionManager: SectionManager,
     tagManager: TagManager,
     trackerManager: TrackerManager,
 ): Connector => {
     const client = new Client();
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "" };
+        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "", game:"" };
         const listeners: Set<() => void> = new Set();
         const subscribe = (listener: () => void) => {
             listeners.add(listener);
@@ -144,6 +141,7 @@ const createConnector = (
                     ...connection.slotInfo,
                     slotName: slot,
                     alias: client.players.self.alias,
+                    game: client.players.self.game,
                 };
 
                 client.socket.on("disconnected", () => {
@@ -223,10 +221,7 @@ const createConnector = (
                 getGroups().then((groups: { [groupName: string]: string[] }) => {
                     trackerManager.initializeTracker({
                         gameName: savedConnectionInfo.game,
-                        checkManager,
                         entranceManager,
-                        groupManager,
-                        sectionManager,
                         slotData: {},
                         groups
                     }

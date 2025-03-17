@@ -51,14 +51,12 @@ const sectionManager = createSectionManager(
     groupManager
 );
 const tagManager = createTagManager(checkManager);
-const trackerManager = new TrackerManager();
+const trackerManager = new TrackerManager(checkManager, groupManager, sectionManager);
 trackerManager.loadSavedTrackerChoices();
 const connector = createConnector(
     checkManager,
     inventoryManager,
     entranceManager,
-    groupManager,
-    sectionManager,
     tagManager,
     trackerManager
 );

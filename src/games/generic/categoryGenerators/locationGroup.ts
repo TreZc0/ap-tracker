@@ -296,13 +296,13 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
 
     // build group tree
     for (const [groupName, checks] of finalGroups.entries()) {
-        groupConfig[groupName] = {
+        groupConfig[`group_${groupName}`] = {
             checks: [...checks.values()],
         };
     }
 
     // build category tree
-    const getChildList = (parentName) => {
+    const getChildList = (parentName: string) => {
         const children = childTable.get(parentName) ?? new Set();
         const childList = [];
         children.forEach((childName) => {
@@ -315,16 +315,16 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
     // place nodes in tree
     let themeCounter = 0;
     for (const groupName of keyLocationGroups.union(metaLocationGroups)) {
-        categoryConfig.categories[groupName] = {
+        categoryConfig.categories[`section_${groupName}`] = {
             title: groupName,
             theme: keyLocationGroups.has(groupName)
                 ? themeNames[themeCounter++ % themeNames.length]
                 : "default",
-            children: getChildList(groupName),
-            groupKey: groupName,
+            children: getChildList(groupName).map((name) => `section_${name}`),
+            groupKey: `group_${groupName}`,
         };
         if (roots.has(groupName)) {
-            categoryConfig.categories.root.children.push(groupName);
+            categoryConfig.categories.root.children.push(`section_${groupName}`);
         }
     }
 
@@ -341,18 +341,18 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
     })
 
     if (unclassifiedLocations.size > 0) {
-        groupConfig["unclassified"] = {
+        groupConfig["group_unclassified"] = {
             checks: [...unclassifiedLocations.values()],
         };
-        categoryConfig.categories["unclassified"] = {
+        categoryConfig.categories["section_unclassified"] = {
             title: "Unclassified Checks",
-            groupKey: "unclassified",
+            groupKey: "group_unclassified",
             theme: "default",
             children: null,
         };
-        categoryConfig.categories.root.children.push("unclassified");
+        categoryConfig.categories.root.children.push("section_unclassified");
     } else {
-        delete categoryConfig.categories["unclassified"];
+        delete categoryConfig.categories["section_unclassified"];
     }
 
     return {

@@ -1,23 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { useCustomTrackerDirectory } from "../../hooks/trackerHooks";
 import { tertiary } from "../../constants/colors";
-import { DangerButton, GhostButton, PrimaryButton, SecondaryButton } from "../buttons";
+import { DangerButton, PrimaryButton} from "../buttons";
 import Icon from "../icons/icons";
-import Modal from "../shared/Modal";
-import NotificationManager, {
-    MessageType,
-} from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import TrackerManager from "../../games/TrackerManager";
-import { FileInput } from "../inputs";
-import styled from "styled-components";
-import CustomTrackerHelpModal from "./CustomTrackerHelpModal";
+import CreateCustomTrackerModal from "./CreateCustomTrackerModal";
 
-const ModalGrid = styled.div`
-    display: grid;
-    column-gap: 2em;
-    grid: "upload build" 25vh / 1fr 1fr;
-`;
+
 
 const CustomTrackerOptions = ({
     trackerManager,
@@ -56,46 +46,6 @@ const CustomTrackerOptions = ({
     }, [trackersByGame]);
 
     const [modalOpen, setModalOpen] = useState(false);
-    const [helpModalOpen, setHelpModalOpen] = useState(false);
-    /**
-     * Passes the contents of a file to the CustomTrackerManager
-     */
-    const loadCustomTracker = (file: File) => {
-        const statusHandle = NotificationManager.createStatus({
-            message: "Loading Custom Tracker",
-            type: MessageType.info,
-            progress: -1,
-        });
-        file.text()
-            .then((text) => JSON.parse(text))
-            .then((data) => {
-                CustomTrackerManager.addCustomTracker(data);
-                statusHandle.update({
-                    message: "Successfully added custom tracker",
-                    type: MessageType.success,
-                    progress: 1,
-                    duration: 4,
-                });
-                if (trackerManager.getGameTracker(data.game)?.id === data.id) {
-                    trackerManager.setGameTracker(data.game, data.id);
-                }
-            })
-            .catch((e) => {
-                statusHandle.update({
-                    message: "Failed to load tracker",
-                    progress: 0,
-                    duration: 4,
-                    type: MessageType.error,
-                });
-                NotificationManager.createToast({
-                    message: "Failed to create custom tracker",
-                    duration: 10,
-                    type: MessageType.error,
-                    details: `Error: \n\t${e}`,
-                });
-            });
-        setModalOpen(false);
-    };
     return (
         <div>
             <div>
@@ -161,69 +111,7 @@ const CustomTrackerOptions = ({
             >
                 <Icon type="add" />
             </PrimaryButton>
-            <Modal open={modalOpen}>
-                <div>
-                    <h2>Custom Trackers (experimental)</h2>
-                    <ModalGrid>
-                        {/* <label htmlFor="custom_list_upload">
-                            Load custom tracker:{" "}
-                        </label> */}
-                        <div
-                            style={{
-                                gridArea: "upload",
-                                alignSelf: "center",
-                            }}
-                        >
-                            <h3>Add Custom Tracker:</h3>
-                            <FileInput
-                                label="Upload file"
-                                id="custom_list_upload"
-                                accept="application/JSON"
-                                // renderAsDrop
-                                onChange={(e) => {
-                                    if (e.target.files.length > 0) {
-                                        loadCustomTracker(e.target.files[0]);
-                                    }
-                                }}
-                            />
-                        </div>
-                        <div
-                            style={{
-                                gridArea: "build",
-                                alignSelf: "center",
-                            }}
-                        >
-                            <div> 
-                                <h3>Generate a Template:</h3>
-                                <div style={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}>
-                                    <PrimaryButton>Location Group</PrimaryButton>
-                                    <PrimaryButton>Name Analysis</PrimaryButton>
-
-                                </div>
-                            </div>
-                        </div>
-                    </ModalGrid>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            width: "100%",
-                            marginTop: "1em",
-                        }}
-                    >
-                        <SecondaryButton onClick={() => setHelpModalOpen(true)}>
-                            Help
-                        </SecondaryButton>
-                        <GhostButton onClick={() => setModalOpen(false)}>
-                            Close
-                        </GhostButton>
-                    </div>
-                </div>
-            </Modal>
-            <CustomTrackerHelpModal open={helpModalOpen} onClose={()=>setHelpModalOpen(false)}/>
+            <CreateCustomTrackerModal trackerManager={trackerManager} open={modalOpen} onClose={()=>setModalOpen(false)}/>
         </div>
     );
 };

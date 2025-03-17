@@ -60,9 +60,9 @@ const CustomTrackerHelpModal = ({
                     grouping for those.
                 </p>
                 <p>
-                    There are many different ways that Archipelago world developers
-                    name their locations, as such the app provides some
-                    parameters that can be set to change how the names are
+                    There are many different ways that Archipelago world
+                    developers name their locations, as such the app provides
+                    some parameters that can be set to change how the names are
                     analyzed. To understand these parameters, it is best to know
                     a bit about how the analysis takes place.
                 </p>
@@ -111,10 +111,16 @@ const CustomTrackerHelpModal = ({
                         locations that must share a prefix to create a group for
                         them.
                     </li>
-                    {/* <li>
+                    <li>
                         <b>Max dropdown depth:</b> How nested the generated
                         groups should be.
-                    </li> */}
+                    </li>
+                    <li>
+                        <b>Use all checks in Data Package:</b> When enabled, all
+                        locations defined by the world developer will be used in
+                        the analysis instead of just the locations present in
+                        the current slot.
+                    </li>
                 </ul>
             </div>
             <div

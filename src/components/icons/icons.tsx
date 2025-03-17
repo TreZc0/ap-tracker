@@ -46,6 +46,9 @@ const supportedIcons = [
     "checklist",
     "delete_forever",
     "delete",
+    "download",
+    "upload_file"
+
 ];
 
 const link = document.createElement("link");

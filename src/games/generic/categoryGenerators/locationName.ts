@@ -160,6 +160,13 @@ const generateGroups = (checks: Set<string>, nameTokenizationOptions: NameTokeni
     return groups;
 }
 
+const sectionName = (name: string) => {
+    if(name === "root"){
+        return name;
+    }
+    return `section_${name}`;
+}
+
 const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTokenizationOptions, requirementParams: {minGroupSize: number, maxDepth: number, minTokenCount: number}) => {
     const groupTreeRoot = new GroupNode("root", checks.values());
     const currentLevelGroups: Set<GroupNode> = new Set([groupTreeRoot]);
@@ -201,24 +208,34 @@ const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTo
         // create group entry
         let groupKey: string = null;
         if (node.ownChecks.size > 0){
-            if(groupConfig[node.name]){
-                console.warn(`Duplicate name ${node.name} detected`);
+            groupKey = `group_${node.name}`;
+            if(groupConfig[groupKey]){
+                console.warn(`Duplicate name ${groupKey} detected`);
             }
-            groupConfig[node.name] = {
+            groupConfig[groupKey] = {
                 checks: [...node.ownChecks.values()]
             }
-            groupKey = node.name;
         }
-        categoryConfig.categories[node.name] = {
-            theme: "default",
-            title: node.name.trim(),
-            groupKey,
-            children: []
+        if(node.name === "root"){
+            categoryConfig.categories[`${node.name}`] = {
+                theme: "default",
+                title: "Total",
+                groupKey,
+                children: []
+            }
+        }else{
+            categoryConfig.categories[sectionName(node.name)] = {
+                theme: "default",
+                title: node.name.trim(),
+                groupKey,
+                children: []
+            }
         }
+
 
         node.children.forEach((child) => {
             traverseTreeNode(child);
-            categoryConfig.categories[node.name].children.push(child.name);
+            categoryConfig.categories[sectionName(node.name)].children.push(sectionName(child.name));
         })
 
     }

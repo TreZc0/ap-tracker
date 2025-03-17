@@ -58,11 +58,13 @@ const Checkbox = forwardRef(
             label,
             checked,
             style,
+            disabled,
             onChange,
             ...props
         }: {
             label: string;
             checked: boolean;
+            disabled?: boolean;
             style?: React.CSSProperties;
             onChange: React.ChangeEventHandler<HTMLInputElement>;
         },
@@ -80,6 +82,7 @@ const Checkbox = forwardRef(
                     <input
                         ref={ref}
                         type="checkbox"
+                        disabled={disabled}
                         {...props}
                         checked={checked}
                         onChange={onChange}
@@ -90,6 +93,7 @@ const Checkbox = forwardRef(
                                 fontSize: "0.75em",
                                 marginLeft: "0.5em",
                                 marginBottom: "0px",
+                                opacity: disabled ? "0.7" : "1",
                             }}
                         >
                             {label}

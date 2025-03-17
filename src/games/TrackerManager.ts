@@ -11,10 +11,7 @@ const TRACKER_CHOICE_KEY = "Archipelago_Checklist_saved_tracker_choices";
 type TrackerBuilder = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager, sectionManager: SectionManager, slotData: unknown) => void;
 type TrackerInitParams = {
     gameName: string
-    checkManager: CheckManager,
     entranceManager: EntranceManager,
-    groupManager: GroupManager,
-    sectionManager: SectionManager,
     slotData?: unknown,
     groups: { [groupName: string]: string[] },
 }
@@ -34,6 +31,9 @@ class TrackerManager {
     #registeredTrackers: Map<string, Tracker> = new Map();
     #trackerListeners: Set<() => void> = new Set();
     #trackerParams: TrackerInitParams = null;
+    #checkManager: CheckManager;
+    #sectionManager: SectionManager;
+    #groupManager: GroupManager;
     static #managers: Set<TrackerManager> = new Set();
     static #allTrackers: Map<string, Tracker> = new Map();
     static #trackersByGame: Map<string, Set<string>> = new Map();
@@ -103,8 +103,11 @@ class TrackerManager {
         }
     }
 
-    constructor() {
+    constructor(checkManager: CheckManager, groupManager: GroupManager, sectionManager: SectionManager) {
         TrackerManager.#managers.add(this);
+        this.#checkManager = checkManager;
+        this.#groupManager = groupManager;
+        this.#sectionManager = sectionManager;
     }
 
     /** Returns a callback that can have a listener passed in that will be called when tracker changes occur and returns a clean up call.*/
@@ -163,19 +166,20 @@ class TrackerManager {
             return;
         }
         const {
-            gameName, checkManager, entranceManager, groupManager, sectionManager, slotData, groups
+            gameName, entranceManager, slotData, groups
         } = this.#trackerParams;
         let tracker: Tracker = null;
         if (this.#registeredTrackers.has(gameName)) {
             tracker = this.#registeredTrackers.get(gameName);
         } else {
-            tracker = buildGenericGame(gameName, checkManager, groups, GenericGameMethod.nameAnalysis);
+            tracker = buildGenericGame(gameName, this.#checkManager, groups, GenericGameMethod.locationGroup);
         }
+        this.#sectionManager.deleteAllSections();
         tracker.buildTracker(
-            checkManager,
+            this.#checkManager,
             entranceManager,
-            groupManager,
-            sectionManager,
+            this.#groupManager,
+            this.#sectionManager,
             slotData
         );
     }
@@ -201,6 +205,10 @@ class TrackerManager {
                 this.setGameTracker(gameName, tracker);
             }
         });
+    }
+
+    getTrackerInitParams = (): TrackerInitParams => {
+        return this.#trackerParams;
     }
 
     #callTrackerListeners = () => {

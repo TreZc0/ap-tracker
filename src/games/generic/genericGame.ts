@@ -7,9 +7,11 @@ import LocationGroupCategoryGenerator from "./categoryGenerators/locationGroup";
 import locationNameGroupGenerator, { NameTokenizationOptions } from "./categoryGenerators/locationName";
 
 /** Builds a generic tracker for a given game */
-const buildGenericGame = (gameName: string, _checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }, method: GenericGameMethod = GenericGameMethod.locationGroup, parameters: { tokenizationOptions?: NameTokenizationOptions, groupingOptions?: { minChecksPerGroup?: number, maxDepth?: number } } = {}): Tracker => {
-    const checks = new Set(locationGroups["Everywhere"]);
-
+const buildGenericGame = (gameName: string, checkManager: CheckManager, locationGroups: { [locationGroupName: string]: string[] }, method: GenericGameMethod = GenericGameMethod.locationGroup, parameters: { useAllChecksInDataPackage?: boolean, tokenizationOptions?: NameTokenizationOptions, groupingOptions?: { minGroupSize?: number, maxDepth?: number, minTokenCount?:number } } = {}): Tracker => {
+    let checks = checkManager.getAllExistingChecks();
+    if(parameters.useAllChecksInDataPackage ?? true){
+        checks = new Set(locationGroups["Everywhere"]);
+    }
     const { groupConfig, categoryConfig } =
         method === GenericGameMethod.locationGroup ?
             LocationGroupCategoryGenerator.generateCategories(
