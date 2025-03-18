@@ -16,6 +16,11 @@ import SectionView from "../sectionComponents/SectionView";
 import { createTagManager } from "../../services/tags/tagManager";
 import { buildGenericGame } from "../../games/generic/genericGame";
 import { GenericGameMethod } from "../../games/generic/categoryGenerators/genericGameEnums";
+import NotificationManager, {
+    MessageType,
+} from "../../services/notifications/notifications";
+import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
+import { exportJSONFile } from "../../utility/jsonExport";
 
 interface AdditionalParams {
     useAllChecksInDataPackage?: boolean;
@@ -151,7 +156,9 @@ const NameAnalysisModal = ({
                     <h3>Preview</h3>
                     <ServiceContext.Provider
                         value={{
-                            checkManager: otherOptions.useAllChecksInDataPackage ? previewCheckManager : previewCheckManager,
+                            checkManager: otherOptions.useAllChecksInDataPackage
+                                ? previewCheckManager
+                                : previewCheckManager,
                             entranceManager: previewEntranceManager,
                             groupManager: previewGroupManager,
                             sectionManager: previewSectionManager,
@@ -319,8 +326,58 @@ const NameAnalysisModal = ({
                 </div>
             </AnalysisGrid>
             <ButtonRow>
-                <PrimaryButton>Save and Use</PrimaryButton>
-                <SecondaryButton>
+                <PrimaryButton
+                    onClick={() => {
+                        const customTracker =
+                            previewTrackerManager.getGameTracker(
+                                services.connector.connection.slotInfo.game
+                            );
+                        const customTrackerExport =
+                            customTracker.exportTracker();
+                        if (!customTracker || !customTrackerExport) {
+                            NotificationManager.createToast({
+                                message: "Failed to export and save tracker",
+                                type: MessageType.error,
+                            });
+                            return;
+                        }
+
+                        CustomTrackerManager.addCustomTracker(
+                            customTrackerExport
+                        );
+                        mainTrackerManager.setGameTracker(
+                            customTracker.gameName,
+                            customTrackerExport.id
+                        );
+                        NotificationManager.createStatus({
+                            message: "Successfully added tracker",
+                            type: MessageType.success,
+                            progress: 1,
+                            duration: 3,
+                        });
+                    }}
+                >
+                    Save and Use
+                </PrimaryButton>
+                <SecondaryButton
+                    onClick={() => {
+                        const customTracker =
+                            previewTrackerManager.getGameTracker(
+                                services.connector.connection.slotInfo.game
+                            );
+                        if (!customTracker) {
+                            NotificationManager.createToast({
+                                message: "Failed to export tracker",
+                                type: MessageType.error,
+                            });
+                            return;
+                        }
+                        exportJSONFile(
+                            `tracker-export-${Date.now().toString()}`,
+                            customTracker.exportTracker()
+                        );
+                    }}
+                >
                     Export <Icon type="download" fontSize="14px" />
                 </SecondaryButton>
                 <GhostButton onClick={onClose}>Close</GhostButton>

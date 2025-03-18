@@ -75,7 +75,7 @@ class GroupNode {
     ownChecks: Set<string>;
     children: Set<GroupNode> = new Set();
     name: string;
-    constructor(name:string, checks: Iterable<string>){
+    constructor(name: string, checks: Iterable<string>) {
         this.ownChecks = new Set(checks);
         this.name = name;
     }
@@ -161,29 +161,29 @@ const generateGroups = (checks: Set<string>, nameTokenizationOptions: NameTokeni
 }
 
 const sectionName = (name: string) => {
-    if(name === "root"){
+    if (name === "root") {
         return name;
     }
     return `section_${name}`;
 }
 
-const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTokenizationOptions, requirementParams: {minGroupSize: number, maxDepth: number, minTokenCount: number}) => {
+const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTokenizationOptions, requirementParams: { minGroupSize: number, maxDepth: number, minTokenCount: number }) => {
     const groupTreeRoot = new GroupNode("root", checks.values());
     const currentLevelGroups: Set<GroupNode> = new Set([groupTreeRoot]);
     const nextLevelGroups: Set<GroupNode> = new Set();
-    for(let level = 0; level < requirementParams.maxDepth; level++){
+    for (let level = 0; level < requirementParams.maxDepth; level++) {
         nextLevelGroups.clear();
         currentLevelGroups.forEach((groupNode) => {
             let levelTokenCount = requirementParams.minTokenCount;
-            if(groupNode.name !== "root"){
-                levelTokenCount = tokenizeName(groupNode.name,nameTokenizationOptions).length + 1;
+            if (groupNode.name !== "root") {
+                levelTokenCount = tokenizeName(groupNode.name, nameTokenizationOptions).length + 1;
             }
             const generatedGroups = generateGroups(groupNode.ownChecks, nameTokenizationOptions, requirementParams.minGroupSize, levelTokenCount);
             generatedGroups.forEach((checks, name) => {
                 const child = new GroupNode(name, checks);
-                if(name === "Unorganized" && groupNode.name === "root"){
+                if (name === "Unorganized" && groupNode.name === "root") {
                     groupNode.addChild(child);
-                } else if (name !== "Unorganized"){
+                } else if (name !== "Unorganized") {
                     groupNode.addChild(child);
                     nextLevelGroups.add(child);
                 }
@@ -193,9 +193,9 @@ const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTo
         nextLevelGroups.forEach((group) => currentLevelGroups.add(group));
     }
     // debugger;
-    const groupConfig: {[groupKey: string]: GroupData} = {};
+    const groupConfig: { [groupKey: string]: GroupData } = {};
     const categoryConfig: SectionConfigData = {
-        categories:{},
+        categories: {},
         options: {},
         themes: {
             default: {
@@ -207,23 +207,23 @@ const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTo
     const traverseTreeNode = (node: GroupNode) => {
         // create group entry
         let groupKey: string = null;
-        if (node.ownChecks.size > 0){
+        if (node.ownChecks.size > 0) {
             groupKey = `group_${node.name}`;
-            if(groupConfig[groupKey]){
+            if (groupConfig[groupKey]) {
                 console.warn(`Duplicate name ${groupKey} detected`);
             }
             groupConfig[groupKey] = {
                 checks: [...node.ownChecks.values()]
             }
         }
-        if(node.name === "root"){
+        if (node.name === "root") {
             categoryConfig.categories[`${node.name}`] = {
                 theme: "default",
                 title: "Total",
                 groupKey,
                 children: []
             }
-        }else{
+        } else {
             categoryConfig.categories[sectionName(node.name)] = {
                 theme: "default",
                 title: node.name.trim(),
@@ -236,7 +236,8 @@ const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTo
         node.children.forEach((child) => {
             traverseTreeNode(child);
             categoryConfig.categories[sectionName(node.name)].children.push(sectionName(child.name));
-        })
+        });
+        categoryConfig.categories[sectionName(node.name)].children.sort();
 
     }
     traverseTreeNode(groupTreeRoot);

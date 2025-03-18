@@ -35,9 +35,13 @@ const TrackerDropdown = ({
             onChange={(e) => {
                 try {
                     if (e.target.value) {
-                        trackerManager.setGameTracker(game, e.target.value);
+                        trackerManager.setGameTracker(
+                            game,
+                            e.target.value,
+                            true
+                        );
                     } else {
-                        trackerManager.setGameTracker(game, null);
+                        trackerManager.setGameTracker(game, null, true);
                     }
                 } catch (e) {
                     console.error(e);

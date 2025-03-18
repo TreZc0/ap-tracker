@@ -22,7 +22,7 @@ const ModalGrid = styled.div`
     display: grid;
     column-gap: 2em;
 
-    grid: 
+    grid:
         "upload" 25vh
         "build" 25vh / auto;
     @media only screen and (orientation: landscape) {
@@ -63,9 +63,8 @@ const CreateCustomTrackerModal = ({
                     progress: 1,
                     duration: 4,
                 });
-                if (trackerManager.getGameTracker(data.game)?.id === data.id) {
-                    trackerManager.setGameTracker(data.game, data.id);
-                }
+
+                trackerManager.setGameTracker(data.game, data.id);
             })
             .catch((e) => {
                 statusHandle.update({
@@ -131,25 +130,40 @@ const CreateCustomTrackerModal = ({
                                 >
                                     <PrimaryButton
                                         disabled={!connector.slotInfo.game}
-                                        onClick={()=>{
-                                            const trackerData = trackerManager.getTrackerInitParams();
-                                            if(!trackerData){
-                                                NotificationManager.createToast({
-                                                    message: "Failed to export tracker, connect to a slot first",
-                                                    type: MessageType.error,
-                                                })
+                                        onClick={() => {
+                                            const trackerData =
+                                                trackerManager.getTrackerInitParams();
+                                            if (!trackerData) {
+                                                NotificationManager.createToast(
+                                                    {
+                                                        message:
+                                                            "Failed to export tracker, connect to a slot first",
+                                                        type: MessageType.error,
+                                                    }
+                                                );
                                                 return;
                                             }
-                                            const tracker = buildGenericGame(connector.slotInfo.game, services.checkManager, trackerData.groups, GenericGameMethod.locationGroup);
-                                            const trackerJSON = tracker.exportTracker();
-                                            exportJSONFile(`tracker-export-${Date.now().toString()}`, trackerJSON, true);
+                                            const tracker = buildGenericGame(
+                                                connector.slotInfo.game,
+                                                services.checkManager,
+                                                trackerData.groups,
+                                                GenericGameMethod.locationGroup
+                                            );
+                                            const trackerJSON =
+                                                tracker.exportTracker();
+                                            exportJSONFile(
+                                                `tracker-export-${Date.now().toString()}`,
+                                                trackerJSON,
+                                                true
+                                            );
                                         }}
                                     >
-                                        Location Group <Icon fontSize="14px" type="download"/>
+                                        Location Group{" "}
+                                        <Icon fontSize="14px" type="download" />
                                     </PrimaryButton>
                                     <PrimaryButton
                                         disabled={!connector.slotInfo.game}
-                                        onClick={()=>setNameModalOpen(true)}
+                                        onClick={() => setNameModalOpen(true)}
                                     >
                                         Name Analysis
                                     </PrimaryButton>
@@ -157,9 +171,7 @@ const CreateCustomTrackerModal = ({
                             </div>
                         </div>
                     </ModalGrid>
-                    <ButtonRow
-                        
-                    >
+                    <ButtonRow>
                         <SecondaryButton onClick={() => setHelpModalOpen(true)}>
                             Help
                         </SecondaryButton>
@@ -173,7 +185,7 @@ const CreateCustomTrackerModal = ({
             />
             <NameAnalysisModal
                 open={nameModalOpen}
-                onClose={()=>setNameModalOpen(false)}
+                onClose={() => setNameModalOpen(false)}
             />
         </>
     );

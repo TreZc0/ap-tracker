@@ -120,7 +120,7 @@ class TrackerManager {
         };
     };
 
-    setGameTracker = (game: string, _tracker: Tracker | string | null) => {
+    setGameTracker = (game: string, _tracker: Tracker | string | null, save?: boolean) => {
         // TODO, make it so setting with game name of "" will set the default tracker for games
         if (!game) {
             throw new Error(
@@ -143,16 +143,18 @@ class TrackerManager {
             this.reloadTracker();
         }
 
-        const savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
-        const trackerChoices = savedChoicesString
-            ? JSON.parse(savedChoicesString)
-            : {};
-        if (tracker) {
-            trackerChoices[game] = tracker.id;
-        } else {
-            delete trackerChoices[game];
+        if (save) {
+            const savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
+            const trackerChoices = savedChoicesString
+                ? JSON.parse(savedChoicesString)
+                : {};
+            if (tracker) {
+                trackerChoices[game] = tracker.id;
+            } else {
+                delete trackerChoices[game];
+            }
+            localStorage.setItem(TRACKER_CHOICE_KEY, JSON.stringify(trackerChoices));
         }
-        localStorage.setItem(TRACKER_CHOICE_KEY, JSON.stringify(trackerChoices));
 
         this.#callTrackerListeners();
     };
