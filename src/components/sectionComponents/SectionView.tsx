@@ -9,6 +9,7 @@ import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
+import { naturalSort } from "../../utility/comparisons";
 
 /**
  *
@@ -77,12 +78,14 @@ const SectionView = ({
         "checkOrderBehavior",
         "global"
     );
-    const checkOrderBehavior = checkOrderBehavior_ ?? "lexical";
+    const checkOrderBehavior = checkOrderBehavior_ ?? "natural";
 
     const checks = useMemo(() => {
         const checkNames = [...(section?.checks.keys() ?? [])];
         if (checkOrderBehavior === "lexical") {
             checkNames.sort();
+        } else if (checkOrderBehavior === "natural") {
+            checkNames.sort(naturalSort);
         } else if (checkOrderBehavior === "id") {
             checkNames.sort(
                 (a, b) =>

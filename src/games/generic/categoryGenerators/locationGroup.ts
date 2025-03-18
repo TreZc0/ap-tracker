@@ -1,5 +1,6 @@
 import { GroupData } from "../../../services/sections/groupManager";
 import { SectionConfigData } from "../../../services/sections/sectionManager";
+import { naturalSort } from "../../../utility/comparisons";
 
 const GROUP_DEBUG = false;
 const DEBUG_PARENT_GROUP_ORGANIZATION = GROUP_DEBUG;
@@ -333,7 +334,7 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
         const aIsKey = keyLocationGroups.has(a);
         const bIsKey = keyLocationGroups.has(b);
         if (aIsKey === bIsKey) {
-            return a < b ? -1 : 1;
+            return naturalSort(a, b);
         } else if (aIsKey) {
             return -1;
         }
