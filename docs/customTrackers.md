@@ -1,5 +1,5 @@
 # Custom Tracker Files
-The tracker supports loading of external files to define how the checks are organized. At the moment, there is no way to use this app to create these files for you. This document hopes to explain the expected format and will refer to this example [Ori_BF_custom_example.json](./examples/Ori_BF_custom_example.json).
+The tracker supports loading of external files to define how the checks are organized. There are a few ways to get some starting templates from the app, but any fine tuning will have to be done by editing `.json` files by hand (see Getting a template section). This document hopes to explain the expected format and will refer to this example [Ori_BF_custom_example.json](./examples/Ori_BF_custom_example.json).
 
 ## Using a custom Tracker
 To use a custom tracker you need to:
@@ -9,10 +9,12 @@ To use a custom tracker you need to:
 4. Use that dropdown to select the tracker you want to use for that game
 5. Now when you connect to a game, that tracker will be loaded
 
-Note that the changes only take affect the moment you connect to the Archipelago server, they will not update while you are already connected.
-
 ## Getting a template
-You can copy the example here [Ori_BF_custom_example.json](./examples/Ori_BF_custom_example.json), or if you open the developer tools when using the default tracker, it will log the result of the default categorization. You can copy this object (in chrome right-click the object => copy object) and paste it into a json document so you can modify it. (This is how I created the example)
+After connecting to an Archipelago slot, the app will allow you to generate and export some templates you can use to customize your custom tracker.
+
+To find this, go to the options screen and press the `+` button, on the pop up window on the right there will be the option to download the location group template (this is the same template used by the default tracker), or use the Name Analyzer to build one for you. The help button describes how this analysis is performed and what the options might do. This is a first implementation and there are plans to improve the process in the future. After you have gotten a template you think you can work with, it will allow you to save or download the template from that page.
+
+You can also download any tracker you have saved previously from the options page directly.
 
 ## General structure
 The json file must have the following structure:
