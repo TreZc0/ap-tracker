@@ -6,6 +6,8 @@ import Icon from "../icons/icons";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import TrackerManager from "../../games/TrackerManager";
 import CreateCustomTrackerModal from "./CreateCustomTrackerModal";
+import NotificationManager, { MessageType } from "../../services/notifications/notifications";
+import { exportJSONFile } from "../../utility/jsonExport";
 
 
 
@@ -73,6 +75,23 @@ const CustomTrackerOptions = ({
                                     >
                                         {tracker.name}
                                         {!tracker.enabled && "(Disabled)"}{" "}
+                                        <PrimaryButton 
+                                        $tiny
+                                        onClick={()=>{
+                                            const trackerData = CustomTrackerManager.getCustomTracker(tracker.id);
+                                            if(!tracker){
+                                                NotificationManager.createStatus({
+                                                    message: "Failed to load tracker",
+                                                    type: MessageType.error,
+                                                    progress: 1,
+                                                    duration: 5,
+                                                });
+                                            } else {
+                                                exportJSONFile(`tracker-export-${Date.now().toString()}`, trackerData);
+                                            }
+                                        }}>
+                                            <Icon fontSize="14px" type="download"/>
+                                        </PrimaryButton>
                                         <DangerButton
                                             $tiny
                                             onClick={() => {

@@ -102,7 +102,7 @@ const isUpperCase = (char: string) => {
 }
 
 const isLowerToUpper = (a: string, b: string) => {
-    return !isUpperCase(a) && isUpperCase(b);
+    return !isUpperCase(a) && isUpperCase(b) && /^[a-zA-Z]$/.test(a) && /^[a-zA-Z]$/.test(b);
 }
 
 type NameTokenizationOptions = {

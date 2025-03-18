@@ -1,15 +1,17 @@
 // @ts-check
 import React, { forwardRef, ComponentProps } from "react";
-import { background, tertiary, textPrimary } from "../constants/colors";
+import { background, danger, tertiary, textPrimary } from "../constants/colors";
 
 const Input = forwardRef(
     (
         {
             label,
             style,
+            invalid,
             ...props
         }: {
             label: string;
+            invalid?: boolean;
             style?: React.CSSProperties;
         } & ComponentProps<"input">,
         ref: React.ForwardedRef<HTMLInputElement>
@@ -29,9 +31,10 @@ const Input = forwardRef(
                                 fontSize: "0.75em",
                                 marginLeft: "0.5em",
                                 marginBottom: "0px",
+                                color: invalid ? danger : textPrimary,
                             }}
                         >
-                            {label}
+                            {label} {invalid && "*"}
                         </label>
                     )}
                     <br />
@@ -42,7 +45,7 @@ const Input = forwardRef(
                         style={{
                             backgroundColor: background,
                             color: textPrimary,
-                            border: `1px solid ${tertiary}`,
+                            border: `1px solid ${invalid ? danger : tertiary}`,
                         }}
                     />
                 </div>

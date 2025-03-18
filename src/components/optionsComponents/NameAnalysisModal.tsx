@@ -88,6 +88,15 @@ const NameAnalysisModal = ({
         minTokenCount: 1,
     });
 
+    const [textOptionsTemp, setTextOptionsTemp]: [
+        { [key: string]: string },
+        React.Dispatch<React.SetStateAction<{ [key: string]: string }>>
+    ] = useState({
+        maxDepth: "1",
+        minChecksPerGroup: "3",
+        minTokenCount: "1",
+    });
+
     const removeSplitChar = (char: string) => {
         const currentValues = new Set(tokenOptions.splitCharacters);
         currentValues.delete(char);
@@ -280,7 +289,12 @@ const NameAnalysisModal = ({
                     <br />
                     <Input
                         type="number"
-                        value={otherOptions.minChecksPerGroup}
+                        value={textOptionsTemp.minChecksPerGroup}
+                        invalid={
+                            isNaN(
+                                parseInt(textOptionsTemp.minChecksPerGroup)
+                            ) || parseInt(textOptionsTemp.minChecksPerGroup) < 2
+                        }
                         min="2"
                         label="Min checks per group"
                         onChange={(e) => {
@@ -290,12 +304,20 @@ const NameAnalysisModal = ({
                                     minChecksPerGroup: parseInt(e.target.value),
                                 });
                             }
+                            setTextOptionsTemp({
+                                ...textOptionsTemp,
+                                minChecksPerGroup: e.target.value,
+                            });
                         }}
                     />
                     <br />
                     <Input
                         type="number"
-                        value={otherOptions.maxDepth}
+                        value={textOptionsTemp.maxDepth}
+                        invalid={
+                            isNaN(parseInt(textOptionsTemp.maxDepth)) ||
+                            parseInt(textOptionsTemp.maxDepth) < 0
+                        }
                         min="0"
                         label="Max depth"
                         onChange={(e) => {
@@ -305,12 +327,20 @@ const NameAnalysisModal = ({
                                     maxDepth: parseInt(e.target.value),
                                 });
                             }
+                            setTextOptionsTemp({
+                                ...textOptionsTemp,
+                                maxDepth: e.target.value,
+                            });
                         }}
                     />
                     <br />
                     <Input
                         type="number"
-                        value={otherOptions.minTokenCount}
+                        value={textOptionsTemp.minTokenCount}
+                        invalid={
+                            isNaN(parseInt(textOptionsTemp.minTokenCount)) ||
+                            parseInt(textOptionsTemp.minTokenCount) < 1
+                        }
                         min="1"
                         label="Min Token Count"
                         onChange={(e) => {
@@ -320,6 +350,10 @@ const NameAnalysisModal = ({
                                     minTokenCount: parseInt(e.target.value),
                                 });
                             }
+                            setTextOptionsTemp({
+                                ...textOptionsTemp,
+                                minTokenCount: e.target.value,
+                            });
                         }}
                     />
                     <br />
