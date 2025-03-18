@@ -9,7 +9,6 @@ import CheckView from "./CheckView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
-import _ from "lodash";
 
 /**
  *
@@ -25,7 +24,7 @@ const SectionView = ({
     startOpen,
 }: {
     name: string;
-    context: any;
+    context: unknown;
     startOpen?: boolean;
 }) => {
     const isClosable = name !== "root";
@@ -81,13 +80,14 @@ const SectionView = ({
     const checkOrderBehavior = checkOrderBehavior_ ?? "lexical";
 
     const checks = useMemo(() => {
-        let checkNames = [...(section?.checks.keys() ?? [])];
+        const checkNames = [...(section?.checks.keys() ?? [])];
         if (checkOrderBehavior === "lexical") {
             checkNames.sort();
         } else if (checkOrderBehavior === "id") {
-            checkNames = _.orderBy(
-                checkNames,
-                (name) => checkManager?.getCheckStatus(name).id
+            checkNames.sort(
+                (a, b) =>
+                    checkManager.getCheckStatus(b).id -
+                    checkManager.getCheckStatus(a).id
             );
         }
         return checkNames;
@@ -180,7 +180,7 @@ const SectionView = ({
                             )}
                             {section?.children &&
                                 section.children.map((childName) => {
-                                    let child =
+                                    const child =
                                         sectionManager.getSectionStatus(
                                             childName
                                         );
@@ -210,7 +210,7 @@ const SectionView = ({
                             {clearedSectionBehavior === "separate" &&
                                 section?.children &&
                                 section.children.map((childName) => {
-                                    let child =
+                                    const child =
                                         sectionManager.getSectionStatus(
                                             childName
                                         );

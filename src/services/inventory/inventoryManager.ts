@@ -67,7 +67,7 @@ const createInventoryManager = (): InventoryManager => {
     }
 
     const addItemToCollection = (item: InventoryItem) => {
-        let itemCollection = collectedItems.get(item.id) ?? createItemCollection(item);
+        const itemCollection = collectedItems.get(item.id) ?? createItemCollection(item);
         itemCollection.count++;
         itemCollection.progression ||= item.progression;
         itemCollection.useful ||= item.useful;

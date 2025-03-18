@@ -1,4 +1,3 @@
-// @ts-check
 import { createPortal } from "react-dom";
 import React, {
     useEffect,
@@ -7,16 +6,19 @@ import React, {
     useContext,
     useReducer,
 } from "react";
-import NotificationManager from "../../services/notifications/notifications";
+import NotificationManager, {
+    MessageType,
+    StatusNotification,
+    ToastNotification,
+} from "../../services/notifications/notifications";
 import Toast from "./toastNotification";
 import styled from "styled-components";
 import { SecondaryButton } from "../buttons";
-import Dialog from "../shared/Dialog";
+import Modal from "../shared/Modal";
 import ServiceContext from "../../contexts/serviceContext";
 import useOption from "../../hooks/optionHook";
 import { readThemeValue } from "../../services/theme/theme";
-import _ from "lodash";
-import StatusNotification from "./statusNotification";
+import StatusNotificationView from "./statusNotification";
 
 const ContentContainer = styled.div`
     width: fit-content;
@@ -30,12 +32,41 @@ const ContentContainer = styled.div`
         "details"
         "close";
 `;
-/**
- *
- * @param {any[]} notifications
- * @param {{type:string, data:*}} action
- */
-let toastNotificationReducer = (notifications, action) => {
+
+interface ToastNotificationData {
+    notification: ToastNotification;
+    message: string;
+    type: MessageType;
+    id: string;
+    remainingTime: number;
+    duration: number;
+    details?: string;
+    timed?: boolean;
+}
+
+interface StatusNotificationData {
+    notification: StatusNotification;
+    id: string;
+    remainingTime: number;
+    new: boolean;
+    timed?: boolean;
+}
+
+interface ToastUpdateData {
+    notification?: ToastNotification;
+    delta?: number;
+}
+
+interface StatusUpdateData {
+    notification?: StatusNotification;
+    delta?: number;
+    progress?: number;
+}
+
+const toastNotificationReducer = (
+    notifications: ToastNotificationData[],
+    action: { type: string; data: ToastUpdateData }
+) => {
     let newNotifications = notifications.slice(0);
     switch (action.type) {
         case "tick": {
@@ -51,12 +82,13 @@ let toastNotificationReducer = (notifications, action) => {
             break;
         }
         case "add": {
-            let index = _.findIndex(newNotifications, {
-                id: action.data.notification.id,
-            });
+            const index = newNotifications
+                .map(({ id }) => id === action.data.notification.id)
+                .indexOf(true);
             if (index < 0) {
                 // add completely new notification
                 newNotifications.unshift({
+                    notification: action.data.notification,
                     message: action.data.notification.message,
                     type: action.data.notification.type,
                     id: action.data.notification.id,
@@ -90,7 +122,10 @@ let toastNotificationReducer = (notifications, action) => {
  * @param {any[]} notifications
  * @param {{type:string, data:*}} action
  */
-let statusNotificationReducer = (notifications, action) => {
+const statusNotificationReducer = (
+    notifications: StatusNotificationData[],
+    action: { type: string; data: StatusUpdateData }
+) => {
     let newNotifications = notifications.slice(0);
     switch (action.type) {
         case "tick": {
@@ -107,11 +142,11 @@ let statusNotificationReducer = (notifications, action) => {
             break;
         }
         case "update": {
-            let oldIndex = _.findIndex(newNotifications, {
-                id: action.data.notification.id,
-            });
+            const oldIndex = newNotifications
+                .map(({ id }) => id === action.data.notification.id)
+                .indexOf(true);
             if (oldIndex > -1) {
-                let newStatus = {
+                const newStatus: StatusNotificationData = {
                     ...notifications[oldIndex],
                     notification: action.data.notification,
                 };
@@ -121,7 +156,7 @@ let statusNotificationReducer = (notifications, action) => {
                 }
                 newNotifications[oldIndex] = newStatus;
             } else {
-                let newStatus = {
+                const newStatus: StatusNotificationData = {
                     id: action.data.notification.id,
                     timed: action.data.notification.duration !== undefined,
                     new: true,
@@ -139,24 +174,27 @@ let statusNotificationReducer = (notifications, action) => {
     return newNotifications;
 };
 
-let NotificationContainer = () => {
-    let [toastNotifications, updateToastNotifications] = useReducer(
+const NotificationContainer = () => {
+    const [toastNotifications, updateToastNotifications] = useReducer(
         toastNotificationReducer,
         []
     );
-    let [statusNotifications, updateStatusNotifications] = useReducer(
+    const [statusNotifications, updateStatusNotifications] = useReducer(
         statusNotificationReducer,
         []
     );
     const [detailModalOpen, setDetailModalOpen] = useState(false);
     const [detailIndex, setDetailIndex] = useState(0);
-    const dialog = useRef(null);
     const animationFrameRef = useRef(0);
     const timeRef = useRef(0);
     const toastTimerStopped = useRef(false);
     const serviceContext = useContext(ServiceContext);
     const optionManger = serviceContext.optionManager;
-    const themeValue = useOption(optionManger, "theme", "global") as "light"|"dark"|"system"|null;
+    const themeValue = useOption(optionManger, "theme", "global") as
+        | "light"
+        | "dark"
+        | "system"
+        | null;
 
     const openDetailModal = (index: number) => {
         setDetailIndex(index);
@@ -171,45 +209,30 @@ let NotificationContainer = () => {
         toastTimerStopped.current = false;
     };
 
-    // Effect to sync modal opening and closing with state
-    useEffect(() => {
-        if (detailModalOpen) {
-            dialog.current?.showModal();
-        } else {
-            dialog.current?.close();
-        }
-    }, [detailModalOpen]);
 
     // Effect to run timer animations, set listeners on notifications
     useEffect(() => {
-        /**
-         * @param {import("../../services/notifications/notifications").ToastNotification} toast
-         */
-        let addToast = (toast) => {
+        const addToast = (toast: ToastNotification) => {
             updateToastNotifications({
                 type: "add",
                 data: { notification: toast },
             });
         };
 
-        /**
-         *
-         * @param {import("../../services/notifications/notifications").StatusNotification} statusNotification
-         */
-        let addStatus = (statusNotification) => {
+        const addStatus = (statusNotification: StatusNotification) => {
             updateStatusNotifications({
                 type: "update",
                 data: { notification: statusNotification },
             });
         };
 
-        let update = (time: number) => {
+        const update = (time: number) => {
             animationFrameRef.current = requestAnimationFrame(update);
             if (!timeRef.current) {
                 timeRef.current = time;
                 return;
             }
-            let delta = time - timeRef.current;
+            const delta = time - timeRef.current;
             timeRef.current = time;
             if (!toastTimerStopped.current && !detailModalOpen) {
                 updateToastNotifications({ type: "tick", data: { delta } });
@@ -249,7 +272,7 @@ let NotificationContainer = () => {
                     data-theme={readThemeValue(themeValue)}
                 >
                     {detailModalOpen && toastNotifications[detailIndex] && (
-                        <Dialog ref={dialog}>
+                        <Modal open={detailModalOpen}>
                             <ContentContainer>
                                 <h3 style={{ gridArea: "message" }}>
                                     {toastNotifications[detailIndex].message}
@@ -264,7 +287,6 @@ let NotificationContainer = () => {
                                 </div>
                                 <SecondaryButton
                                     style={{ gridArea: "close" }}
-                                    // @ts-ignore
                                     $small
                                     onClick={() => {
                                         setDetailModalOpen(false);
@@ -273,7 +295,7 @@ let NotificationContainer = () => {
                                     Close
                                 </SecondaryButton>
                             </ContentContainer>
-                        </Dialog>
+                        </Modal>
                     )}
                     {toastNotifications.map((toast, index) => (
                         <Toast
@@ -293,7 +315,7 @@ let NotificationContainer = () => {
                     ))}
 
                     {statusNotifications.map((notification, index) => (
-                        <StatusNotification
+                        <StatusNotificationView
                             message={notification.notification.message}
                             type={notification.notification.type}
                             key={notification.id}
@@ -303,7 +325,7 @@ let NotificationContainer = () => {
                                 notification.remainingTime < 0
                             }
                             progress={notification.notification.progress}
-                        ></StatusNotification>
+                        ></StatusNotificationView>
                     ))}
                 </div>,
                 document.body

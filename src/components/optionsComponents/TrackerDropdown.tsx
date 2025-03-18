@@ -1,23 +1,33 @@
-// @ts-check
-import React from "react";
+import React, { useMemo } from "react";
 import {
     useCurrentGameTracker,
     useTrackerDirectory,
 } from "../../hooks/trackerHooks";
-import TrackerDirectory from "../../games/TrackerDirectory";
 import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
+import TrackerManager from "../../games/TrackerManager";
 /**
  * Displays a drop down with a list of options available for trackers for the provided game name
- * @param param0 
- * @returns 
+ * @param param0
+ * @returns
  */
-const TrackerDropdown = ({ game }:{
-    game: string
+const TrackerDropdown = ({
+    game,
+    trackerManager,
+}: {
+    game: string;
+    trackerManager: TrackerManager;
 }) => {
     const directory = useTrackerDirectory();
-    const currentSelection = useCurrentGameTracker(game);
+    const currentSelection = useCurrentGameTracker(game, trackerManager);
+    const trackers = useMemo(() => {
+        const list = directory.trackers.filter(
+            (tracker) => tracker.gameName === game
+        );
+        list.sort((a, b) => (a.name < b.name ? -1 : 1));
+        return list;
+    }, [directory.trackers]);
     return (
         <select
             className="interactive"
@@ -25,11 +35,16 @@ const TrackerDropdown = ({ game }:{
             onChange={(e) => {
                 try {
                     if (e.target.value) {
-                        TrackerDirectory.setTracker(game, e.target.value);
+                        trackerManager.setGameTracker(
+                            game,
+                            e.target.value,
+                            true
+                        );
                     } else {
-                        TrackerDirectory.setTracker(game, null);
+                        trackerManager.setGameTracker(game, null, true);
                     }
                 } catch (e) {
+                    console.error(e);
                     NotificationManager.createToast({
                         message: "An error occurred",
                         type: MessageType.error,
@@ -40,15 +55,13 @@ const TrackerDropdown = ({ game }:{
             }}
         >
             <option value="">Default</option>
-            {directory.trackers
-                .filter((tracker) => tracker.gameName === game)
-                .map((tracker) => {
-                    return (
-                        <option key={tracker.id} value={tracker.id}>
-                            {tracker.name}
-                        </option>
-                    );
-                })}
+            {trackers.map((tracker) => {
+                return (
+                    <option key={tracker.id} value={tracker.id}>
+                        {tracker.name}
+                    </option>
+                );
+            })}
         </select>
     );
 };

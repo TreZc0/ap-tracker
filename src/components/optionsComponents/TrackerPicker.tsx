@@ -2,11 +2,16 @@ import React from "react";
 import { useTrackerDirectory } from "../../hooks/trackerHooks";
 import TrackerDropdown from "./TrackerDropdown";
 import { tertiary } from "../../constants/colors";
+import TrackerManager from "../../games/TrackerManager";
 
 /**
  * A UI for selecting which tracker to use with which game
  */
-const TrackerPicker = () => {
+const TrackerPicker = ({
+    trackerManager,
+}: {
+    trackerManager: TrackerManager;
+}) => {
     const trackerDirectory = useTrackerDirectory();
 
     return (
@@ -17,7 +22,11 @@ const TrackerPicker = () => {
                     trackerDirectory.games.map((game) => {
                         return (
                             <div key={game}>
-                                {game}: <TrackerDropdown game={game} />
+                                {game}:{" "}
+                                <TrackerDropdown
+                                    game={game}
+                                    trackerManager={trackerManager}
+                                />
                             </div>
                         );
                     })

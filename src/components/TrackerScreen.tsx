@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useContext } from "react";
 import SplitScreen from "./shared/SplitScreen";
 import SectionView from "./sectionComponents/SectionView";
 import InventoryView from "./inventoryComponents/InventoryView";
 import StickySpacer from "./shared/StickySpacer";
+import ServiceContext from "../contexts/serviceContext";
+import useOption from "../hooks/optionHook";
 
-const TrackerScreen = ({}) => {
+const TrackerScreen = () => {
+    const services = useContext(ServiceContext);
+    const showInventoryProg = useOption(
+        services.optionManager,
+        "inventory_show_prog_items",
+        "global"
+    );
+    const showInventoryUseful = useOption(
+        services.optionManager,
+        "inventory_show_useful_items",
+        "global"
+    );
+    const showInventoryNormal = useOption(
+        services.optionManager,
+        "inventory_show_normal_items",
+        "global"
+    );
+    const showInventoryTrap = useOption(
+        services.optionManager,
+        "inventory_show_trap_items",
+        "global"
+    );
+    const showInventory =
+        showInventoryProg ||
+        showInventoryNormal ||
+        showInventoryTrap ||
+        showInventoryUseful;
     return (
         <SplitScreen
             style={{
@@ -15,8 +43,8 @@ const TrackerScreen = ({}) => {
             screens={[
                 {
                     key: "inventory_view",
-                    weight: 1,
-                    content: (
+                    weight: showInventory ? 1 : 0,
+                    content: showInventory && (
                         <>
                             <InventoryView />
                             <StickySpacer />

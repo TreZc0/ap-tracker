@@ -195,7 +195,6 @@ const ChecklistSettings = ({
             <br />
             <br />
             <SecondaryButton
-                // @ts-ignore
                 $small
                 onClick={() => {
                     setPreviewOpen((x) => !x);

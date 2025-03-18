@@ -7,18 +7,19 @@ import { Connector } from "../services/connector/connector";
 import { SectionManager } from "../services/sections/sectionManager";
 import { TagManager } from "../services/tags/tagManager";
 import { OptionManager } from "../services/options/optionManager";
+import TrackerManager from "../games/TrackerManager";
 
-interface _ServiceContext {
-    checkManager?: CheckManager;
-    inventoryManager?: InventoryManager;
-    groupManager?: GroupManager;
-    entranceManager?: EntranceManager;
-    connector?: Connector;
-    sectionManager?: SectionManager;
-    tagManager?: TagManager;
-    optionManager?: OptionManager;
-}
-const ServiceContext: React.Context<_ServiceContext> = createContext({})
+const ServiceContext: React.Context<{
+    checkManager?: CheckManager,
+    inventoryManager?: InventoryManager,
+    groupManager?: GroupManager,
+    entranceManager?: EntranceManager,
+    connector?: Connector,
+    sectionManager?: SectionManager,
+    tagManager?: TagManager,
+    optionManager?: OptionManager,
+    trackerManager?: TrackerManager,
+}> = createContext({})
 
 
 export default ServiceContext
