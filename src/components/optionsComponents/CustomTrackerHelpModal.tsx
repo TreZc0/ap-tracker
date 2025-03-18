@@ -116,6 +116,11 @@ const CustomTrackerHelpModal = ({
                         groups should be.
                     </li>
                     <li>
+                        <b>Minimum token count:</b> Determines how many tokens
+                        are required prior to splitting. Note that split
+                        characters count as tokens.
+                    </li>
+                    <li>
                         <b>Use all checks in Data Package:</b> When enabled, all
                         locations defined by the world developer will be used in
                         the analysis instead of just the locations present in
