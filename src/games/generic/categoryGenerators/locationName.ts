@@ -1,5 +1,6 @@
 import { GroupData } from "../../../services/sections/groupManager";
 import { SectionConfigData } from "../../../services/sections/sectionManager";
+import { naturalSort } from "../../../utility/comparisons";
 
 class TrieNode {
     children: Map<string, TrieNode>;
@@ -237,7 +238,7 @@ const generateCategories = (checks: Set<string>, nameTokenizationOptions: NameTo
             traverseTreeNode(child);
             categoryConfig.categories[sectionName(node.name)].children.push(sectionName(child.name));
         });
-        categoryConfig.categories[sectionName(node.name)].children.sort();
+        categoryConfig.categories[sectionName(node.name)].children.sort(naturalSort);
 
     }
     traverseTreeNode(groupTreeRoot);

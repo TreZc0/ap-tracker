@@ -6,6 +6,7 @@ import StickySpacer from "../shared/StickySpacer";
 import { globalOptionManager } from "../../services/options/optionManager";
 import useOption from "../../hooks/optionHook";
 import { InventoryItemOrder } from "../optionsComponents/InventorySettings";
+import { naturalSort } from "../../utility/comparisons";
 
 const InventoryView = () => {
     const services = useContext(ServiceContext);
@@ -65,7 +66,7 @@ const InventoryView = () => {
                 let orderValue = 1;
                 switch (itemOrder) {
                     case "name": {
-                        orderValue = a.name < b.name ? -1 : 1;
+                        orderValue = naturalSort(a.name, b.name);
                         break;
                     }
                     case "count": {

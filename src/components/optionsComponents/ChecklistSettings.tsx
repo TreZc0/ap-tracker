@@ -176,7 +176,7 @@ const ChecklistSettings = ({
             <select
                 className="interactive"
                 id={"check_order_behavior"}
-                value={checkOrderBehavior ?? "lexical"}
+                value={checkOrderBehavior ?? "natural"}
                 onChange={(event) => {
                     const value = event.target.value;
                     if (value) {
@@ -189,6 +189,7 @@ const ChecklistSettings = ({
                     }
                 }}
             >
+                <option value="natural">Natural</option>
                 <option value="lexical">Lexical</option>
                 <option value="id">Internal id</option>
             </select>

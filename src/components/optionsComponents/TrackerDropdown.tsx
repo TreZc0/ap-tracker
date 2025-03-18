@@ -7,6 +7,7 @@ import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
 import TrackerManager from "../../games/TrackerManager";
+import { naturalSort } from "../../utility/comparisons";
 /**
  * Displays a drop down with a list of options available for trackers for the provided game name
  * @param param0
@@ -25,7 +26,7 @@ const TrackerDropdown = ({
         const list = directory.trackers.filter(
             (tracker) => tracker.gameName === game
         );
-        list.sort((a, b) => (a.name < b.name ? -1 : 1));
+        list.sort((a, b) => naturalSort(a.name, b.name));
         return list;
     }, [directory.trackers]);
     return (

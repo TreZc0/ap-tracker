@@ -1,15 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { useCustomTrackerDirectory } from "../../hooks/trackerHooks";
 import { tertiary } from "../../constants/colors";
-import { DangerButton, PrimaryButton} from "../buttons";
+import { DangerButton, PrimaryButton } from "../buttons";
 import Icon from "../icons/icons";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import TrackerManager from "../../games/TrackerManager";
 import CreateCustomTrackerModal from "./CreateCustomTrackerModal";
-import NotificationManager, { MessageType } from "../../services/notifications/notifications";
+import NotificationManager, {
+    MessageType,
+} from "../../services/notifications/notifications";
 import { exportJSONFile } from "../../utility/jsonExport";
-
-
+import { naturalSort } from "../../utility/comparisons";
 
 const CustomTrackerOptions = ({
     trackerManager,
@@ -35,7 +36,7 @@ const CustomTrackerOptions = ({
         const games = [...trackerMap.keys()];
         games.forEach((game) => {
             const list = trackerMap.get(game);
-            list.sort((a, b) => (a.name < b.name ? -1 : 1));
+            list.sort((a, b) => naturalSort(a.name, b.name));
             trackerMap.set(game, list);
         });
         return trackerMap;
@@ -43,7 +44,7 @@ const CustomTrackerOptions = ({
 
     const sortedGames = useMemo(() => {
         const games = [...trackersByGame.keys()];
-        games.sort();
+        games.sort(naturalSort);
         return games;
     }, [trackersByGame]);
 
@@ -75,22 +76,35 @@ const CustomTrackerOptions = ({
                                     >
                                         {tracker.name}
                                         {!tracker.enabled && "(Disabled)"}{" "}
-                                        <PrimaryButton 
-                                        $tiny
-                                        onClick={()=>{
-                                            const trackerData = CustomTrackerManager.getCustomTracker(tracker.id);
-                                            if(!tracker){
-                                                NotificationManager.createStatus({
-                                                    message: "Failed to load tracker",
-                                                    type: MessageType.error,
-                                                    progress: 1,
-                                                    duration: 5,
-                                                });
-                                            } else {
-                                                exportJSONFile(`tracker-export-${Date.now().toString()}`, trackerData);
-                                            }
-                                        }}>
-                                            <Icon fontSize="14px" type="download"/>
+                                        <PrimaryButton
+                                            $tiny
+                                            onClick={() => {
+                                                const trackerData =
+                                                    CustomTrackerManager.getCustomTracker(
+                                                        tracker.id
+                                                    );
+                                                if (!tracker) {
+                                                    NotificationManager.createStatus(
+                                                        {
+                                                            message:
+                                                                "Failed to load tracker",
+                                                            type: MessageType.error,
+                                                            progress: 1,
+                                                            duration: 5,
+                                                        }
+                                                    );
+                                                } else {
+                                                    exportJSONFile(
+                                                        `tracker-export-${Date.now().toString()}`,
+                                                        trackerData
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <Icon
+                                                fontSize="14px"
+                                                type="download"
+                                            />
                                         </PrimaryButton>
                                         <DangerButton
                                             $tiny
@@ -130,7 +144,11 @@ const CustomTrackerOptions = ({
             >
                 <Icon type="add" />
             </PrimaryButton>
-            <CreateCustomTrackerModal trackerManager={trackerManager} open={modalOpen} onClose={()=>setModalOpen(false)}/>
+            <CreateCustomTrackerModal
+                trackerManager={trackerManager}
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+            />
         </div>
     );
 };
