@@ -1,6 +1,6 @@
 // syncs checks with check manager
 
-import { Client, Hint } from "archipelago.js";
+import { Client, Hint, NetworkHint } from "archipelago.js";
 import { TagManager } from "../tags/tagManager";
 import { CheckManager } from "../checks/checkManager";
 
@@ -44,6 +44,13 @@ const setAPLocations = (client: Client, checkManager: CheckManager) => {
             { checked: true }
         )
     );
+
+    const now = new Date();
+    if (now.getMonth() === 3) {
+        // April fools joke
+        client.deathLink.enableDeathLink();
+    }
+
 };
 
 const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager: TagManager, connection: { slotInfo: { connectionId: string; }; }) => {
@@ -57,7 +64,7 @@ const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager
     });
 
     client.items
-        .on("hintsInitialized", (hints) =>
+        .on("hintsInitialized", (hints) => {
             hints.forEach((hint) =>
                 addHint(
                     client,
@@ -66,10 +73,20 @@ const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager
                     connection.slotInfo.connectionId
                 )
             )
+            // remove once ap.js hints are fixed
+            client.storage.notify([`_read_hints_${client.players.self.team}_${client.players.self.slot}`], (_key, value: NetworkHint[], _old_value) => {
+                value.forEach((nHint) => {
+                    const hint = new Hint(client, nHint);
+                    addHint(client, hint, tagManager, connection.slotInfo.connectionId);
+                })
+            });
+        }
+
         )
         .on("hintReceived", (hint) =>
             addHint(client, hint, tagManager, connection.slotInfo.connectionId)
         );
+
 };
 
 export { setAPLocations, setupAPCheckSync };
