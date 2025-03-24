@@ -29,10 +29,10 @@ const TrackerScreen = () => {
         "global"
     );
     const showInventory =
-        showInventoryProg ||
-        showInventoryNormal ||
-        showInventoryTrap ||
-        showInventoryUseful;
+        (showInventoryProg ?? true) ||
+        (showInventoryNormal ?? true) ||
+        (showInventoryTrap ?? true) ||
+        (showInventoryUseful ?? true);
     return (
         <SplitScreen
             style={{
