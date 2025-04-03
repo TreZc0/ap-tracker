@@ -1,4 +1,4 @@
-import { CheckManager } from "../checks/checkManager";
+import { CheckManager } from "../locations/locationManager";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
 
 interface TagType {

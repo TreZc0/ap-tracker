@@ -1,4 +1,4 @@
-import { CheckManager } from "../../../services/checks/checkManager";
+import { CheckManager } from "../../../services/locations/locationManager";
 import { GroupData } from "../../../services/sections/groupManager";
 import { SectionConfigData } from "../../../services/sections/sectionManager";
 

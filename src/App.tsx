@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { CONNECTION_STATUS } from "./services/connector/connector";
 import OptionsScreen from "./components/optionsComponents/OptionsScreen";
 import { createEntranceManager } from "./services/entrances/entranceManager";
-import { createCheckManager } from "./services/checks/checkManager";
+import { LocationManager } from "./services/locations/locationManager";
 import ServiceContext from "./contexts/serviceContext";
 import { createGroupManager } from "./services/sections/groupManager";
 import { createSectionManager } from "./services/sections/sectionManager";
@@ -40,21 +40,21 @@ const AppScreen = styled.div`
     grid-template-columns: auto;
 `;
 
-const checkManager = createCheckManager();
+const locationManager = new LocationManager();
 const inventoryManager = createInventoryManager();
 const entranceManager = createEntranceManager();
 const optionManager = globalOptionManager;
 const groupManager = createGroupManager(entranceManager);
 const sectionManager = createSectionManager(
-    checkManager,
+    locationManager,
     entranceManager,
     groupManager
 );
-const tagManager = createTagManager(checkManager);
-const trackerManager = new TrackerManager(checkManager, groupManager, sectionManager);
+const tagManager = createTagManager(locationManager);
+const trackerManager = new TrackerManager(locationManager, groupManager, sectionManager);
 trackerManager.loadSavedTrackerChoices();
 const connector = createConnector(
-    checkManager,
+    locationManager,
     inventoryManager,
     entranceManager,
     tagManager,
@@ -90,7 +90,7 @@ const App = (): React.ReactNode => {
                 >
                     <ServiceContext.Provider
                         value={{
-                            checkManager,
+                            locationManager,
                             entranceManager,
                             connector,
                             groupManager,

@@ -8,20 +8,20 @@ import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
 import { GhostButton } from "../buttons";
-const CheckView = ({ check } : {
-    check: string
+const LocationView = ({ location } : {
+    location: string
 }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
-    const checkManager = serviceContext.checkManager;
-    if (!checkManager) {
-        throw new Error("No check manager provided");
+    const locationManager = serviceContext.locationManager;
+    if (!locationManager) {
+        throw new Error("No location manager provided");
     }
     const tagManager = serviceContext.tagManager;
     const status = useSyncExternalStore(
-        checkManager.getSubscriberCallback(check),
-        () => checkManager.getCheckStatus(check),
-        () => checkManager.getCheckStatus(check)
+        locationManager.getSubscriberCallback(location),
+        () => locationManager.getLocationStatus(location),
+        () => locationManager.getLocationStatus(location)
     );
     const connection = serviceContext.connector;
 
@@ -65,7 +65,7 @@ const CheckView = ({ check } : {
                             type={iconType}
                             style={{ color: iconColor }}
                         />{" "}
-                        {check}
+                        {location}
                         {connection && tagManager && (
                             <>
                                 {!status.checked && (
@@ -83,8 +83,8 @@ const CheckView = ({ check } : {
                                                 const ignoreTag =
                                                     tagManager.createTagData();
                                                 ignoreTag.typeId = "ignore";
-                                                ignoreTag.checkName = check;
-                                                ignoreTag.tagId = `${check}-ignore`;
+                                                ignoreTag.checkName = location;
+                                                ignoreTag.tagId = `${location}-ignore`;
                                                 tagManager.addTag(
                                                     ignoreTag,
                                                     connection.connection
@@ -98,8 +98,8 @@ const CheckView = ({ check } : {
                                                 const ignoreTag =
                                                     tagManager.createTagData();
                                                 ignoreTag.typeId = "ignore";
-                                                ignoreTag.checkName = check;
-                                                ignoreTag.tagId = `${check}-ignore`;
+                                                ignoreTag.checkName = location;
+                                                ignoreTag.tagId = `${location}-ignore`;
                                                 tagManager.removeTag(
                                                     ignoreTag,
                                                     connection.connection
@@ -123,7 +123,7 @@ const CheckView = ({ check } : {
                                         event.stopPropagation();
                                         let found = false;
                                         status.tags?.forEach((tag) => {
-                                            if (tag.tagId === `${check}-star`) {
+                                            if (tag.tagId === `${location}-star`) {
                                                 found = true;
                                             }
                                         });
@@ -131,8 +131,8 @@ const CheckView = ({ check } : {
                                             const starTag =
                                                 tagManager.createTagData();
                                             starTag.typeId = "star";
-                                            starTag.checkName = check;
-                                            starTag.tagId = `${check}-star`;
+                                            starTag.checkName = location;
+                                            starTag.tagId = `${location}-star`;
                                             tagManager.addTag(
                                                 starTag,
                                                 connection.connection.slotInfo
@@ -142,8 +142,8 @@ const CheckView = ({ check } : {
                                             const starTag =
                                                 tagManager.createTagData();
                                             starTag.typeId = "star";
-                                            starTag.checkName = check;
-                                            starTag.tagId = `${check}-star`;
+                                            starTag.checkName = location;
+                                            starTag.tagId = `${location}-star`;
                                             tagManager.removeTag(
                                                 starTag,
                                                 connection.connection.slotInfo
@@ -191,4 +191,4 @@ const CheckView = ({ check } : {
     );
 };
 
-export default CheckView;
+export default LocationView;

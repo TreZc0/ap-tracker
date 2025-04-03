@@ -5,7 +5,7 @@ import SavedConnectionManager, { SavedConnectionInfo } from "../savedConnections
 import NotificationManager, { MessageType } from "../notifications/notifications";
 import { enableDataSync } from "./remoteSync";
 import { setupAPInventorySync } from "./inventorySync";
-import { CheckManager } from "../checks/checkManager";
+import { LocationManager } from "../locations/locationManager";
 import { InventoryManager } from "../inventory/inventoryManager";
 import { EntranceManager } from "../entrances/entranceManager";
 import { TagManager } from "../tags/tagManager";
@@ -32,7 +32,7 @@ interface Connector {
 }
 
 const createConnector = (
-    checkManager: CheckManager,
+    checkManager: LocationManager,
     inventoryManger: InventoryManager,
     entranceManager: EntranceManager,
     tagManager: TagManager,

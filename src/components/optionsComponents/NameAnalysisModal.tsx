@@ -4,7 +4,7 @@ import styled from "styled-components";
 import ButtonRow from "../shared/ButtonRow";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../buttons";
 import Icon from "../icons/icons";
-import { createCheckManager } from "../../services/checks/checkManager";
+import { LocationManager } from "../../services/locations/locationManager";
 import { createGroupManager } from "../../services/sections/groupManager";
 import { createEntranceManager } from "../../services/entrances/entranceManager";
 import { createSectionManager } from "../../services/sections/sectionManager";
@@ -44,17 +44,17 @@ const AnalysisGrid = styled.div`
     }
 `;
 
-const previewCheckManager = createCheckManager();
+const previewLocationManager = new LocationManager();
 const previewEntranceManager = createEntranceManager();
 const previewGroupManager = createGroupManager(previewEntranceManager);
-const previewTagManager = createTagManager(previewCheckManager);
+const previewTagManager = createTagManager(previewLocationManager);
 const previewSectionManager = createSectionManager(
-    previewCheckManager,
+    previewLocationManager,
     previewEntranceManager,
     previewGroupManager
 );
 const previewTrackerManager = new TrackerManager(
-    previewCheckManager,
+    previewLocationManager,
     previewGroupManager,
     previewSectionManager
 );
@@ -122,15 +122,18 @@ const NameAnalysisModal = ({
                 mainTrackerParams.gameName
         ) {
             previewTrackerManager.initializeTracker(mainTrackerParams);
-            previewCheckManager.deleteAllChecks();
-            mainTrackerParams.groups["Everywhere"].forEach((check) => {
-                previewCheckManager.updateCheckStatus(check, { exists: true });
+            previewLocationManager.pauseUpdateBroadcast();
+            previewLocationManager.deleteAllLocations();
+            mainTrackerParams.groups["Everywhere"].forEach((location) => {
+                previewLocationManager.updateLocationStatus(location, { exists: true });
             });
+            previewLocationManager.resumeUpdateBroadcast();
+
         }
         if (mainTrackerParams) {
             const tracker = buildGenericGame(
                 mainTrackerParams.gameName,
-                services.checkManager,
+                services.locationManager,
                 mainTrackerParams.groups,
                 GenericGameMethod.nameAnalysis,
                 {
@@ -165,9 +168,9 @@ const NameAnalysisModal = ({
                     <h3>Preview</h3>
                     <ServiceContext.Provider
                         value={{
-                            checkManager: otherOptions.useAllChecksInDataPackage
-                                ? previewCheckManager
-                                : previewCheckManager,
+                            locationManager: otherOptions.useAllChecksInDataPackage
+                                ? previewLocationManager
+                                : previewLocationManager,
                             entranceManager: previewEntranceManager,
                             groupManager: previewGroupManager,
                             sectionManager: previewSectionManager,

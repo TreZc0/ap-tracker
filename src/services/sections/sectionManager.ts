@@ -1,4 +1,4 @@
-import { CheckManager, CheckStatus } from "../checks/checkManager";
+import { LocationManager, LocationStatus } from "../locations/locationManager";
 import { EntranceManager } from "../entrances/entranceManager";
 import { CounterMode } from "../tags/tagManager";
 import { GroupManager } from "./groupManager";
@@ -97,7 +97,7 @@ interface SectionConfigData {
 interface Section {
     title: string;
     checkReport: CheckReport;
-    checks: Map<string, CheckStatus>;
+    checks: Map<string, LocationStatus>;
     portals?: unknown;
     theme: SectionTheme;
     children: string[] | null;
@@ -106,7 +106,7 @@ interface Section {
 interface SectionUpdate {
     title?: string;
     checkReport?: CheckReport;
-    checks?: Map<string, CheckStatus>;
+    checks?: Map<string, LocationStatus>;
     portals?: unknown;
     theme?: SectionTheme;
     children?: string[] | null;
@@ -141,7 +141,7 @@ interface SectionManager {
 }
 
 
-const createSectionManager = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
+const createSectionManager = (checkManager: LocationManager, entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
     const sectionData: Map<string, Section> = new Map();
     const sectionConfigData: Map<string, SectionConfig> = new Map();
     const sectionSubscribers: Map<string, Set<() => void>> = new Map();
@@ -270,8 +270,8 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
      * @param checkName
      * @returns The status of the related check
      */
-    const addCheckToReport = (report: CheckReport, checkName: string): CheckStatus => {
-        const status = checkManager.getCheckStatus(checkName);
+    const addCheckToReport = (report: CheckReport, checkName: string): LocationStatus => {
+        const status = checkManager.getLocationStatus(checkName);
         if (status.exists) {
             report.exist.add(checkName);
             if (status.checked) {
@@ -334,7 +334,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             const buildCheckReport = () => {
                 const checkReport = createNewCheckReport();
                 /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
-                const checks: Map<string, import("../checks/checkManager").CheckStatus> = new Map();
+                const checks: Map<string, LocationStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );
@@ -482,7 +482,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 
             const buildCheckReport = () => {
                 const checkReport = createNewCheckReport();
-                const checks: Map<string, CheckStatus> = new Map();
+                const checks: Map<string, LocationStatus> = new Map();
                 node.checks.forEach((check) =>
                     checks.set(check, addCheckToReport(checkReport, check))
                 );

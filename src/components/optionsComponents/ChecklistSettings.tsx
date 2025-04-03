@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ServiceContext from "../../contexts/serviceContext";
 import SectionView from "../sectionComponents/SectionView";
 import useOption from "../../hooks/optionHook";
-import { createCheckManager } from "../../services/checks/checkManager";
+import { LocationManager } from "../../services/locations/locationManager";
 import { createEntranceManager } from "../../services/entrances/entranceManager";
 import { createGroupManager } from "../../services/sections/groupManager";
 import { createSectionManager } from "../../services/sections/sectionManager";
@@ -10,37 +10,37 @@ import { createTagManager } from "../../services/tags/tagManager";
 import { OptionManager } from "../../services/options/optionManager";
 import { SecondaryButton } from "../buttons";
 
-const mockCheckManager = createCheckManager();
+const mockLocationManager = new LocationManager();
 const mockEntranceManager = createEntranceManager();
 const mockGroupManager = createGroupManager(mockEntranceManager);
 const mockSectionManager = createSectionManager(
-    mockCheckManager,
+    mockLocationManager,
     mockEntranceManager,
     mockGroupManager
 );
-const mockTagManager = createTagManager(mockCheckManager);
+const mockTagManager = createTagManager(mockLocationManager);
 
-mockCheckManager.updateCheckStatus("Location 1", {
+mockLocationManager.updateLocationStatus("Location 1", {
     exists: true,
     checked: true,
 });
-mockCheckManager.updateCheckStatus("Location 2", { exists: true });
-mockCheckManager.updateCheckStatus("Location 3", {
+mockLocationManager.updateLocationStatus("Location 2", { exists: true });
+mockLocationManager.updateLocationStatus("Location 3", {
     exists: true,
     checked: true,
 });
-mockCheckManager.updateCheckStatus("Location 4", { exists: true });
-mockCheckManager.updateCheckStatus("Location 5", { exists: true });
-mockCheckManager.updateCheckStatus("Location 6", {
+mockLocationManager.updateLocationStatus("Location 4", { exists: true });
+mockLocationManager.updateLocationStatus("Location 5", { exists: true });
+mockLocationManager.updateLocationStatus("Location 6", {
     exists: true,
     checked: true,
 });
-mockCheckManager.updateCheckStatus("Location 7", { exists: true });
-mockCheckManager.updateCheckStatus("Location 8", {
+mockLocationManager.updateLocationStatus("Location 7", { exists: true });
+mockLocationManager.updateLocationStatus("Location 8", {
     exists: true,
     checked: true,
 });
-mockCheckManager.updateCheckStatus("Location 9", { exists: true });
+mockLocationManager.updateLocationStatus("Location 9", { exists: true });
 
 mockGroupManager.loadGroups({
     one: {
@@ -206,7 +206,7 @@ const ChecklistSettings = ({
             {previewOpen && (
                 <ServiceContext.Provider
                     value={{
-                        checkManager: mockCheckManager,
+                        locationManager: mockLocationManager,
                         entranceManager: mockEntranceManager,
                         groupManager: mockGroupManager,
                         sectionManager: mockSectionManager,
