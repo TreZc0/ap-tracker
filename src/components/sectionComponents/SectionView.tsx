@@ -58,7 +58,7 @@ const SectionView = ({
     const clearedLocationCount =
         (section?.checkReport.checked.size ?? 0) +
         (section?.checkReport.ignored.size ?? 0);
-    const totalLocationCount = section?.checkReport.exist.size ?? 0;
+    const totalLocationCount = section?.checkReport.existing.size ?? 0;
     const checkedLocationBehavior_ = useOption(
         optionManager,
         "checkedLocationBehavior",
@@ -98,7 +98,7 @@ const SectionView = ({
 
     return (
         <>
-            {section?.checkReport.exist.size === 0 ? (
+            {section?.checkReport.existing.size === 0 ? (
                 <></> // Hide empty sections
             ) : (
                 <div style={style}>
@@ -106,7 +106,7 @@ const SectionView = ({
                         style={{ cursor: isClosable ? "pointer" : "default" }}
                         className={`section_title ${
                             section?.checkReport.checked.size ===
-                            section?.checkReport.exist.size
+                            section?.checkReport.existing.size
                                 ? "checked"
                                 : ""
                         }`}
@@ -196,7 +196,7 @@ const SectionView = ({
                                                     "separate") &&
                                                 child.checkReport.checked
                                                     .size !==
-                                                    child.checkReport.exist
+                                                    child.checkReport.existing
                                                         .size))
                                     ) {
                                         return (
@@ -220,7 +220,7 @@ const SectionView = ({
                                     if (
                                         child &&
                                         child.checkReport.checked.size ===
-                                            child.checkReport.exist.size
+                                            child.checkReport.existing.size
                                     ) {
                                         return (
                                             <SectionView

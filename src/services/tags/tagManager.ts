@@ -1,4 +1,4 @@
-import { CheckManager } from "../locations/locationManager";
+import { LocationManager } from "../locations/locationManager";
 import SavedConnectionManager from "../savedConnections/savedConnectionManager";
 
 interface TagType {
@@ -93,9 +93,9 @@ const builtInTagTypeDefaults: { [s: string]: TagType; } = {
 };
 
 enum CounterMode {
-    countUnchecked= 0,
-    countChecked= 1,
-    countAll= 2,
+    countUnchecked = 0,
+    countChecked = 1,
+    countAll = 2,
 };
 
 interface TagCounter {
@@ -148,12 +148,12 @@ interface TagManager {
     getCounter: (counterId: string) => TagCounter;
 }
 
-const createTagManager = (checkManager: CheckManager): TagManager => {
+const createTagManager = (locationManager: LocationManager): TagManager => {
     /** @type {Map<string, Set<()=>void>>} */
     const tagListenerCleanupCalls: Map<string, Set<() => void>> = new Map();
-    const createTagType = () => {};
+    const createTagType = () => { };
 
-    const deleteTagType = () => {};
+    const deleteTagType = () => { };
     const buildTag = (tagData: TagData): Tag => {
         const type = getTagType(tagData.typeId);
         const tag = {
@@ -176,7 +176,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
     const handleTagConversion = (tag: Tag, saveId: string | undefined) => {
         const tagData = extractTagData(tag);
         if (tag.checkName) {
-            const checkStatus = checkManager.getCheckStatus(tag.checkName);
+            const checkStatus = locationManager.getLocationStatus(tag.checkName);
             if (checkStatus.checked) {
                 if (tag.type.convertToWhenChecked === null) {
                     removeTag(tagData, saveId);
@@ -208,7 +208,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
 
         // Add the tag to any relevant checks, set up conversion listeners
         if (tagData.checkName) {
-            const checkStatus = checkManager.getCheckStatus(tagData.checkName);
+            const checkStatus = locationManager.getLocationStatus(tagData.checkName);
             const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
@@ -227,7 +227,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
                     handleTagConversion(tag, saveId);
                 };
 
-                const checkSubscriber = checkManager.getSubscriberCallback(
+                const checkSubscriber = locationManager.getSubscriberCallback(
                     tag.checkName
                 );
                 const cleanUpCalls =
@@ -236,12 +236,12 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
                 tagListenerCleanupCalls.set(tag.tagId, cleanUpCalls);
             }
             if (tag.type.considerChecked) {
-                checkManager.updateCheckStatus(tagData.checkName, {
+                locationManager.updateLocationStatus(tagData.checkName, {
                     ignored: true,
                     tags: checkTags,
                 });
             } else {
-                checkManager.updateCheckStatus(tagData.checkName, {
+                locationManager.updateLocationStatus(tagData.checkName, {
                     tags: checkTags,
                 });
             }
@@ -287,7 +287,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
 
         // Remove tag from checks
         if (tag.tagId && tag.checkName) {
-            const checkStatus = checkManager.getCheckStatus(tag.checkName);
+            const checkStatus = locationManager.getLocationStatus(tag.checkName);
             const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
@@ -308,7 +308,7 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
             }
 
             if (found) {
-                checkManager.updateCheckStatus(tag.checkName, {
+                locationManager.updateLocationStatus(tag.checkName, {
                     ignored: keepIgnore,
                     tags: checkTags.slice(0),
                 });
@@ -389,4 +389,4 @@ const createTagManager = (checkManager: CheckManager): TagManager => {
 };
 
 export { createTagManager, CounterMode };
-export type {Tag, TagData, TagCounter, TagManager, TagType}
+export type { Tag, TagData, TagCounter, TagManager, TagType }
