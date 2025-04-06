@@ -401,11 +401,11 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
             }
 
             // set up listeners on checks
-            node.checks.forEach((checkName) => {
-                const subscribe = locationManager.getSubscriberCallback(checkName);
-                const cleanUpCall = subscribe(update);
-                listenerCleanUpCalls.add(cleanUpCall);
-            });
+
+            const subscribe = locationManager.getSubscriberCallback(new Set(node.checks));
+            const cleanUpCall = subscribe(update);
+            listenerCleanUpCalls.add(cleanUpCall);
+
 
             // create children
             const childLineage = new Set([...lineage.values(), sectionName]);

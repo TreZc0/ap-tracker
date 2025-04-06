@@ -25,16 +25,20 @@ const defaultCheckStatus = {
 
 class LocationManager {
     #locationStats: Map<string, LocationStatus> = new Map();
-    #locationSubscribers: Map<string, Set<() => void>> = new Map();
+    #locationSubscribers: Map<Set<string>, (names: Set<string>) => void> = new Map();
     #updateQueue: Set<string> = new Set();
     #updatesPaused: boolean = false;
 
-    
+
     #broadcastUpdate = (locationName: string): void => {
         if (this.#updatesPaused) {
             this.#updateQueue.add(locationName);
         } else {
-            this.#locationSubscribers.get(locationName)?.forEach(listener => listener());
+            this.#locationSubscribers.forEach((listener, triggerLocations) => {
+                if (triggerLocations.has(locationName)) {
+                    listener(new Set(locationName));
+                }
+            });
         }
     }
 
@@ -52,8 +56,14 @@ class LocationManager {
      * Will broadcast any queued updates.
      */
     resumeUpdateBroadcast = () => {
+        if (this.#updatesPaused) {
+            this.#locationSubscribers.forEach((listener, triggerLocations) => {
+                if (!triggerLocations.isDisjointFrom(this.#updateQueue)) {
+                    listener(this.#updateQueue);
+                }
+            })
+        }
         this.#updatesPaused = false;
-        this.#updateQueue.forEach((locationName) => this.#broadcastUpdate(locationName));
         this.#updateQueue.clear();
     }
 
@@ -99,15 +109,23 @@ class LocationManager {
         return locations;
     }
 
-    getSubscriberCallback = (locationName:  string) => {
-        return (listener: () => void) => {
-            if (!this.#locationSubscribers.has(locationName)) {
-                this.#locationSubscribers.set(locationName, new Set());
+    /**
+     * 
+     * @param locationName The check or set of checks to listen to and fire the listener on
+     * @returns 
+     */
+    getSubscriberCallback = (locationName: Set<string> | string) => {
+        return (listener: (updatedLocations: Set<string>) => void) => {
+            let locationNames: Set<string> = null;
+            if(typeof locationName === "string"){
+                locationNames = new Set(locationNames);
+            } else {
+                locationNames = locationName;
             }
-            this.#locationSubscribers.get(locationName)?.add(listener);
+            this.#locationSubscribers.set(locationNames, listener);
             // return a function to clean up the subscription
             return () => {
-                this.#locationSubscribers.get(locationName)?.delete(listener);
+                this.#locationSubscribers.delete(locationNames);
             };
         };
     }

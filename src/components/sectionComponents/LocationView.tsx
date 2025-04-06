@@ -19,7 +19,7 @@ const LocationView = ({ location } : {
     }
     const tagManager = serviceContext.tagManager;
     const status = useSyncExternalStore(
-        locationManager.getSubscriberCallback(location),
+        locationManager.getSubscriberCallback(new Set(location)),
         () => locationManager.getLocationStatus(location),
         () => locationManager.getLocationStatus(location)
     );
