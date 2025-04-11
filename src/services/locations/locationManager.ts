@@ -118,7 +118,7 @@ class LocationManager {
         return (listener: (updatedLocations: Set<string>) => void) => {
             let locationNames: Set<string> = null;
             if(typeof locationName === "string"){
-                locationNames = new Set(locationNames);
+                locationNames = new Set([locationName]);
             } else {
                 locationNames = locationName;
             }

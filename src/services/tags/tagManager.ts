@@ -8,6 +8,8 @@ interface TagType {
     textColor?: string;
     hideWhenChecked: boolean;
     convertToWhenChecked?: string | null;
+    convertToWhenIgnored?: string | null;
+    convertToWhenRestored?: string | null;
     considerChecked: boolean;
     icon: string;
     priority: number;
@@ -43,6 +45,7 @@ const builtInTagTypeDefaults: { [s: string]: TagType; } = {
         priority: 50,
         hideWhenChecked: false,
         convertToWhenChecked: "hint_found",
+        convertToWhenIgnored: "hint_ignored",
         doNotSave: true,
     },
     hint_found: {
@@ -55,6 +58,20 @@ const builtInTagTypeDefaults: { [s: string]: TagType; } = {
         icon: "flag_check",
         priority: 50,
         hideWhenChecked: false,
+        doNotSave: true,
+    },
+    hint_ignored: {
+        displayName: "Hint",
+        id: "hint_ignored",
+        textColor: "grey",
+        iconColor: "#ffff00",
+        considerChecked: false,
+        tagCounterId: null,
+        icon: "flag_check",
+        priority: 51,
+        hideWhenChecked: false,
+        convertToWhenChecked: "hint_found",
+        convertToWhenRestored: "hint",
         doNotSave: true,
     },
     star: {
@@ -168,27 +185,35 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
         return tag;
     };
 
+    const convertTagTo = (tag: Tag, toType: string, saveId?: string) => {
+        const tagData = extractTagData(tag);
+        if (toType === null) {
+            removeTag(tagData, saveId);
+        } else if (toType) {
+            removeTag(tagData, saveId);
+            const newTagData = createTagData();
+            newTagData.checkName = tagData.checkName;
+            newTagData.tagId = tagData.tagId;
+            newTagData.typeId = toType;
+            newTagData.text = tagData.text;
+            addTag(newTagData, saveId);
+        }
+    }
+
     /**
      *
      * @param {Tag} tag
      * @param {string | undefined} saveId
      */
     const handleTagConversion = (tag: Tag, saveId: string | undefined) => {
-        const tagData = extractTagData(tag);
         if (tag.checkName) {
             const checkStatus = locationManager.getLocationStatus(tag.checkName);
             if (checkStatus.checked) {
-                if (tag.type.convertToWhenChecked === null) {
-                    removeTag(tagData, saveId);
-                } else if (tag.type.convertToWhenChecked) {
-                    removeTag(tagData, saveId);
-                    const newTagData = createTagData();
-                    newTagData.checkName = tagData.checkName;
-                    newTagData.tagId = tagData.tagId;
-                    newTagData.typeId = tag.type.convertToWhenChecked;
-                    newTagData.text = tagData.text;
-                    addTag(newTagData, saveId);
-                }
+                convertTagTo(tag, tag.type.convertToWhenChecked, saveId);
+            } else if (checkStatus.ignored) {
+                convertTagTo(tag, tag.type.convertToWhenIgnored, saveId);
+            } else if (checkStatus.exists) {
+                convertTagTo(tag, tag.type.convertToWhenRestored, saveId);
             }
         }
     };
