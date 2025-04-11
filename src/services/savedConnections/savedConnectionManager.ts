@@ -1,5 +1,6 @@
 // @ts-check
 
+import { DataPackage } from "archipelago.js";
 import { TagData } from "../tags/tagManager";
 
 /** Data that can be used to create a new Saved Connection */
@@ -13,7 +14,7 @@ interface SavedConnectionInfo {
     playerAlias?: string;
 }
 
-interface SavedConnection {
+interface SavedConnection_V2 {
     connectionId: string;
     name: string;
     seed: string;
@@ -25,12 +26,33 @@ interface SavedConnection {
     playerAlias?: string;
     lastUsedTime: number;
     createdTime: number;
-    version: number;
+    version: 2;
     settings: unknown;
     saveData?: {
-        locationGroups?: {[groupName:string] : string[]},
+        locationGroups?: { [groupName: string]: string[] },
         tagData?: {
-            [tagId:string]: TagData
+            [tagId: string]: TagData
+        },
+    };
+}
+
+interface SavedConnection_V3 {
+    connectionId: string;
+    name: string;
+    seed: string;
+    host: string;
+    port: string;
+    slot: string;
+    game: string;
+    password?: string;
+    playerAlias?: string;
+    lastUsedTime: number;
+    createdTime: number;
+    version: 3;
+    settings: unknown;
+    saveData?: {
+        tagData?: {
+            [tagId: string]: TagData
         },
     };
 }
@@ -47,25 +69,60 @@ const getSubscriberCallback = () => {
     };
 };
 
-const SAVED_CONNECTION_VERSION = 2;
-const CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
+const database_request = window.indexedDB.open("checklist_db", 3);
 
-let cachedConnectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } | null = null;
+database_request.onerror = () => {
+    console.error("Data base error: ")
+    console.error(database_request.error);
+};
+
+// database_request.onsuccess = () => {
+//     // console.log("database success");
+// }
+
+database_request.onblocked = () => {
+    console.warn("Database operation blocked");
+}
+
+const DATA_PACKAGE_DB_KEY = "data_packages";
+const LOCATION_GROUP_DB_KEY = "location_groups";
+
+database_request.onupgradeneeded = (_event) => {
+    const db = database_request.result;
+    if (!db.objectStoreNames.contains(DATA_PACKAGE_DB_KEY)) {
+        const dataPackageStore = db.createObjectStore(DATA_PACKAGE_DB_KEY, { keyPath: "seed" });
+        dataPackageStore.createIndex("seed", "seed", { unique: true });
+    }
+    if (!db.objectStoreNames.contains(LOCATION_GROUP_DB_KEY)) {
+        const locationGroupStore = db.createObjectStore(LOCATION_GROUP_DB_KEY, { keyPath: "connectionId" });
+        locationGroupStore.createIndex("connectionId", "connectionId", { unique: true });
+    }
+}
+
+const SAVED_CONNECTION_VERSION = 3;
+const LEGACY_LS_CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
+
+let cachedConnectionData: { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; } | null = null;
 
 const loadSavedConnectionData = () => {
-    const connectionDataString = localStorage.getItem(CONNECTION_ITEM_NAME);
- 
-    const connectionData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; } = connectionDataString
+    const connectionDataString = localStorage.getItem(LEGACY_LS_CONNECTION_ITEM_NAME);
+
+    const connectionData: { connections: { [s: string]: SavedConnection_V2 | SavedConnection_V3; }; version: number; modified: number; } = connectionDataString
         ? JSON.parse(connectionDataString)
         : {
-              connections: {},
-              version: SAVED_CONNECTION_VERSION,
-              modified: Date.now(),
-          };
+            connections: {},
+            version: SAVED_CONNECTION_VERSION,
+            modified: Date.now(),
+        };
 
     const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
     for (const id of connectionIds) {
         const connection = connectionData.connections[id];
+
+        if (connection.version === 2 && connection.saveData?.locationGroups) {
+            // these take up too much space
+            delete connection.saveData.locationGroups;
+        }
 
         // Load and convert from ap-oot tracker
         connectionData.connections[id] = {
@@ -84,6 +141,8 @@ const loadSavedConnectionData = () => {
                 new Date().getTime(),
             version: SAVED_CONNECTION_VERSION,
         };
+
+
     }
     connectionData.version = 2;
     // React requires the same object to be returned if nothing has changed
@@ -93,17 +152,17 @@ const loadSavedConnectionData = () => {
     ) {
         return cachedConnectionData;
     }
-    cachedConnectionData = connectionData;
-    return connectionData;
+    cachedConnectionData = connectionData as { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; };
+    return connectionData as { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; };
 };
 
-const save = (saveData: { connections: { [s: string]: SavedConnection; }; version: number; modified: number; }) => {
+const save = (saveData: { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; }) => {
     saveData.modified = Date.now();
-    localStorage.setItem(CONNECTION_ITEM_NAME, JSON.stringify(saveData));
+    localStorage.setItem(LEGACY_LS_CONNECTION_ITEM_NAME, JSON.stringify(saveData));
     connectionListeners.forEach((listener) => listener());
 };
 
-const saveConnectionData = (data: SavedConnection) => {
+const saveConnectionData = (data: SavedConnection_V3) => {
     const currentSaveData = loadSavedConnectionData();
     if (!data.connectionId) {
         data.connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
@@ -115,7 +174,7 @@ const saveConnectionData = (data: SavedConnection) => {
     save(currentSaveData);
 };
 
-const createNewSavedConnection = (data: SavedConnectionInfo): SavedConnection => {
+const createNewSavedConnection = (data: SavedConnectionInfo): SavedConnection_V3 => {
     const connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
     return {
         connectionId,
@@ -137,8 +196,8 @@ const createNewSavedConnection = (data: SavedConnectionInfo): SavedConnection =>
 
 const getExistingConnections = (data: SavedConnectionInfo) => {
     const currentSaveData = loadSavedConnectionData();
-    /** @type {Set<SavedConnection>} */
-    const existingConnections: Set<SavedConnection> = new Set();
+    /** @type {Set<SavedConnection_V3>} */
+    const existingConnections: Set<SavedConnection_V3> = new Set();
     const connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
 
     for (const id of connectionIds) {
@@ -158,7 +217,7 @@ const getExistingConnections = (data: SavedConnectionInfo) => {
  * @param data
  * @returns Object with info for connecting to Archipelago
  */
-const getConnectionInfo = (data: SavedConnection): { host: string; port: string; slot: string; game: string; password: string; } => {
+const getConnectionInfo = (data: SavedConnection_V2): { host: string; port: string; slot: string; game: string; password: string; } => {
     return {
         host: data.host,
         port: data.port.toString(),
@@ -168,14 +227,198 @@ const getConnectionInfo = (data: SavedConnection): { host: string; port: string;
     };
 };
 
+const getCachedDataPackage = (seed: string): Promise<DataPackage> => {
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptLoad = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readonly");
+                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
+                const request = objectStore.get(seed);
+                request.onerror = () => {
+                    resolve(null);
+                }
+                request.onsuccess = () => {
+                    resolve(request.result ? request.result['package'] : null);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(null);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptLoad, 200);
+                }
+            }
+        }
+        if (seed) {
+            attemptLoad();
+        } else {
+            resolve(null);
+        }
+    });
+};
+
+const cacheDataPackage = (seed: string, dataPackage: DataPackage): Promise<boolean> => {
+
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptSave = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readwrite");
+                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
+                const request = objectStore.put({ seed, package: dataPackage });
+                request.onerror = () => {
+                    resolve(false);
+                }
+                request.onsuccess = () => {
+                    resolve(true);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(false);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptSave, 200);
+                }
+            }
+        }
+        attemptSave();
+    })
+}
+
+const deleteDataPackage = (seed: string): Promise<boolean> => {
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptDelete = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readwrite");
+                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
+                const request = objectStore.delete(seed);
+                request.onerror = () => {
+                    resolve(false);
+                }
+                request.onsuccess = () => {
+                    resolve(true);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(false);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptDelete, 200);
+                }
+            }
+        }
+        attemptDelete();
+    })
+}
+
+const getCachedLocationGroups = (connectionId: string): Promise<{ [name: string]: string[] }> => {
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptLoad = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readonly");
+                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
+                const request = objectStore.get(connectionId);
+                request.onerror = () => {
+                    resolve(null);
+                }
+                request.onsuccess = () => {
+                    resolve(request.result ? request.result['groups'] : null);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(null);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptLoad, 200);
+                }
+            }
+        }
+        if (connectionId) {
+            attemptLoad();
+        } else {
+            resolve(null);
+        }
+    });
+};
+
+const cacheLocationGroups = (connectionId: string, groups: { [name: string]: string[] }): Promise<boolean> => {
+
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptSave = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readwrite");
+                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
+                const request = objectStore.put({ connectionId, groups });
+                request.onerror = () => {
+                    resolve(false);
+                }
+                request.onsuccess = () => {
+                    resolve(true);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(false);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptSave, 200);
+                }
+            }
+        }
+        attemptSave();
+    })
+}
+
+const deleteLocationGroups = (connectionId: string): Promise<boolean> => {
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptDelete = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readwrite");
+                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
+                const request = objectStore.delete(connectionId);
+                request.onerror = () => {
+                    resolve(false);
+                }
+                request.onsuccess = () => {
+                    resolve(true);
+                }
+            } catch {
+                if (hasFailed) {
+                    resolve(false);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptDelete, 200);
+                }
+            }
+        }
+        attemptDelete();
+    })
+}
+
 /**
  *
  * @param {string} id
  */
 const deleteConnection = (id: string) => {
     const currentSaveData = loadSavedConnectionData();
+    const seed = currentSaveData.connections[id]?.seed ?? "";
     delete currentSaveData.connections[id];
     save(currentSaveData);
+    const dataPackageInUse = Object.getOwnPropertyNames(currentSaveData.connections).filter((id) => currentSaveData.connections[id].seed === seed).length > 0;
+    if (!dataPackageInUse) {
+        deleteDataPackage(seed);
+    }
+    deleteLocationGroups(id);
 };
 
 /**
@@ -203,6 +446,10 @@ const SavedConnectionManager = {
     createNewSavedConnection,
     saveConnectionData,
     getExistingConnections,
+    getCachedDataPackage,
+    getCachedLocationGroups,
+    cacheDataPackage,
+    cacheLocationGroups,
     getConnectionInfo,
     loadSavedConnectionData,
     deleteConnection,
@@ -212,4 +459,4 @@ const SavedConnectionManager = {
 };
 
 export default SavedConnectionManager;
-export type { SavedConnection, SavedConnectionInfo}
+export type { SavedConnection_V3 as SavedConnection, SavedConnectionInfo }

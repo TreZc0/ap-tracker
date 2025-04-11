@@ -1,7 +1,9 @@
 import React, { useContext, useState, useSyncExternalStore } from "react";
 import styled from "styled-components";
 import { PrimaryButton, SecondaryButton } from "../buttons";
-import SavedConnectionManager, { SavedConnection } from "../../services/savedConnections/savedConnectionManager";
+import SavedConnectionManager, {
+    SavedConnection,
+} from "../../services/savedConnections/savedConnectionManager";
 import SavedConnectionView from "./SavedConnectionView";
 import ServiceContext from "../../contexts/serviceContext";
 import { TrackerStateContext } from "../../contexts/contexts";
@@ -34,7 +36,9 @@ const SavedConnections = ({ ...props }) => {
         () => SavedConnectionManager.loadSavedConnectionData()
     );
     const allConnections: SavedConnection[] = [];
-    const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
+    const connectionIds = Object.getOwnPropertyNames(
+        connectionData.connections
+    );
 
     const serviceContext = useContext(ServiceContext);
     const connector = serviceContext.connector;
@@ -65,7 +69,7 @@ const SavedConnections = ({ ...props }) => {
             const connectionInfo =
                 SavedConnectionManager.getConnectionInfo(selectedConnection);
             connector
-                .connectToAP(connectionInfo)
+                .connectToAP(connectionInfo, selectedConnection.seed)
                 .catch((result) => {
                     NotificationManager.createToast({
                         ...result,
