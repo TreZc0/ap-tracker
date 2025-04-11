@@ -149,7 +149,7 @@ const generateGroups = (checks: Set<string>, nameTokenizationOptions: NameTokeni
     // console.log(commonPrefix);
     while (commonPrefix && commonPrefix.count >= minGroupSize) {
         const prefix = commonPrefix.prefix;
-        groups.set(prefix, new Set(checks.values().filter(checkName => checkName.indexOf(prefix) === 0)));
+        groups.set(prefix, new Set([...checks.values()].filter(checkName => checkName.indexOf(prefix) === 0)));
         checks = checks.difference(groups.get(prefix));
         tree.remove(prefix);
         commonPrefix = tree.mostFrequentPrefix(minTokenCount);
