@@ -20,6 +20,7 @@ import useOption from "./hooks/optionHook";
 import { readThemeValue } from "./services/theme/theme";
 import TrackerScreen from "./components/TrackerScreen";
 import TrackerManager from "./games/TrackerManager";
+import CustomTrackerManager from "./games/generic/categoryGenerators/customTrackerManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -52,7 +53,7 @@ const sectionManager = createSectionManager(
 );
 const tagManager = createTagManager(locationManager);
 const trackerManager = new TrackerManager(locationManager, groupManager, sectionManager);
-trackerManager.loadSavedTrackerChoices();
+CustomTrackerManager.readyCallback(trackerManager.loadSavedTrackerChoices);
 const connector = createConnector(
     locationManager,
     inventoryManager,

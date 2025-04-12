@@ -113,8 +113,8 @@ const readDirectoryFromStorage = (): CustomListDirectory => {
             modified: 0,
             version: 1,
         };
-    
-    if(directory.version !== 1){
+
+    if (directory.version !== 1) {
         const items = directory.customLists;
         directory.customLists = [];
         directory.version = 1;
@@ -126,7 +126,7 @@ const readDirectoryFromStorage = (): CustomListDirectory => {
             const promises = items.map(async (item) => {
                 const customTrackerData = localStorage.getItem(`${CUSTOM_TRACKER_STORAGE_KEY_LEGACY}_${item.id}`);
                 console.log(`Saving ${item.id}`)
-                if(customTrackerData){
+                if (customTrackerData) {
                     const customTracker = JSON.parse(customTrackerData);
                     await addCustomTracker(customTracker);
                 }
@@ -136,7 +136,7 @@ const readDirectoryFromStorage = (): CustomListDirectory => {
             console.log("Migration Complete");
         }
         migrate();
-        
+
     }
 
     // React requires returning the same object if nothing has changed
@@ -163,7 +163,7 @@ const getCustomTracker = async (id: string): Promise<CustomCategory_V1> => {
  * @param {CustomCategory_V1} data
  */
 const addCustomTracker = async (data: CustomCategory_V1) => {
-    const directory = { ... readDirectoryFromStorage() };
+    const directory = { ...readDirectoryFromStorage() };
     // validate data
     if (data.customTrackerVersion > CUSTOM_TRACKER_VERSION) {
         throw new Error(
@@ -237,7 +237,7 @@ const addCustomTracker = async (data: CustomCategory_V1) => {
  * @param {string} id
  */
 const removeCustomTracker = async (id: string) => {
-    const directory = { ...await readDirectoryFromStorage() };
+    const directory = { ...readDirectoryFromStorage() };
     // validate data
     const currentIndex = directory.customLists.map(({ id: itemId }) => itemId === id).indexOf(true);
     if (currentIndex > -1) {
@@ -247,13 +247,25 @@ const removeCustomTracker = async (id: string) => {
         directory.customLists.splice(currentIndex, 1);
     }
     const deleted = await SaveData.deleteItem(DB_STORE_KEYS.customTrackers, id);
-    if(deleted){
+    if (deleted) {
         saveDirectory(directory);
     }
 };
 
+let isReady = false;
+let readyCallbackQueue = [];
+
+// Call these once the manager is ready
+const readyCallback = (callback: () => void) => {
+    if (!isReady) {
+        readyCallbackQueue.push(callback);
+    } else {
+        callback();
+    }
+}
+
 const loadTrackers = async () => {
-    const directory = { ...await readDirectoryFromStorage() }; // set the cached directory as well
+    const directory = { ...readDirectoryFromStorage() }; // set the cached directory as well
     let encounteredErrors = false;
     const promises = cachedDirectory.customLists.map(async (trackerInfo, index) => {
         if (trackerInfo.enabled) {
@@ -279,6 +291,9 @@ const loadTrackers = async () => {
     if (encounteredErrors) {
         saveDirectory(directory);
     }
+    isReady = true;
+    readyCallbackQueue.forEach((callback) => callback());
+    readyCallbackQueue = [];
 };
 
 loadTrackers();
@@ -289,7 +304,8 @@ const CustomTrackerManager = {
     getCustomTracker,
     getDirectory,
     getDirectorySubscriberCallback,
+    readyCallback,
 };
 
 export default CustomTrackerManager;
-export type {CustomCategory_V1 };
+export type { CustomCategory_V1 };
