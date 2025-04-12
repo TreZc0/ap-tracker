@@ -32,7 +32,7 @@ interface Connector {
 }
 
 const createConnector = (
-    checkManager: LocationManager,
+    locationManager: LocationManager,
     inventoryManger: InventoryManager,
     entranceManager: EntranceManager,
     tagManager: TagManager,
@@ -80,7 +80,7 @@ const createConnector = (
         };
     })();
 
-    setupAPCheckSync(client, checkManager, tagManager, connection);
+    setupAPCheckSync(client, locationManager, tagManager, connection);
     setupAPInventorySync(client, inventoryManger);
 
     const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }, seed: string) => {
@@ -203,7 +203,7 @@ const createConnector = (
                         connectionId: newConnectionData.connectionId,
                     };
                 }
-                setAPLocations(client, checkManager);
+                setAPLocations(client, locationManager);
                 // Load groups from save data or request them from AP
                 const getGroups = async (): Promise<{ [groupName: string]: string[] }> => {
                     const cachedGroups = await SavedConnectionManager.getCachedLocationGroups(connection.slotInfo.connectionId);

@@ -2,6 +2,7 @@
 
 import { DataPackage } from "archipelago.js";
 import { TagData } from "../tags/tagManager";
+import { DB_STORE_KEYS, SaveData } from "../saveData";
 
 /** Data that can be used to create a new Saved Connection */
 interface SavedConnectionInfo {
@@ -68,36 +69,6 @@ const getSubscriberCallback = () => {
         };
     };
 };
-
-const database_request = window.indexedDB.open("checklist_db", 3);
-
-database_request.onerror = () => {
-    console.error("Data base error: ")
-    console.error(database_request.error);
-};
-
-// database_request.onsuccess = () => {
-//     // console.log("database success");
-// }
-
-database_request.onblocked = () => {
-    console.warn("Database operation blocked");
-}
-
-const DATA_PACKAGE_DB_KEY = "data_packages";
-const LOCATION_GROUP_DB_KEY = "location_groups";
-
-database_request.onupgradeneeded = (_event) => {
-    const db = database_request.result;
-    if (!db.objectStoreNames.contains(DATA_PACKAGE_DB_KEY)) {
-        const dataPackageStore = db.createObjectStore(DATA_PACKAGE_DB_KEY, { keyPath: "seed" });
-        dataPackageStore.createIndex("seed", "seed", { unique: true });
-    }
-    if (!db.objectStoreNames.contains(LOCATION_GROUP_DB_KEY)) {
-        const locationGroupStore = db.createObjectStore(LOCATION_GROUP_DB_KEY, { keyPath: "connectionId" });
-        locationGroupStore.createIndex("connectionId", "connectionId", { unique: true });
-    }
-}
 
 const SAVED_CONNECTION_VERSION = 3;
 const LEGACY_LS_CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
@@ -227,182 +198,30 @@ const getConnectionInfo = (data: SavedConnection_V2): { host: string; port: stri
     };
 };
 
-const getCachedDataPackage = (seed: string): Promise<DataPackage> => {
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptLoad = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readonly");
-                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
-                const request = objectStore.get(seed);
-                request.onerror = () => {
-                    resolve(null);
-                }
-                request.onsuccess = () => {
-                    resolve(request.result ? request.result['package'] : null);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(null);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptLoad, 200);
-                }
-            }
-        }
-        if (seed) {
-            attemptLoad();
-        } else {
-            resolve(null);
-        }
-    });
+const getCachedDataPackage = async (seed: string): Promise<DataPackage> => {
+    const dataPackage = await SaveData.getItem(DB_STORE_KEYS.dataPackageCache, seed) as { seed: string, package: DataPackage };
+    return dataPackage ? dataPackage.package : null;
 };
 
 const cacheDataPackage = (seed: string, dataPackage: DataPackage): Promise<boolean> => {
-
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptSave = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readwrite");
-                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
-                const request = objectStore.put({ seed, package: dataPackage });
-                request.onerror = () => {
-                    resolve(false);
-                }
-                request.onsuccess = () => {
-                    resolve(true);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(false);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptSave, 200);
-                }
-            }
-        }
-        attemptSave();
-    })
+    return SaveData.storeItem(DB_STORE_KEYS.dataPackageCache, { seed, package: dataPackage });
 }
 
 const deleteDataPackage = (seed: string): Promise<boolean> => {
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptDelete = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([DATA_PACKAGE_DB_KEY], "readwrite");
-                const objectStore = transaction.objectStore(DATA_PACKAGE_DB_KEY);
-                const request = objectStore.delete(seed);
-                request.onerror = () => {
-                    resolve(false);
-                }
-                request.onsuccess = () => {
-                    resolve(true);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(false);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptDelete, 200);
-                }
-            }
-        }
-        attemptDelete();
-    })
+    return SaveData.deleteItem(DB_STORE_KEYS.dataPackageCache, seed);
 }
 
-const getCachedLocationGroups = (connectionId: string): Promise<{ [name: string]: string[] }> => {
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptLoad = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readonly");
-                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
-                const request = objectStore.get(connectionId);
-                request.onerror = () => {
-                    resolve(null);
-                }
-                request.onsuccess = () => {
-                    resolve(request.result ? request.result['groups'] : null);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(null);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptLoad, 200);
-                }
-            }
-        }
-        if (connectionId) {
-            attemptLoad();
-        } else {
-            resolve(null);
-        }
-    });
+const getCachedLocationGroups = async (connectionId: string): Promise<{ [name: string]: string[] }> => {
+    const groups = await SaveData.getItem(DB_STORE_KEYS.locationGroupCache, connectionId) as { connectionId: string, groups: { [name: string]: string[] } };
+    return groups ? groups.groups : null;
 };
 
 const cacheLocationGroups = (connectionId: string, groups: { [name: string]: string[] }): Promise<boolean> => {
-
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptSave = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readwrite");
-                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
-                const request = objectStore.put({ connectionId, groups });
-                request.onerror = () => {
-                    resolve(false);
-                }
-                request.onsuccess = () => {
-                    resolve(true);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(false);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptSave, 200);
-                }
-            }
-        }
-        attemptSave();
-    })
+    return SaveData.storeItem(DB_STORE_KEYS.locationGroupCache, { connectionId, groups });
 }
 
 const deleteLocationGroups = (connectionId: string): Promise<boolean> => {
-    return new Promise((resolve, _reject) => {
-        let hasFailed = false;
-        const attemptDelete = () => {
-            try {
-                const db = database_request.result;
-                const transaction = db.transaction([LOCATION_GROUP_DB_KEY], "readwrite");
-                const objectStore = transaction.objectStore(LOCATION_GROUP_DB_KEY);
-                const request = objectStore.delete(connectionId);
-                request.onerror = () => {
-                    resolve(false);
-                }
-                request.onsuccess = () => {
-                    resolve(true);
-                }
-            } catch {
-                if (hasFailed) {
-                    resolve(false);
-                } else {
-                    hasFailed = true;
-                    setTimeout(attemptDelete, 200);
-                }
-            }
-        }
-        attemptDelete();
-    })
+    return SaveData.deleteItem(DB_STORE_KEYS.locationGroupCache, connectionId);
 }
 
 /**

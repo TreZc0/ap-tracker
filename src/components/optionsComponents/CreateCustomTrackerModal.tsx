@@ -55,8 +55,11 @@ const CreateCustomTrackerModal = ({
         });
         file.text()
             .then((text) => JSON.parse(text))
+            .then(async (data) => {
+                await CustomTrackerManager.addCustomTracker(data);
+                return data;
+            })
             .then((data) => {
-                CustomTrackerManager.addCustomTracker(data);
                 statusHandle.update({
                     message: "Successfully added custom tracker",
                     type: MessageType.success,
@@ -145,7 +148,7 @@ const CreateCustomTrackerModal = ({
                                             }
                                             const tracker = buildGenericGame(
                                                 connector.slotInfo.game,
-                                                services.checkManager,
+                                                services.locationManager,
                                                 trackerData.groups,
                                                 GenericGameMethod.locationGroup
                                             );

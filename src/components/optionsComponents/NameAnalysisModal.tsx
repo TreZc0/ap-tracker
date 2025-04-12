@@ -125,10 +125,11 @@ const NameAnalysisModal = ({
             previewLocationManager.pauseUpdateBroadcast();
             previewLocationManager.deleteAllLocations();
             mainTrackerParams.groups["Everywhere"].forEach((location) => {
-                previewLocationManager.updateLocationStatus(location, { exists: true });
+                previewLocationManager.updateLocationStatus(location, {
+                    exists: true,
+                });
             });
             previewLocationManager.resumeUpdateBroadcast();
-
         }
         if (mainTrackerParams) {
             const tracker = buildGenericGame(
@@ -168,9 +169,10 @@ const NameAnalysisModal = ({
                     <h3>Preview</h3>
                     <ServiceContext.Provider
                         value={{
-                            locationManager: otherOptions.useAllChecksInDataPackage
-                                ? previewLocationManager
-                                : previewLocationManager,
+                            locationManager:
+                                otherOptions.useAllChecksInDataPackage
+                                    ? previewLocationManager
+                                    : previewLocationManager,
                             entranceManager: previewEntranceManager,
                             groupManager: previewGroupManager,
                             sectionManager: previewSectionManager,
@@ -364,7 +366,7 @@ const NameAnalysisModal = ({
             </AnalysisGrid>
             <ButtonRow>
                 <PrimaryButton
-                    onClick={() => {
+                    onClick={async () => {
                         const customTracker =
                             previewTrackerManager.getGameTracker(
                                 services.connector.connection.slotInfo.game
@@ -379,7 +381,7 @@ const NameAnalysisModal = ({
                             return;
                         }
 
-                        CustomTrackerManager.addCustomTracker(
+                        await CustomTrackerManager.addCustomTracker(
                             customTrackerExport
                         );
                         mainTrackerManager.setGameTracker(
