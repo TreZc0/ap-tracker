@@ -331,8 +331,8 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
 
     // sort the root
     categoryConfig.categories.root.children.sort((a: string, b: string) => {
-        const aIsKey = keyLocationGroups.has(a);
-        const bIsKey = keyLocationGroups.has(b);
+        const aIsKey = keyLocationGroups.has(a.slice("section_".length));
+        const bIsKey = keyLocationGroups.has(b.slice("section_".length));
         if (aIsKey === bIsKey) {
             return naturalSort(a, b);
         } else if (aIsKey) {
