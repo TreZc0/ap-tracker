@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { InventoryManager } from "../services/inventory/inventoryManager";
-import { CheckManager } from "../services/checks/checkManager";
+import { LocationManager } from "../services/locations/locationManager";
 import { GroupManager } from "../services/sections/groupManager";
 import { EntranceManager } from "../services/entrances/entranceManager";
 import { Connector } from "../services/connector/connector";
@@ -10,7 +10,7 @@ import { OptionManager } from "../services/options/optionManager";
 import TrackerManager from "../games/TrackerManager";
 
 const ServiceContext: React.Context<{
-    checkManager?: CheckManager,
+    locationManager?: LocationManager,
     inventoryManager?: InventoryManager,
     groupManager?: GroupManager,
     entranceManager?: EntranceManager,

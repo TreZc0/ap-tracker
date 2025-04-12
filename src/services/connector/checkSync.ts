@@ -1,8 +1,8 @@
-// syncs checks with check manager
+// syncs checks with location manager
 
 import { Client, Hint, NetworkHint } from "archipelago.js";
 import { TagManager } from "../tags/tagManager";
-import { CheckManager } from "../checks/checkManager";
+import { LocationManager } from "../locations/locationManager";
 
 const hintToText = (client: Client, hint: Hint) => {
     let ownerString = `${hint.item.receiver.alias}'s`;
@@ -30,33 +30,33 @@ const addHint = (client: Client, hint: Hint, tagManager: TagManager, saveId: str
     }
 };
 
-const setAPLocations = (client: Client, checkManager: CheckManager) => {
-    checkManager.deleteAllChecks();
+const setAPLocations = (client: Client, locationManager: LocationManager) => {
+    locationManager.deleteAllLocations();
     client.room.allLocations.forEach((locationId) =>
-        checkManager.updateCheckStatus(
+        locationManager.updateLocationStatus(
             client.package.lookupLocationName(client.game, locationId),
             { exists: true }
         )
     );
     client.room.checkedLocations.forEach((locationId) =>
-        checkManager.updateCheckStatus(
+        locationManager.updateLocationStatus(
             client.package.lookupLocationName(client.game, locationId),
             { checked: true }
         )
     );
 
     const now = new Date();
-    if (now.getMonth() === 3) {
+    if (now.getMonth() === 3 && now.getDate() < 7) {
         // April fools joke
         client.deathLink.enableDeathLink();
     }
 
 };
 
-const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager: TagManager, connection: { slotInfo: { connectionId: string; }; }) => {
+const setupAPCheckSync = (client: Client, locationManager: LocationManager, tagManager: TagManager, connection: { slotInfo: { connectionId: string; }; }) => {
     client.room.on("locationsChecked", (locationIds) => {
         locationIds.forEach((id) =>
-            checkManager.updateCheckStatus(
+            locationManager.updateLocationStatus(
                 client.package.lookupLocationName(client.game, id),
                 { checked: true, id }
             )
@@ -74,10 +74,15 @@ const setupAPCheckSync = (client: Client, checkManager: CheckManager, tagManager
                 )
             )
             // remove once ap.js hints are fixed
-            client.storage.notify([`_read_hints_${client.players.self.team}_${client.players.self.slot}`], (_key, value: NetworkHint[], _old_value) => {
+            client.storage.notify([`_read_hints_${client.players.self.team}_${client.players.self.slot}`], (_key, value: NetworkHint[], _old_value?: NetworkHint[]) => {
+                const seenLocations = new Set(
+                    _old_value?.filter((nHint) => nHint.finding_player === client.players.self.slot).map((nHint) => nHint.location)
+                );
                 value.forEach((nHint) => {
                     const hint = new Hint(client, nHint);
-                    addHint(client, hint, tagManager, connection.slotInfo.connectionId);
+                    if (nHint.finding_player === client.players.self.slot && !seenLocations.has(nHint.location)) {
+                        addHint(client, hint, tagManager, connection.slotInfo.connectionId);
+                    }
                 })
             });
         }

@@ -5,7 +5,7 @@ import React, {
     useState,
     useSyncExternalStore,
 } from "react";
-import CheckView from "./CheckView";
+import LocationView from "./LocationView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
@@ -34,7 +34,7 @@ const SectionView = ({
     );
     const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
-    const checkManager = serviceContext.checkManager;
+    const locationManager = serviceContext.locationManager;
     const tagManager = serviceContext.tagManager;
     const optionManager = serviceContext.optionManager;
     if (!sectionManager) {
@@ -55,10 +55,10 @@ const SectionView = ({
         minWidth: "10em",
     };
 
-    const clearedCheckCount =
+    const clearedLocationCount =
         (section?.checkReport.checked.size ?? 0) +
         (section?.checkReport.ignored.size ?? 0);
-    const totalCheckCount = section?.checkReport.exist.size ?? 0;
+    const totalLocationCount = section?.checkReport.existing.size ?? 0;
     const checkedLocationBehavior_ = useOption(
         optionManager,
         "checkedLocationBehavior",
@@ -80,7 +80,7 @@ const SectionView = ({
     );
     const checkOrderBehavior = checkOrderBehavior_ ?? "natural";
 
-    const checks = useMemo(() => {
+    const locations = useMemo(() => {
         const checkNames = [...(section?.checks.keys() ?? [])];
         if (checkOrderBehavior === "lexical") {
             checkNames.sort();
@@ -89,16 +89,16 @@ const SectionView = ({
         } else if (checkOrderBehavior === "id") {
             checkNames.sort(
                 (a, b) =>
-                    checkManager.getCheckStatus(b).id -
-                    checkManager.getCheckStatus(a).id
+                    locationManager.getLocationStatus(b).id -
+                    locationManager.getLocationStatus(a).id
             );
         }
         return checkNames;
-    }, [checkOrderBehavior, section?.checks, checkManager]);
+    }, [checkOrderBehavior, section?.checks, locationManager]);
 
     return (
         <>
-            {section?.checkReport.exist.size === 0 ? (
+            {section?.checkReport.existing.size === 0 ? (
                 <></> // Hide empty sections
             ) : (
                 <div style={style}>
@@ -106,7 +106,7 @@ const SectionView = ({
                         style={{ cursor: isClosable ? "pointer" : "default" }}
                         className={`section_title ${
                             section?.checkReport.checked.size ===
-                            section?.checkReport.exist.size
+                            section?.checkReport.existing.size
                                 ? "checked"
                                 : ""
                         }`}
@@ -118,9 +118,9 @@ const SectionView = ({
                     >
                         {section?.title ?? "Unloaded Section"}{" "}
                         <i>
-                            {clearedCheckCount}
+                            {clearedLocationCount}
                             {"/"}
-                            {totalCheckCount}
+                            {totalLocationCount}
                         </i>{" "}
                         {[...(section?.checkReport.tagCounts ?? [])].map(
                             ([id, values]) => {
@@ -153,29 +153,29 @@ const SectionView = ({
                     {isOpen && (
                         <>
                             <div>
-                                {checks.map(
-                                    (check) =>
-                                        check &&
-                                        (!section?.checks.get(check)?.checked ||
+                                {locations.map(
+                                    (location) =>
+                                        location &&
+                                        (!section?.checks.get(location)?.checked ||
                                             checkedLocationBehavior ===
                                                 "nothing") && (
-                                            <CheckView
-                                                check={check}
-                                                key={check}
+                                            <LocationView
+                                                location={location}
+                                                key={location}
                                             />
                                         )
                                 )}
                             </div>
                             {checkedLocationBehavior === "separate" && (
                                 <div>
-                                    {checks.map(
-                                        (check) =>
-                                            check &&
-                                            section?.checks.get(check)
+                                    {locations.map(
+                                        (location) =>
+                                            location &&
+                                            section?.checks.get(location)
                                                 ?.checked && (
-                                                <CheckView
-                                                    check={check}
-                                                    key={check}
+                                                <LocationView
+                                                    location={location}
+                                                    key={location}
                                                 />
                                             )
                                     )}
@@ -196,7 +196,7 @@ const SectionView = ({
                                                     "separate") &&
                                                 child.checkReport.checked
                                                     .size !==
-                                                    child.checkReport.exist
+                                                    child.checkReport.existing
                                                         .size))
                                     ) {
                                         return (
@@ -220,7 +220,7 @@ const SectionView = ({
                                     if (
                                         child &&
                                         child.checkReport.checked.size ===
-                                            child.checkReport.exist.size
+                                            child.checkReport.existing.size
                                     ) {
                                         return (
                                             <SectionView

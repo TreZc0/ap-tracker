@@ -5,7 +5,7 @@ import SavedConnectionManager, { SavedConnectionInfo } from "../savedConnections
 import NotificationManager, { MessageType } from "../notifications/notifications";
 import { enableDataSync } from "./remoteSync";
 import { setupAPInventorySync } from "./inventorySync";
-import { CheckManager } from "../checks/checkManager";
+import { LocationManager } from "../locations/locationManager";
 import { InventoryManager } from "../inventory/inventoryManager";
 import { EntranceManager } from "../entrances/entranceManager";
 import { TagManager } from "../tags/tagManager";
@@ -27,21 +27,21 @@ interface SlotInfo {
 }
 
 interface Connector {
-    connectToAP: ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string; }) => Promise<void>;
+    connectToAP: ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string; }, seed?: string) => Promise<void>;
     connection: { status: string; readonly subscribe: (listener: () => void) => () => void; readonly unsubscribe: (listener: () => void) => void; readonly client: Client; readonly slotInfo: SlotInfo; };
 }
 
 const createConnector = (
-    checkManager: CheckManager,
+    locationManager: LocationManager,
     inventoryManger: InventoryManager,
     entranceManager: EntranceManager,
     tagManager: TagManager,
     trackerManager: TrackerManager,
 ): Connector => {
-    const client = new Client();
+    const client = new Client({ debugLogVersions: false });
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "", game:"" };
+        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "", game: "" };
         const listeners: Set<() => void> = new Set();
         const subscribe = (listener: () => void) => {
             listeners.add(listener);
@@ -80,10 +80,10 @@ const createConnector = (
         };
     })();
 
-    setupAPCheckSync(client, checkManager, tagManager, connection);
+    setupAPCheckSync(client, locationManager, tagManager, connection);
     setupAPInventorySync(client, inventoryManger);
 
-    const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }) => {
+    const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }, seed: string) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
                 throw CONNECTION_MESSAGES.alreadyConnected();
@@ -114,12 +114,21 @@ const createConnector = (
             port = "38281";
         }
 
+        // update status message, create connecting alert
         connection.status = CONNECTION_STATUS.connecting;
         const statusMessageHandle = NotificationManager.createStatus({
             message: `Connecting to ${host}:${port} ...`,
             type: MessageType.progress,
             id: "ap-connection",
         });
+
+        // Load cached data package for the seed
+        const dataPackage = await SavedConnectionManager.getCachedDataPackage(seed);
+        if (dataPackage) {
+            // will not take effect until this is properly fixed in ap.js
+            client.package.importPackage(dataPackage);
+        }
+
         return client
             .login(`${host}:${port}`, slot, undefined, {
                 tags: ["Tracker", "Checklist"],
@@ -194,15 +203,12 @@ const createConnector = (
                         connectionId: newConnectionData.connectionId,
                     };
                 }
-                setAPLocations(client, checkManager);
-                const savedConnectionData =
-                    SavedConnectionManager.getConnectionSaveData(
-                        connection.slotInfo.connectionId
-                    );
+                setAPLocations(client, locationManager);
                 // Load groups from save data or request them from AP
                 const getGroups = async (): Promise<{ [groupName: string]: string[] }> => {
-                    if (savedConnectionData.locationGroups) {
-                        return savedConnectionData.locationGroups;
+                    const cachedGroups = await SavedConnectionManager.getCachedLocationGroups(connection.slotInfo.connectionId);
+                    if (cachedGroups) {
+                        return cachedGroups;
                     }
                     // @ts-expect-error, typing error in archipelago.js
                     const groups: { [groupName: string]: string[] } = await client.storage
@@ -211,12 +217,8 @@ const createConnector = (
                             (a) =>
                                 a[`_read_location_name_groups_${client.game}`]
                         );
-                    savedConnectionData.locationGroups = groups;
-                    SavedConnectionManager.updateConnectionSaveData(
-                        connection.slotInfo.connectionId,
-                        savedConnectionData
-                    );
-                    return savedConnectionData.locationGroups;
+                    SavedConnectionManager.cacheLocationGroups(connection.slotInfo.connectionId, groups);
+                    return groups;
                 };
                 getGroups().then((groups: { [groupName: string]: string[] }) => {
                     trackerManager.initializeTracker({
@@ -230,6 +232,7 @@ const createConnector = (
                     tagManager.loadTags(connection.slotInfo.connectionId);
                 });
                 enableDataSync(client, tagManager);
+                SavedConnectionManager.cacheDataPackage(savedConnectionInfo.seed, client.package.exportPackage());
             })
             .catch((e) => {
                 statusMessageHandle.update({

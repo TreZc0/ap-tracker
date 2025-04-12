@@ -78,9 +78,9 @@ const CustomTrackerOptions = ({
                                         {!tracker.enabled && "(Disabled)"}{" "}
                                         <PrimaryButton
                                             $tiny
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 const trackerData =
-                                                    CustomTrackerManager.getCustomTracker(
+                                                    await CustomTrackerManager.getCustomTracker(
                                                         tracker.id
                                                     );
                                                 if (!tracker) {

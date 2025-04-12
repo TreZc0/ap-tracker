@@ -1,52 +1,88 @@
-import { CheckManager, CheckStatus } from "../checks/checkManager";
+import { LocationManager, LocationStatus } from "../locations/locationManager";
 import { EntranceManager } from "../entrances/entranceManager";
 import { CounterMode } from "../tags/tagManager";
 import { GroupManager } from "./groupManager";
 
-interface CheckReport {
-    exist: Set<string>;
-    checked: Set<string>;
-    ignored: Set<string>;
-    tagCounts: Map<string, Set<string>>;
-    tagTotals: Map<string, Set<string>>;
+class LocationReport {
+    existing: Set<string> = new Set();
+    checked: Set<string> = new Set();
+    ignored: Set<string> = new Set();
+    tagCounts: Map<string, Set<string>> = new Map();
+    tagTotals: Map<string, Set<string>> = new Map();
+
+    /**
+     * Adds report values from the provided report to this report;
+     * @param report The report to read from
+     */
+    addReport = (report: LocationReport) => {
+        this.existing = this.existing.union(report.existing);
+        this.checked = this.checked.union(report.checked);
+        this.ignored = this.ignored.union(report.ignored);
+        report.tagCounts.forEach((counter, counterName) => {
+            const updatedCounter: Set<string> = counter.union(this.tagCounts.get(counterName) ?? new Set());
+            this.tagCounts.set(counterName, updatedCounter);
+        });
+        report.tagTotals.forEach((counter, counterName) => {
+            const updatedCounter: Set<string> = counter.union(this.tagTotals.get(counterName) ?? new Set());
+            this.tagTotals.set(counterName, updatedCounter);
+        });
+        return this;
+    }
+
+    /**
+     * Adds the status of a check to the report
+     * @param locationManager 
+     * @param locationName 
+     * @returns 
+     */
+    addLocation = (locationManager: LocationManager, locationName: string) => {
+        const status = locationManager.getLocationStatus(locationName);
+        if (!status.exists) {
+            return status;
+        }
+        // add to correct lists
+        this.existing.add(locationName);
+        if (status.checked) {
+            this.checked.add(locationName);
+        } else if (status.ignored) {
+            this.ignored.add(locationName);
+        }
+
+        // add to tag counters
+        status.tags.forEach((tag) => {
+            const counter = tag.counter;
+            if (!counter) {
+                return;
+            }
+            const counterTotal = this.tagTotals.get(counter.id) ?? new Set();
+            const counterCount = this.tagCounts.get(counter.id) ?? new Set();
+            counterTotal.add(locationName);
+
+            switch (counter.countMode) {
+                case CounterMode.countChecked: {
+                    if (status.checked || status.ignored) {
+                        counterCount.add(locationName);
+                    }
+                    break;
+                }
+
+                case CounterMode.countUnchecked: {
+                    if (!status.checked && !status.ignored) {
+                        counterCount.add(locationName);
+                    }
+                    break;
+                }
+                default: {
+                    counterCount.add(locationName);
+                    break;
+                }
+            }
+            this.tagTotals.set(counter.id, counterTotal);
+            this.tagCounts.set(counter.id, counterCount);
+        });
+        return status;
+    }
 }
-
-const createNewCheckReport = (): CheckReport => {
-    return {
-        exist: new Set(),
-        checked: new Set(),
-        ignored: new Set(),
-        tagCounts: new Map(),
-        tagTotals: new Map(),
-    };
-};
-
-/**
- * Adds reported values from one check report to another
- * @param sourceReport
- * @param destinationReport
- */
-const addCheckReport = (sourceReport: CheckReport, destinationReport: CheckReport) => {
-    sourceReport.exist.forEach((check) => destinationReport.exist.add(check));
-    sourceReport.checked.forEach((check) =>
-        destinationReport.checked.add(check)
-    );
-    sourceReport.ignored.forEach((check) =>
-        destinationReport.ignored.add(check)
-    );
-    sourceReport.tagCounts.forEach((sourceCounter, counterName) => {
-        const destinationCounter =
-            destinationReport.tagCounts.get(counterName) ?? new Set();
-        sourceCounter.forEach((check) => destinationCounter.add(check));
-        destinationReport.tagCounts.set(counterName, destinationCounter);
-    });
-    sourceReport.tagTotals.forEach((sourceCounter, counterName) => {
-        const destinationCounter =
-            destinationReport.tagTotals.get(counterName) ?? new Set();
-        sourceCounter.forEach((check) => destinationCounter.add(check));
-        destinationReport.tagTotals.set(counterName, destinationCounter);
-    });
-};
 
 const defaultTheme = {
     color: "black",
@@ -55,7 +91,7 @@ const defaultTheme = {
 const defaultSectionStatus: Section = {
     title: "No Title",
     checks: new Map(),
-    checkReport: createNewCheckReport(),
+    checkReport: new LocationReport(),
     theme: defaultTheme,
     children: null,
 };
@@ -89,15 +125,15 @@ interface SectionConfig {
 }
 
 interface SectionConfigData {
-    categories: {[categoryKey: string]: SectionDef};
+    categories: { [categoryKey: string]: SectionDef };
     options: unknown;
-    themes: {[themeKey: string]: SectionThemeDef};
+    themes: { [themeKey: string]: SectionThemeDef };
 }
 
 interface Section {
     title: string;
-    checkReport: CheckReport;
-    checks: Map<string, CheckStatus>;
+    checkReport: LocationReport;
+    checks: Map<string, LocationStatus>;
     portals?: unknown;
     theme: SectionTheme;
     children: string[] | null;
@@ -105,8 +141,8 @@ interface Section {
 
 interface SectionUpdate {
     title?: string;
-    checkReport?: CheckReport;
-    checks?: Map<string, CheckStatus>;
+    checkReport?: LocationReport;
+    checks?: Map<string, LocationStatus>;
     portals?: unknown;
     theme?: SectionTheme;
     children?: string[] | null;
@@ -123,7 +159,7 @@ interface SectionTheme {
 interface SectionUpdateTreeNode {
     sectionName: string;
     checks: Set<string>;
-    checkReport: CheckReport;
+    checkReport: LocationReport;
     shouldFlatten: boolean;
     children: Set<SectionUpdateTreeNode>;
     parents: Set<SectionUpdateTreeNode>;
@@ -141,7 +177,7 @@ interface SectionManager {
 }
 
 
-const createSectionManager = (checkManager: CheckManager, entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
+const createSectionManager = (locationManager: LocationManager, _entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
     const sectionData: Map<string, Section> = new Map();
     const sectionConfigData: Map<string, SectionConfig> = new Map();
     const sectionSubscribers: Map<string, Set<() => void>> = new Map();
@@ -264,190 +300,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
         readCategory("root");
     };
 
-    /**
-     * Adds reported values from one check report to another
-     * @param report
-     * @param checkName
-     * @returns The status of the related check
-     */
-    const addCheckToReport = (report: CheckReport, checkName: string): CheckStatus => {
-        const status = checkManager.getCheckStatus(checkName);
-        if (status.exists) {
-            report.exist.add(checkName);
-            if (status.checked) {
-                report.checked.add(checkName);
-            } else if (status.ignored) {
-                report.ignored.add(checkName);
-            }
-
-            status.tags.forEach((tag) => {
-                const counter = tag.counter;
-                if (counter) {
-                    const counterTotal =
-                        report.tagTotals.get(counter.id) ?? new Set();
-                    const counterCount =
-                        report.tagCounts.get(counter.id) ?? new Set();
-                    counterTotal.add(checkName);
-
-                    switch (counter.countMode) {
-                        case CounterMode.countChecked: {
-                            if (status.checked || status.ignored) {
-                                counterCount.add(checkName);
-                            }
-                            break;
-                        }
-                        case CounterMode.countUnchecked: {
-                            if (!status.checked && !status.ignored) {
-                                counterCount.add(checkName);
-                            }
-                            break;
-                        }
-                        default: {
-                            counterCount.add(checkName);
-                            break;
-                        }
-                    }
-                    report.tagTotals.set(counter.id, counterTotal);
-                    report.tagCounts.set(counter.id, counterCount);
-                }
-            });
-        }
-        return status;
-    };
-
     const buildSectionUpdateTree = () => {
-        const buildPortalNode = (
-            portalName: string,
-            parents: SectionUpdateTreeNode[] = [],
-            lineage: Set<string> = new Set()
-        ) => {
-            if (lineage.has(portalName)) {
-                return null;
-            }
-
-            const listenerCleanUpCalls: Set<()=>void> = new Set();
-
-            const cleanUpListeners = () => {
-                listenerCleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
-            };
-
-            const buildCheckReport = () => {
-                const checkReport = createNewCheckReport();
-                /** @type {Map<string, import("../checks/checkManager").CheckStatus>} */
-                const checks: Map<string, import("../checks/checkManager").CheckStatus> = new Map();
-                node.checks.forEach((check) =>
-                    checks.set(check, addCheckToReport(checkReport, check))
-                );
-                node.children.forEach((child) =>
-                    addCheckReport(child.checkReport, checkReport)
-                );
-                return { checkReport, checks };
-            };
-
-            const setChecks = () => {
-                node.checks.clear();
-                let checkGroups: string[] = [];
-                if (typeof groupKey == "string") {
-                    checkGroups.push(groupKey);
-                } else if (groupKey) {
-                    checkGroups = groupKey;
-                }
-                // Build a list of checks for the area
-                for (const groupName of checkGroups) {
-                    /** @type {string[]} */
-                    const checks: string[] = [
-                        ...(groups.get(groupName)?.checks.values() ?? []),
-                    ];
-                    checks.forEach((check) => node.checks.add(check));
-                }
-            };
-
-            const setCheckListeners = () => {
-                node.checks.forEach((checkName) => {
-                    const subscribe =
-                        checkManager.getSubscriberCallback(checkName);
-                    const cleanUpCall = subscribe(update);
-                    listenerCleanUpCalls.add(cleanUpCall);
-                });
-            };
-
-            const setEntranceListener = () => {
-                const subscribe =
-                    entranceManager.getEntranceSubscriber(portalName);
-                const cleanUpCall = subscribe(update);
-                listenerCleanUpCalls.add(cleanUpCall);
-            };
-
-            const update = () => {
-                groupKey = null;
-                // groupManager.getGroupWithRegion(
-                //     entranceManager.getEntranceDestRegion(portalName)
-                // ) ?? null;
-                if (groupKey !== processedAreaKey) {
-                    processedAreaKey = groupKey;
-                    cleanUpListeners();
-                    if (entranceManager.getEntranceAdoptability(portalName)) {
-                        setChecks();
-                        setCheckListeners();
-                    }
-                    setEntranceListener();
-                }
-                let checkValues;
-                ({ checkReport: node.checkReport, checks: checkValues } =
-                    buildCheckReport());
-                parents.forEach((parent) => parent.update());
-                updateSectionStatus(portalName, {
-                    title: `${portalName} => ${groupKey ?? "???"}`,
-                    checkReport: node.checkReport,
-                    checks: checkValues,
-                    children: [...node.children].map(
-                        (child) => child.sectionName
-                    ),
-                });
-            };
-
-            const remove = () => {
-                cleanUpListeners();
-                node.parents.forEach((parent) => {
-                    parent.children.delete(node);
-                    parent.update();
-                });
-                const children = [...node.children.values()];
-                children.forEach((child) => {
-                    child.parents.delete(node);
-                    if (child.parents.size === 0) {
-                        child.remove();
-                    }
-                });
-            };
-
-            let groupKey = null;
-            // groupManager.getGroupWithRegion(
-            //     entranceManager.getEntranceDestRegion(portalName)
-            // ) ?? null;
-            let processedAreaKey = null;
-
-            /** @type {SectionUpdateTreeNode} */
-            const node: SectionUpdateTreeNode = {
-                sectionName: portalName,
-                checks: new Set(),
-                checkReport: createNewCheckReport(),
-                children: new Set(),
-                parents: new Set(parents),
-                shouldFlatten: false,
-                remove,
-                update,
-            };
-
-            updateSectionStatus(portalName, {
-                title: `${portalName} => ${groupKey ?? "???"}`,
-                theme: defaultTheme,
-                children: [...node.children].map((child) => child.sectionName),
-            });
-            setEntranceListener();
-            update();
-            return node;
-        };
         /**
          *
          * @param {string} sectionName
@@ -474,28 +327,28 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 return null;
             }
 
-            const listenerCleanUpCalls: Set<()=>void> = new Set();
+            const listenerCleanUpCalls: Set<() => void> = new Set();
 
             const cleanUpListeners = () => {
                 listenerCleanUpCalls.forEach((cleanUpCall) => cleanUpCall());
             };
 
-            const buildCheckReport = () => {
-                const checkReport = createNewCheckReport();
-                const checks: Map<string, CheckStatus> = new Map();
-                node.checks.forEach((check) =>
-                    checks.set(check, addCheckToReport(checkReport, check))
+            const buildLocationReport = () => {
+                const locationReport = new LocationReport();
+                const locations: Map<string, LocationStatus> = new Map();
+                node.checks.forEach((location) =>
+                    locations.set(location, locationReport.addLocation(locationManager, location))
                 );
                 node.children.forEach((child) =>
-                    addCheckReport(child.checkReport, checkReport)
+                    locationReport.addReport(child.checkReport)
                 );
-                return { checkReport, checks };
+                return { locationReport, locations };
             };
 
             const update = () => {
                 let checkValues;
-                ({ checkReport: node.checkReport, checks: checkValues } =
-                    buildCheckReport());
+                ({ locationReport: node.checkReport, locations: checkValues } =
+                    buildLocationReport());
                 parents.forEach((parent) => parent.update());
                 updateSectionStatus(sectionName, {
                     checkReport: node.checkReport,
@@ -524,7 +377,7 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             const node: SectionUpdateTreeNode = {
                 sectionName,
                 checks: new Set(),
-                checkReport: createNewCheckReport(),
+                checkReport: new LocationReport(),
                 children: new Set(),
                 parents: new Set(parents),
                 shouldFlatten: false,
@@ -548,11 +401,11 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
             }
 
             // set up listeners on checks
-            node.checks.forEach((checkName) => {
-                const subscribe = checkManager.getSubscriberCallback(checkName);
-                const cleanUpCall = subscribe(update);
-                listenerCleanUpCalls.add(cleanUpCall);
-            });
+
+            const subscribe = locationManager.getSubscriberCallback(new Set(node.checks));
+            const cleanUpCall = subscribe(update);
+            listenerCleanUpCalls.add(cleanUpCall);
+
 
             // create children
             const childLineage = new Set([...lineage.values(), sectionName]);
@@ -567,18 +420,6 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
                 }
             });
 
-            // create entrances
-            for (const groupName of checkGroups) {
-                const group = groups.get(groupName);
-                if (group) {
-                    group.exits.forEach((exit) => {
-                        const child = buildPortalNode(exit, [node], childLineage);
-                        if (child) {
-                            node.children.add(child);
-                        }
-                    });
-                }
-            }
             updateSectionStatus(sectionName, {
                 title: sectionConfig.title,
                 theme: sectionConfig.theme,
@@ -611,4 +452,4 @@ const createSectionManager = (checkManager: CheckManager, entranceManager: Entra
 };
 
 export { createSectionManager };
-export type {Section, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef}
+export type { Section, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef }

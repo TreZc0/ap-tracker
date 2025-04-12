@@ -34,7 +34,7 @@ const InventoryItemCollectionView = ({
     collection: InventoryItemCollection;
 }) => {
     const serviceContext = useContext(ServiceContext);
-    const checkManager = serviceContext.checkManager;
+    const locationManager = serviceContext.locationManager;
     const tagManager = serviceContext.tagManager;
     const connection = serviceContext.connector;
     const [detailsOpen, setDetailsOpen] = useState(false);
@@ -59,16 +59,16 @@ const InventoryItemCollectionView = ({
                     {collection.items.map((item) => (
                         <div key={item.index}>
                             {item.location} - {item.sender}{" "}
-                            {item.local && checkManager && tagManager && (
+                            {item.local && locationManager && tagManager && (
                                 <GhostButton
                                     onClick={(event) => {
-                                        const check = item.location;
+                                        const location = item.location;
                                         const status =
-                                            checkManager.getCheckStatus(check);
+                                            locationManager.getLocationStatus(location);
                                         event.stopPropagation();
                                         let found = false;
                                         status.tags?.forEach((tag) => {
-                                            if (tag.tagId === `${check}-star`) {
+                                            if (tag.tagId === `${location}-star`) {
                                                 found = true;
                                             }
                                         });
@@ -76,8 +76,8 @@ const InventoryItemCollectionView = ({
                                             const tagData =
                                                 tagManager.createTagData();
                                             tagData.typeId = "star";
-                                            tagData.checkName = check;
-                                            tagData.tagId = `${check}-star`;
+                                            tagData.checkName = location;
+                                            tagData.tagId = `${location}-star`;
                                             tagManager.addTag(
                                                 tagData,
                                                 connection.connection.slotInfo
@@ -87,8 +87,8 @@ const InventoryItemCollectionView = ({
                                             const starTag =
                                                 tagManager.createTagData();
                                             starTag.typeId = "star";
-                                            starTag.checkName = check;
-                                            starTag.tagId = `${check}-star`;
+                                            starTag.checkName = location;
+                                            starTag.tagId = `${location}-star`;
                                             tagManager.removeTag(
                                                 starTag,
                                                 connection.connection.slotInfo
