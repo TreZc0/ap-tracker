@@ -27,7 +27,7 @@ const Container = styled.div`
 
 const NewConnection = ({ ...props }) => {
     const [connectionInfo, setConnectionInfo] = useState({
-        host: "archipelago.gg",
+        host: "multiworld.gg",
         port: "",
         slot: "",
         password: "",

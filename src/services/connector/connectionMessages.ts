@@ -24,7 +24,9 @@ const CONNECTION_MESSAGES = {
     connectionFailed: ({ host, port, slot, game: _game, error }): ConnectionMessage => {
         let serverHelp = "";
         switch (host) {
-            case "archipelago.gg": {
+            case "archipelago.gg":
+            case "trezapalooza.com":
+	    case "multiworld.gg": {
                 serverHelp = `A common reason to not be able to connect to ${host} is the room has either gone to sleep (after 2 hours of inactivity) or the port has changed. 
 You can wake up the room by refreshing the room page and verify the port is still ${port}.
 If the port has changed, you can change it by clicking a Saved Connection followed by the edit button.`;

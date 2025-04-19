@@ -47,24 +47,6 @@ const OptionsScreen = () => {
                 )}
             </OptionBlock>
             <OptionBlock title="Attributions">
-                <img
-                    src="./icon.svg"
-                    width={"64px"}
-                    style={{ float: "left", marginRight: "1em" }}
-                />
-                The Archipelago Logos used by this app are the modified works of
-                Krista Corkos and Christopher Wilson (© 2022) and is licensed
-                under Attribution-NonCommercial 4.0 International. To view a
-                copy of this license, visit{" "}
-                <a
-                    href="http://creativecommons.org/licenses/by-nc/4.0/"
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    http://creativecommons.org/licenses/by-nc/4.0/
-                </a>
-                <br />
-                <br />
                 This app is primarily built using{" "}
                 <a href="https://react.dev/" target="_blank" rel="noreferrer">
                     React

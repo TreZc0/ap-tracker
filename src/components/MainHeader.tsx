@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { TrackerStateContext } from "../contexts/contexts";
 import { PrimaryButton, SecondaryButton } from "./buttons";
 import Icon from "./icons/icons";
-import { background } from "../constants/colors";
 import NotePad from "./NotePad";
 import { CONNECTION_STATUS } from "../services/connector/connector";
 import ConnectionIcon from "./icons/ConnectionIcon";
@@ -21,7 +20,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 position: "sticky",
                 top: "0px",
                 boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
-                backgroundColor: background,
+                backgroundColor: "#333",
             }}
         >
             <div
@@ -34,10 +33,10 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 {...props}
             >
                 {" "}
-                <div style={{ width: "2.5em", margin: "0.25em" }}>
+                <div style={{ width: "2.5em", marginLeft: "0.25em" }}>
                     <ConnectionIcon status={trackerState.connectionStatus} />
                 </div>
-                <div>{trackerState.connectionStatus}</div>
+                <div style={{ marginLeft: "5em" }}>{trackerState.connectionStatus}</div>
                 {slot?.alias && <div>{slot.alias}</div>}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>

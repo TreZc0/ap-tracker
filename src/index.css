@@ -1,7 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleaypis.com/css2?family=Roboto&display=swap");
 
 :root {
-    --background: white;
     --text-primary: black;
     --filled-text-primary: white;
     --background-primary: #433d9d;
@@ -15,7 +14,6 @@
 }
 
 [data-theme="dark"] {
-    --background: #1f1f1f;
     --text-primary: white;
     --filled-text-primary: white;
     --background-primary: #433d9d;
@@ -26,6 +24,9 @@
 
 body {
     font-family: "Roboto", sans-serif;
+    background-image: url('/ocean.png');
+    background-repeat: repeat;
+    background-size: 126px 126px;
 }
 
 a {
