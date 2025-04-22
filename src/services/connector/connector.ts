@@ -131,7 +131,7 @@ const createConnector = (
 
         return client
             .login(`${host}:${port}`, slot, undefined, {
-                tags: ["Tracker", "Checklist"],
+                tags: ["Tracker", "Checklist", "NoText"],
                 password,
                 items: API.itemsHandlingFlags.all,
             })
