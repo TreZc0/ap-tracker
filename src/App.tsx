@@ -32,7 +32,7 @@ const AppScreen = styled.div`
     padding: 0;
     display: grid;
     overflow: auto;
-    background-color: ${background};
+    background: ${background};
     justify-items: stretch;
     align-items: stretch;
     color: ${textPrimary};
