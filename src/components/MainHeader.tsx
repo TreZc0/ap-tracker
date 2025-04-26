@@ -21,6 +21,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 top: "0px",
                 boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
                 backgroundColor: "#333",
+                color: "white"
             }}
         >
             <div

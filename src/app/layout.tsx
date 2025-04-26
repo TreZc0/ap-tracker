@@ -24,6 +24,9 @@ export default function RootLayout({
                     You need to enable JavaScript to run this app.
                 </noscript>
                 <div id="root">{children}</div>
+                <div id="footer">Created by DrAwesome4433 - <a href="https://github.com/DrAwesome4333/ap-tracker">[Github]</a> || <a href="https://drawesome4333.github.io/ap-tracker/">[Original Site]</a>
+
+                </div>
             </body>
         </html>
     );
