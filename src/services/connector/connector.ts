@@ -131,7 +131,7 @@ const createConnector = (
 
         return client
             .login(`${host}:${port}`, slot, undefined, {
-                tags: ["Tracker", "Checklist"],
+                tags: ["Tracker", "Checklist", "NoText"],
                 password,
                 items: API.itemsHandlingFlags.all,
             })
@@ -232,7 +232,7 @@ const createConnector = (
                     tagManager.loadTags(connection.slotInfo.connectionId);
                 });
                 enableDataSync(client, tagManager);
-                SavedConnectionManager.cacheDataPackage(savedConnectionInfo.seed, client.package.exportPackage());
+                // SavedConnectionManager.cacheDataPackage(savedConnectionInfo.seed, client.package.exportPackage());
             })
             .catch((e) => {
                 statusMessageHandle.update({
