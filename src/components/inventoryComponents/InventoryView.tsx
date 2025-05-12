@@ -94,7 +94,7 @@ const InventoryView = () => {
         items,
     ]);
     return (
-        <div style={{ width: "100%", margin: "1em" }}>
+        <div style={{ margin: "1em" }}>
             <h2>Received Items</h2>
             {sortedItems.map((collection) => (
                 <InventoryItemCollectionView

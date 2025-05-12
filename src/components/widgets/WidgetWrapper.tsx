@@ -1,33 +1,14 @@
 import React from "react";
-import { primary, secondary } from "../../constants/colors";
 
 type WidgetParams = {
     row: number;
     column: number;
     rowSpan: number;
     colSpan: number;
+    resizable?: "horizontal" | "vertical" | "both";
     title?: string;
-    enableEdit: boolean;
+    enableEdit?: boolean;
     children: React.ReactNode;
-};
-const radius = 20;
-const Circle = ({ position }: { position: "top" | "bottom" | "right" | "left" }) => {
-    const style: React.CSSProperties = {
-        position: "absolute",
-        cursor: "pointer",
-    };
-    style[position] = `${-radius/2}`;
-    return (
-        <svg viewBox="-25 -25 50 50" style={style}>
-            <circle
-                stroke={primary}
-                strokeOpacity={0.25}
-                strokeWidth={5}
-                r={radius}
-                fill={secondary}
-            />
-        </svg>
-    );
 };
 
 const WidgetWrapper = ({
@@ -35,15 +16,21 @@ const WidgetWrapper = ({
     column,
     rowSpan,
     colSpan,
-    title,
-    enableEdit,
     children,
+    resizable,
 }: WidgetParams) => {
     return (
         <div
             style={{
                 position: "relative",
                 gridArea: `${row} / ${column} / span ${rowSpan} / span ${colSpan}`,
+                overflow: "auto",
+                boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
+                resize: resizable,
+                maxWidth: "90vw",
+                minWidth: "10vw",
+                maxHeight: "95vh",
+                minHeight: "5vh",
             }}
         >
             {children}
