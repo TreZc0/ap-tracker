@@ -12,13 +12,15 @@ const ClientMessage = ({ message }: { message: MsgPart[] }) => {
         <div
             onDoubleClick={async () => {
                 try {
-                    await navigator.clipboard.writeText(text);
-                    NotificationManager.createStatus({
-                        message: "Copied to clipboard",
-                        type: MessageType.info,
-                        progress: 1,
-                        duration: 2,
-                    });
+                    if (navigator.clipboard) {
+                        await navigator.clipboard.writeText(text);
+                        NotificationManager.createStatus({
+                            message: "Copied to clipboard",
+                            type: MessageType.info,
+                            progress: 1,
+                            duration: 2,
+                        });
+                    }
                 } catch (e) {
                     console.error("Failed to copy text.", e);
                 }

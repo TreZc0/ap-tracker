@@ -1,6 +1,6 @@
 // @ts-check
 import React from "react";
-import SplitScreen from "./shared/SplitScreen";
+import SplitScreen from "./LayoutUtilities/SplitScreen";
 import NewConnection from "./connectionComponents/NewConnection";
 import SavedConnections from "./connectionComponents/SavedConnections";
 

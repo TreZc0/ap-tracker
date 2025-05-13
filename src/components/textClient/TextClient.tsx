@@ -8,7 +8,7 @@ import { GhostButton, PrimaryButton } from "../buttons";
 import { Checkbox, Input } from "../inputs";
 import useOption from "../../hooks/optionHook";
 import Modal from "../shared/Modal";
-import ButtonRow from "../shared/ButtonRow";
+import ButtonRow from "../LayoutUtilities/ButtonRow";
 import Icon from "../icons/icons";
 
 const TextClient = () => {

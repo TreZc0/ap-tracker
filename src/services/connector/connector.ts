@@ -12,6 +12,7 @@ import { TagManager } from "../tags/tagManager";
 import TrackerManager from "../../games/TrackerManager";
 import TextClientManager from "../textClientManager";
 import { setupAPTextSync } from "./textSync";
+import { globalOptionManager } from "../options/optionManager";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -83,6 +84,27 @@ const createConnector = (
         };
     })();
 
+    let apTags = ["Tracker", "Checklist"];
+    let receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+
+    const updateTags = () => {
+        apTags = ["Tracker", "Checklist"];
+        if (!receiveText) {
+            apTags.push("NoText")
+        }
+        if (client.authenticated) {
+            client.updateTags(apTags);
+        }
+        console.log("updated")
+    }
+
+    const toggleText = () => {
+        receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+        updateTags();
+    }
+
+    globalOptionManager.getSubscriberCallback("showTextClient", "global")(toggleText);
+
     setupAPCheckSync(client, locationManager, tagManager, connection);
     setupAPInventorySync(client, inventoryManger);
     setupAPTextSync(client, textClientManager);
@@ -133,9 +155,10 @@ const createConnector = (
             client.package.importPackage(dataPackage);
         }
 
+        updateTags();
         return client
             .login(`${host}:${port}`, slot, undefined, {
-                tags: ["Tracker", "Checklist"],
+                tags: apTags,
                 password,
                 items: API.itemsHandlingFlags.all,
             })

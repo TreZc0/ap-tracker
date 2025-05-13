@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import Modal from "../shared/Modal";
 import styled from "styled-components";
-import ButtonRow from "../shared/ButtonRow";
+import ButtonRow from "../LayoutUtilities/ButtonRow";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../buttons";
 import Icon from "../icons/icons";
 import { LocationManager } from "../../services/locations/locationManager";
