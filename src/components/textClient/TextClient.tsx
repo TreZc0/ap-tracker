@@ -1,11 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
 import StickySpacer from "../shared/StickySpacer";
 import useOnScreen from "../../hooks/onScreenHook";
 import { GhostButton, PrimaryButton } from "../buttons";
-import { Checkbox, Input } from "../inputs";
+import { Input } from "../inputs";
 import useOption from "../../hooks/optionHook";
 import Modal from "../shared/Modal";
 import ButtonRow from "../LayoutUtilities/ButtonRow";
@@ -20,19 +26,18 @@ const TextClient = () => {
     const bottomRef = useRef(null);
     const messagesWindowRef = useRef(null);
     const shouldScroll = useOnScreen(bottomRef, messagesWindowRef);
+    const scrollTimeoutRef = useRef(null);
     const [inputText, setInputText] = useState("");
     const [cachedInputText, setCachedInputText] = useState("");
     const [inputHistory, setInputHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
 
-    const filterItemSends_option = useOption(
+    const itemSendsFilter_option = useOption(
         optionManager,
-        "filterItemSends",
+        "itemSendsFilter",
         "textClient"
-    ) as boolean;
-    const filterItemSends = filterItemSends_option ?? false;
-
-
+    ) as "all" | "own" | "own+prog+use+trap" | "prog+use+trap";
+    const itemSendsFilter = itemSendsFilter_option ?? "all";
 
     const processInput = () => {
         if (inputText) {
@@ -71,15 +76,25 @@ const TextClient = () => {
         }
     };
 
+    const scrollToBottom = useCallback(() => {
+        if (scrollTimeoutRef.current) {
+            clearTimeout(scrollTimeoutRef.current);
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+            scrollTimeoutRef.current = null;
+        }, 10);
+    }, [shouldScroll, messages, bottomRef, scrollTimeoutRef]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, []);
     useEffect(() => {
         if (shouldScroll) {
-            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+            scrollToBottom();
         }
     }, [messages, shouldScroll, bottomRef]);
 
-    useEffect(() => {
-        textClientManager.filterItemSends = filterItemSends;
-    }, [textClientManager, filterItemSends]);
     return (
         <div
             style={{
@@ -159,18 +174,32 @@ const TextClient = () => {
                     <h2>Text Client Filters</h2>
                     <div>
                         <h3>Item filters</h3>
-                        <Checkbox
-                            label="Filter Item Sends"
-                            checked={filterItemSends}
+                        <label htmlFor={"send_filter"}>Filter: </label>
+                        <select
+                            className="interactive"
+                            id={"send_filter"}
+                            value={itemSendsFilter ?? "all"}
                             onChange={(event) => {
-                                optionManager.setOptionValue(
-                                    "filterItemSends",
-                                    "textClient",
-                                    event.target.checked
-                                );
-                                optionManager.saveScope("textClient");
+                                const value = event.target.value;
+                                if (value) {
+                                    optionManager.setOptionValue(
+                                        "itemSendsFilter",
+                                        "textClient",
+                                        value
+                                    );
+                                    optionManager.saveScope("textClient");
+                                }
                             }}
-                        />
+                        >
+                            <option value="all">Show all</option>
+                            <option value="own">Show own</option>
+                            <option value="prog+use+trap">
+                                Show all non-normal
+                            </option>
+                            <option value="own+prog+use+trap">
+                                Show own and all non-normal
+                            </option>
+                        </select>
                     </div>
 
                     <ButtonRow>

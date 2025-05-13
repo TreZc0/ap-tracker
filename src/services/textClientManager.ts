@@ -1,5 +1,7 @@
-import { Client, JSONMessagePart, Player, PrintJSONPacket, ValidJSONColorType } from "archipelago.js";
+import { API, Client, JSONMessagePart, Player, PrintJSONPacket, ValidJSONColorType } from "archipelago.js";
+import { globalOptionManager } from "./options/optionManager";
 
+globalOptionManager.loadScope("textClient");
 const keyGen = (() => {
     let next = 0;
     return () => next++;
@@ -67,9 +69,8 @@ type MessagePart = (TextMessagePart |
 class TextClientManager {
     #messages: MessagePart[][] = [];
     #listeners: Set<() => void> = new Set();
-    messageBufferSize = 1000;
+    messageBufferSize = 500;
     allowedTypes = new Set(["ItemSend", "ItemCheat", "Hint", "Join", "Part", "Chat", "ServerChat", "Tutorial", "TagsChanged", "CommandResult", "AdminCommandResult", "Goal", "Release", "Collect", "Countdown"]);
-    filterItemSends = true;
     #callListeners = () => {
         this.#listeners.forEach(listener => listener());
     }
@@ -165,14 +166,20 @@ class TextClientManager {
 
     /** Processes a PrintJSONPacket into a Simpler message format */
     addMessage = (packet: PrintJSONPacket, client: Client) => {
+        const itemSendsFilter = globalOptionManager.getOptionValue("itemSendsFilter", "textClient") as "all" | "own" | "own+prog+use+trap" | "prog+use+trap" ?? "all";
+        const player = client.players.self.slot;
         const { data, type } = packet;
+        const pertainsToPlayer = () => type === "ItemSend" && (player === packet.receiving || player === packet.item.player);
         if (!this.allowedTypes.has(type)) {
             return;
         }
 
-        if (type === "ItemSend" && this.filterItemSends) {
-            const player = client.players.self.slot;
-            if (player !== packet.receiving && player !== packet.item.player) {
+        if (type === "ItemSend" && itemSendsFilter !== "all") {
+            if (itemSendsFilter === "own" && !pertainsToPlayer()) {
+                return;
+            } else if (itemSendsFilter === "own+prog+use+trap" && (!pertainsToPlayer() && !(packet.item.flags & (API.itemClassifications.progression | API.itemClassifications.useful | API.itemClassifications.trap)))) {
+                return;
+            } else if (itemSendsFilter === "prog+use+trap" && !(packet.item.flags & (API.itemClassifications.progression | API.itemClassifications.useful | API.itemClassifications.trap))) {
                 return;
             }
         }

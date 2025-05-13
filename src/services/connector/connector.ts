@@ -90,12 +90,11 @@ const createConnector = (
     const updateTags = () => {
         apTags = ["Tracker", "Checklist"];
         if (!receiveText) {
-            apTags.push("NoText")
+            apTags.push("NoText");
         }
         if (client.authenticated) {
             client.updateTags(apTags);
         }
-        console.log("updated")
     }
 
     const toggleText = () => {
