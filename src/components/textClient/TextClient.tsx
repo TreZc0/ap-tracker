@@ -4,11 +4,18 @@ import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
 import StickySpacer from "../shared/StickySpacer";
 import useOnScreen from "../../hooks/onScreenHook";
-import { PrimaryButton } from "../buttons";
-import { Input } from "../inputs";
+import { GhostButton, PrimaryButton } from "../buttons";
+import { Checkbox, Input } from "../inputs";
+import useOption from "../../hooks/optionHook";
+import Modal from "../shared/Modal";
+import ButtonRow from "../shared/ButtonRow";
+import Icon from "../icons/icons";
+
 const TextClient = () => {
     const services = useContext(ServiceContext);
+    const optionManager = services.optionManager;
     const textClientManager = services.textClientManager;
+    const [showFilterModal, setShowFilterModal] = useState(false);
     const messages = useTextClientMessages(textClientManager);
     const bottomRef = useRef(null);
     const messagesWindowRef = useRef(null);
@@ -17,6 +24,15 @@ const TextClient = () => {
     const [cachedInputText, setCachedInputText] = useState("");
     const [inputHistory, setInputHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
+
+    const filterItemSends_option = useOption(
+        optionManager,
+        "filterItemSends",
+        "textClient"
+    ) as boolean;
+    const filterItemSends = filterItemSends_option ?? false;
+
+
 
     const processInput = () => {
         if (inputText) {
@@ -61,6 +77,9 @@ const TextClient = () => {
         }
     }, [messages, shouldScroll, bottomRef]);
 
+    useEffect(() => {
+        textClientManager.filterItemSends = filterItemSends;
+    }, [textClientManager, filterItemSends]);
     return (
         <div
             style={{
@@ -69,10 +88,28 @@ const TextClient = () => {
                 width: "100%",
                 height: "100%",
                 display: "grid",
-                gridTemplateRows: "auto 1fr auto",
+                gridTemplateRows: "3em 1fr auto",
             }}
         >
-            <h3>Text Client</h3>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    position: "sticky",
+                    top: "0px",
+                }}
+            >
+                <h3>Text Client</h3>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <PrimaryButton
+                        $tiny
+                        style={{ height: "20px" }}
+                        onClick={() => setShowFilterModal(true)}
+                    >
+                        <Icon fontSize="12pt" type="filter_alt" />
+                    </PrimaryButton>
+                </div>
+            </div>
             <div
                 style={{
                     overflowY: "auto",
@@ -117,6 +154,36 @@ const TextClient = () => {
                     }}
                 ></Input>
             </div>
+            <Modal open={showFilterModal}>
+                <div>
+                    <h2>Text Client Filters</h2>
+                    <div>
+                        <h3>Item filters</h3>
+                        <Checkbox
+                            label="Filter Item Sends"
+                            checked={filterItemSends}
+                            onChange={(event) => {
+                                optionManager.setOptionValue(
+                                    "filterItemSends",
+                                    "textClient",
+                                    event.target.checked
+                                );
+                                optionManager.saveScope("textClient");
+                            }}
+                        />
+                    </div>
+
+                    <ButtonRow>
+                        <GhostButton
+                            onClick={() => {
+                                setShowFilterModal(false);
+                            }}
+                        >
+                            Close
+                        </GhostButton>
+                    </ButtonRow>
+                </div>
+            </Modal>
         </div>
     );
 };

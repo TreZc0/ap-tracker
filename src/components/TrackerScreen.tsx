@@ -9,7 +9,7 @@ import Flex from "./Flex";
 
 const TrackerScreen = () => {
     const services = useContext(ServiceContext);
-    const showTextClient = true; //useOption(services.optionManager, "showTextClient", "global") as boolean;
+    const showTextClient = useOption(services.optionManager, "showTextClient", "global") ?? true as boolean;
     const inventory = (
         <>
             <InventoryView />
@@ -23,7 +23,7 @@ const TrackerScreen = () => {
         </>
     );
     const clientAndList = <Flex direction="column" child1={checklist} child2={<TextClient/>}/>;
-    return <Flex direction="row" style={{width: "100%", height:"100%"}} startRatio={0.25} child1={inventory} child2={clientAndList}/>;
+    return showTextClient ? <Flex direction="row" style={{width: "100%", height:"100%"}} startRatio={0.25} child1={inventory} child2={clientAndList}/> : <Flex direction="row" style={{width: "100%", height:"100%"}} startRatio={0.25} child1={inventory} child2={checklist}/> ;
 };
 
 export default TrackerScreen;

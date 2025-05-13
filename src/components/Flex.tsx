@@ -38,8 +38,10 @@ FlexItem.displayName = "FlexItem";
 
 const FlexResizer = ({
     onMouseDown,
+    onTouchStart,
 }: {
     onMouseDown: React.MouseEventHandler;
+    onTouchStart: React.TouchEventHandler;
 }) => {
     const flexParent = useContext(FlexContext);
     const style: React.CSSProperties = {
@@ -47,7 +49,13 @@ const FlexResizer = ({
         cursor: flexParent === "row" ? "ew-resize" : "ns-resize",
         backgroundColor: "rgba(128, 128, 128, 0.5)",
     };
-    return <div onMouseDown={onMouseDown} style={style}></div>;
+    return (
+        <div
+            onMouseDown={onMouseDown}
+            onTouchStart={onTouchStart}
+            style={style}
+        ></div>
+    );
 };
 
 const Flex = ({
@@ -101,6 +109,32 @@ const Flex = ({
         }
     };
 
+    const onTouchMove: React.TouchEventHandler = (event) => {
+        if (mouseDownRef.current) {
+            //
+            const deltaX =
+                event.targetTouches[0].clientX - mousePosRef.current.x;
+            const deltaY =
+                event.targetTouches[0].clientY - mousePosRef.current.y;
+            mousePosRef.current = {
+                x: event.targetTouches[0].clientX,
+                y: event.targetTouches[0].clientY,
+            };
+
+            const totalWidth =
+                child1Ref.current.clientWidth + child2Ref.current.clientWidth;
+            const totalHeight =
+                child1Ref.current.clientHeight + child2Ref.current.clientHeight;
+            const ratioDX = deltaX / totalWidth;
+            const ratioDY = deltaY / totalHeight;
+            if (direction === "row") {
+                setChildRatio((r) => Math.max(0, Math.min(1, r + ratioDX)));
+            } else {
+                setChildRatio((r) => Math.max(0, Math.min(1, r + ratioDY)));
+            }
+        }
+    };
+
     if (flexParent !== "root") {
         myStyle.position = "relative";
         myStyle.width = "100%";
@@ -114,7 +148,11 @@ const Flex = ({
                     mouseDownRef.current = false;
                     event.preventDefault();
                 }}
+                onTouchEnd={(_event) => {
+                    mouseDownRef.current = false;
+                }}
                 onMouseMove={onMouseMove}
+                onTouchMove={onTouchMove}
             >
                 <FlexItem ref={child1Ref} ratio={childRatio}>
                     {child1}
@@ -127,6 +165,13 @@ const Flex = ({
                         };
                         mouseDownRef.current = true;
                         event.preventDefault();
+                    }}
+                    onTouchStart={(event) => {
+                        mousePosRef.current = {
+                            x: event.targetTouches[0].clientX,
+                            y: event.targetTouches[0].clientY,
+                        };
+                        mouseDownRef.current = true;
                     }}
                 />
                 <FlexItem ref={child2Ref} ratio={1 - childRatio}>
