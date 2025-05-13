@@ -13,6 +13,7 @@ const supportedIcons = [
     "beenhere",
     "new_label",
     "pentagon",
+    "filter_alt",
     "sticky_note",
     "sync_arrow_down",
     "sync_arrow_up",

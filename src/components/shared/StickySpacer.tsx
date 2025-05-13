@@ -5,7 +5,7 @@ const StickySpacer = () => {
     style={{
         position: "sticky",
         bottom: "0px",
-        height: "25vh",
+        height: "5vh",
         pointerEvents: "none",
     }}
 />

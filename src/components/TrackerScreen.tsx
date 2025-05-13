@@ -1,72 +1,74 @@
-import React, { useContext } from "react";
-import SplitScreen from "./shared/SplitScreen";
+import React, { useContext, useMemo } from "react";
 import SectionView from "./sectionComponents/SectionView";
 import InventoryView from "./inventoryComponents/InventoryView";
 import StickySpacer from "./shared/StickySpacer";
 import ServiceContext from "../contexts/serviceContext";
 import useOption from "../hooks/optionHook";
+import TextClient from "./textClient/TextClient";
+import Flex from "./LayoutUtilities/Flex";
+import Tabs, { Tab } from "./LayoutUtilities/Tabs";
+import { useOrientation } from "../hooks/mediaHook";
 
 const TrackerScreen = () => {
     const services = useContext(ServiceContext);
-    const showInventoryProg = useOption(
+    const showTextClient =
+        useOption(services.optionManager, "showTextClient", "global") ??
+        (true as boolean);
+    const layoutMode = useOption(
         services.optionManager,
-        "inventory_show_prog_items",
+        "trackerLayoutMode",
         "global"
+    ) as "auto" | "tab" | "flex" ?? "auto";
+    const orientation = useOrientation();
+    const useTabLayout =
+        layoutMode === "tab" ||
+        (layoutMode === "auto" && !orientation.includes("landscape"));
+    const inventory = (
+        <>
+            <InventoryView />
+            <StickySpacer />
+        </>
     );
-    const showInventoryUseful = useOption(
-        services.optionManager,
-        "inventory_show_useful_items",
-        "global"
+    const checklist = (
+        <>
+            <SectionView name="root" context={{}} />
+            <StickySpacer />
+        </>
     );
-    const showInventoryNormal = useOption(
-        services.optionManager,
-        "inventory_show_normal_items",
-        "global"
+
+    const textClient = <TextClient />;
+    const clientAndList = (
+        <Flex direction="column" child1={checklist} child2={textClient} />
     );
-    const showInventoryTrap = useOption(
-        services.optionManager,
-        "inventory_show_trap_items",
-        "global"
-    );
-    const showInventory =
-        (showInventoryProg ?? true) ||
-        (showInventoryNormal ?? true) ||
-        (showInventoryTrap ?? true) ||
-        (showInventoryUseful ?? true);
-    return (
-        <SplitScreen
-            style={{
-                height: "100%",
-                width: "100%",
-                overflow: "auto",
-            }}
-            screens={[
-                {
-                    key: "inventory_view",
-                    weight: showInventory ? 1 : 0,
-                    content: showInventory && (
-                        <>
-                            <InventoryView />
-                            <StickySpacer />
-                        </>
-                    ),
-                },
-                {
-                    key: "section_view",
-                    weight: 3,
-                    content: (
-                        <div
-                            style={{
-                                width: "100%",
-                                overflow: "auto",
-                            }}
-                        >
-                            <SectionView name="root" context={{}} />
-                            <StickySpacer />
-                        </div>
-                    ),
-                },
-            ]}
+    const tabs = useMemo(() => {
+        const res = [
+            new Tab("Locations", checklist),
+            new Tab("Inventory", inventory),
+        ];
+        if(showTextClient){
+            res.push(new Tab("Text Client", textClient));
+        }
+        return res;
+    }, [showTextClient]);
+
+    if (useTabLayout) {
+        return <Tabs tabs={tabs} style={{ width: "100%", height: "100%" }} />;
+    }
+    return showTextClient ? (
+        <Flex
+            direction="row"
+            style={{ width: "100%", height: "100%" }}
+            startRatio={0.25}
+            child1={inventory}
+            child2={clientAndList}
+        />
+    ) : (
+        <Flex
+            direction="row"
+            style={{ width: "100%", height: "100%" }}
+            startRatio={0.25}
+            child1={inventory}
+            child2={checklist}
         />
     );
 };

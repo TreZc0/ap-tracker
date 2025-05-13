@@ -7,6 +7,7 @@ import StickySpacer from "../shared/StickySpacer";
 import ChecklistSettings from "./ChecklistSettings";
 import ThemeOptions from "./ThemeOptions";
 import InventorySettings from "./InventorySettings";
+import LayoutSettings from "./LayoutSettings";
 
 const OptionsScreen = () => {
     const serviceContext = useContext(ServiceContext);
@@ -22,9 +23,18 @@ const OptionsScreen = () => {
     }
 
     return (
-        <div>
+        <div
+            style={{
+                width: "100%",
+                height: "100%",
+                overflow: "auto",
+            }}
+        >
             <OptionBlock title="Theme Settings">
                 <ThemeOptions optionManager={optionManager} />
+            </OptionBlock>
+            <OptionBlock title="Tracker Layout">
+                <LayoutSettings />
             </OptionBlock>
             <OptionBlock title="Checklist Settings">
                 <ChecklistSettings optionManager={optionManager} />
@@ -46,6 +56,7 @@ const OptionsScreen = () => {
                     <i>Failed to initiate tracker manager</i>
                 )}
             </OptionBlock>
+
             <OptionBlock title="Attributions">
                 This app is primarily built using{" "}
                 <a href="https://react.dev/" target="_blank" rel="noreferrer">

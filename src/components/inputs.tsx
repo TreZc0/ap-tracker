@@ -10,7 +10,7 @@ const Input = forwardRef(
             invalid,
             ...props
         }: {
-            label: string;
+            label?: string;
             invalid?: boolean;
             style?: React.CSSProperties;
         } & ComponentProps<"input">,
@@ -21,33 +21,46 @@ const Input = forwardRef(
                 <div
                     style={{
                         ...style,
-                        display: "inline-block",
-                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
                     }}
                 >
-                    {label && (
-                        <label
-                            style={{
-                                fontSize: "0.75em",
-                                marginLeft: "0.5em",
-                                marginBottom: "0px",
-                                color: invalid ? danger : textPrimary,
-                            }}
-                        >
-                            {label} {invalid && "*"}
-                        </label>
-                    )}
-                    <br />
-                    <input
-                        ref={ref}
-                        {...props}
-                        className="interactive"
+                    <div
                         style={{
-                            backgroundColor: background,
-                            color: textPrimary,
-                            border: `1px solid ${invalid ? danger : tertiary}`,
+                            width: "100%",
                         }}
-                    />
+                    >
+                        {label && (
+                            <>
+                                <label
+                                    style={{
+                                        fontSize: "0.75em",
+                                        marginLeft: "0.5em",
+                                        marginBottom: "0px",
+                                        color: invalid ? danger : textPrimary,
+                                    }}
+                                >
+                                    {label} {invalid && "*"}
+                                </label>
+                                <br />
+                            </>
+                        )}
+
+                        <input
+                            ref={ref}
+                            {...props}
+                            className="interactive"
+                            style={{
+                                backgroundColor: background,
+                                color: textPrimary,
+                                border: `1px solid ${
+                                    invalid ? danger : tertiary
+                                }`,
+                                width: "100%",
+                                boxSizing: "border-box",
+                            }}
+                        />
+                    </div>
                 </div>
             </>
         );
@@ -125,25 +138,36 @@ const FileInput = forwardRef(
         } & ComponentProps<"input">,
         ref: React.ForwardedRef<HTMLInputElement>
     ) => {
-        return <div>
-            <label htmlFor={props.id}>{label}</label>
-            <br/>
-            <input type="file" ref={ref} {...props} style={renderAsDrop ? {display:'none'} : style} className={renderAsDrop ? "" : "interactive " + className}/>
-            {renderAsDrop && <div onDrop={(e)=>{
-                e.preventDefault();
-                if(e.dataTransfer.items){
-                    console.log("items");
-                }else{
-                    console.log("files");
-                }
-            }}
-            onDragOver={(e) => {
-                e.preventDefault();
-            }}
-            >
-                Drag and drop file here.
-                </div>}
-        </div>;
+        return (
+            <div>
+                <label htmlFor={props.id}>{label}</label>
+                <br />
+                <input
+                    type="file"
+                    ref={ref}
+                    {...props}
+                    style={renderAsDrop ? { display: "none" } : style}
+                    className={renderAsDrop ? "" : "interactive " + className}
+                />
+                {renderAsDrop && (
+                    <div
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            if (e.dataTransfer.items) {
+                                console.log("items");
+                            } else {
+                                console.log("files");
+                            }
+                        }}
+                        onDragOver={(e) => {
+                            e.preventDefault();
+                        }}
+                    >
+                        Drag and drop file here.
+                    </div>
+                )}
+            </div>
+        );
     }
 );
 

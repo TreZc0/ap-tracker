@@ -10,6 +10,9 @@ import { InventoryManager } from "../inventory/inventoryManager";
 import { EntranceManager } from "../entrances/entranceManager";
 import { TagManager } from "../tags/tagManager";
 import TrackerManager from "../../games/TrackerManager";
+import TextClientManager from "../textClientManager";
+import { setupAPTextSync } from "./textSync";
+import { globalOptionManager } from "../options/optionManager";
 
 const CONNECTION_STATUS = {
     disconnected: "Disconnected",
@@ -37,6 +40,7 @@ const createConnector = (
     entranceManager: EntranceManager,
     tagManager: TagManager,
     trackerManager: TrackerManager,
+    textClientManager: TextClientManager,
 ): Connector => {
     const client = new Client({ debugLogVersions: false });
     const connection = (() => {
@@ -80,8 +84,29 @@ const createConnector = (
         };
     })();
 
+    let apTags = ["Tracker", "Checklist"];
+    let receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+
+    const updateTags = () => {
+        apTags = ["Tracker", "Checklist"];
+        if (!receiveText) {
+            apTags.push("NoText");
+        }
+        if (client.authenticated) {
+            client.updateTags(apTags);
+        }
+    }
+
+    const toggleText = () => {
+        receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+        updateTags();
+    }
+
+    globalOptionManager.getSubscriberCallback("showTextClient", "global")(toggleText);
+
     setupAPCheckSync(client, locationManager, tagManager, connection);
     setupAPInventorySync(client, inventoryManger);
+    setupAPTextSync(client, textClientManager);
 
     const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }, seed: string) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
@@ -129,9 +154,10 @@ const createConnector = (
             client.package.importPackage(dataPackage);
         }
 
+        updateTags();
         return client
             .login(`${host}:${port}`, slot, undefined, {
-                tags: ["Tracker", "Checklist", "NoText"],
+                tags: apTags,
                 password,
                 items: API.itemsHandlingFlags.all,
             })
