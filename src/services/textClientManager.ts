@@ -1,4 +1,4 @@
-import { Client, JSONMessagePart, Player, PrintJSONPacket } from "archipelago.js";
+import { Client, JSONMessagePart, Player, PrintJSONPacket, ValidJSONColorType } from "archipelago.js";
 
 const keyGen = (() => {
     let next = 0;
@@ -52,22 +52,24 @@ interface HintStatusMessagePart {
 interface ColorMessagePart {
     type: "color";
     text: string;
-    color: unknown;
+    color: ValidJSONColorType;
 }
 
-type MessagePart = (TextMessagePart | 
-                    PlayerMessagePart | 
-                    ItemMessagePart | 
-                    LocationMessagePart | 
-                    EntranceMessagePart | 
-                    HintStatusMessagePart |
-                    ColorMessagePart) & {key: number};
+type MessagePart = (TextMessagePart |
+    PlayerMessagePart |
+    ItemMessagePart |
+    LocationMessagePart |
+    EntranceMessagePart |
+    HintStatusMessagePart |
+    ColorMessagePart) & { key: number };
 
 
 class TextClientManager {
     #messages: MessagePart[][] = [];
     #listeners: Set<() => void> = new Set();
-
+    messageBufferSize = 1000;
+    allowedTypes = new Set(["ItemSend", "ItemCheat", "Hint", "Join", "Part", "Chat", "ServerChat", "Tutorial", "TagsChanged", "CommandResult", "AdminCommandResult", "Goal", "Release", "Collect", "Countdown"]);
+    filterItemSends = true;
     #callListeners = () => {
         this.#listeners.forEach(listener => listener());
     }
@@ -75,8 +77,7 @@ class TextClientManager {
     #parseMessagePart = (part: JSONMessagePart, client: Client): MessagePart => {
         let messagePart: MessagePart = null;
         const key = keyGen();
-
-        if (part.type === "item_id"){
+        if (part.type === "item_id") {
             const player = client.players.findPlayer(part.player);
             messagePart = {
                 key,
@@ -99,7 +100,7 @@ class TextClientManager {
             messagePart = {
                 key,
                 text: client.package.lookupLocationName(player.game, Number(part.text)),
-                type:"location",
+                type: "location",
                 player,
             }
         } else if (part.type === "location_name") {
@@ -107,7 +108,7 @@ class TextClientManager {
             messagePart = {
                 key,
                 text: part.text,
-                type:"location",
+                type: "location",
                 player,
             }
         } else if (part.type === "entrance_name") {
@@ -120,14 +121,14 @@ class TextClientManager {
             const player = client.players.findPlayer(Number(part.text));
             messagePart = {
                 key,
-                type:"player",
+                type: "player",
                 text: player.alias,
                 player,
             }
-        } else if (part.type === "player_name"){
+        } else if (part.type === "player_name") {
             messagePart = {
                 key,
-                type:"player",
+                type: "player",
                 text: part.text,
             }
         } else if (part.type === "color") {
@@ -149,15 +150,65 @@ class TextClientManager {
 
     }
 
-    addMessage = ({ data }: PrintJSONPacket, client: Client) => {
+    /** Appends a message of a specific color, note color is not really used at the moment */
+    echo = (message: string, color: ValidJSONColorType) => {
+        const simplifiedMessageParts: MessagePart[] = [{
+            key: keyGen(),
+            text: message,
+            type: "color",
+            color,
+        }];
+        const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
+        this.#messages = [...this.#messages.slice(start), simplifiedMessageParts];
+        this.#callListeners();
+    }
+
+    /** Processes a PrintJSONPacket into a Simpler message format */
+    addMessage = (packet: PrintJSONPacket, client: Client) => {
+        const { data, type } = packet;
+        if (!this.allowedTypes.has(type)) {
+            return;
+        }
+
+        if (type === "ItemSend" && this.filterItemSends) {
+            const player = client.players.self.slot;
+            if (player !== packet.receiving && player !== packet.item.player) {
+                return;
+            }
+        }
+
         const simplifiedMessageParts = data.map((part) => this.#parseMessagePart(part, client));
-        this.#messages = [...this.#messages, simplifiedMessageParts];
+        const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
+        this.#messages = [...this.#messages.slice(start), simplifiedMessageParts];
         this.#callListeners();
     }
 
     getMessages = () => {
         return this.#messages;
     }
+
+    processCommand = (text: string) => {
+        this.echo(text, "bold");
+        switch (text) {
+            case "help": {
+                this.echo("Available commands:", null);
+                this.echo("/help: Display this helpful message", null);
+                break;
+            }
+            default: {
+                this.echo(`Unrecognized command: ${text}, run /help for a list of available commands`, "red");
+                break;
+            }
+        }
+    }
+
+    processInput = (text: string, client: Client) => {
+        if (text.startsWith("/")) {
+            return this.processCommand(text.substring(1));
+        }
+        client.messages.say(text);
+    }
+
 
     /**
      * Creates a callback that can be used to subscribe to new messages
@@ -177,5 +228,5 @@ class TextClientManager {
 }
 
 export default TextClientManager
-export {HintStatus}
-export type {MessagePart}
+export { HintStatus }
+export type { MessagePart }

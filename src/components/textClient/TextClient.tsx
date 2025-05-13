@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
 import StickySpacer from "../shared/StickySpacer";
 import useOnScreen from "../../hooks/onScreenHook";
+import { PrimaryButton } from "../buttons";
+import { Input } from "../inputs";
 const TextClient = () => {
     const services = useContext(ServiceContext);
     const textClientManager = services.textClientManager;
@@ -11,25 +13,74 @@ const TextClient = () => {
     const bottomRef = useRef(null);
     const messagesWindowRef = useRef(null);
     const shouldScroll = useOnScreen(bottomRef, messagesWindowRef);
-    useEffect(()=>{
-        if(shouldScroll){
-            bottomRef.current?.scrollIntoView({behavior:"smooth"});
-        }
-    },
-    [messages, shouldScroll, bottomRef]);
+    const [inputText, setInputText] = useState("");
+    const [cachedInputText, setCachedInputText] = useState("");
+    const [inputHistory, setInputHistory] = useState([]);
+    const [historyIndex, setHistoryIndex] = useState(-1);
 
-   
+    const processInput = () => {
+        if (inputText) {
+            setInputHistory([inputText, ...inputHistory]);
+            textClientManager.processInput(
+                inputText,
+                services.connector?.connection.client
+            );
+            setInputText("");
+            setCachedInputText("");
+            setHistoryIndex(-1);
+        }
+    };
+
+    const navigateHistory = (direction: number) => {
+        if (historyIndex === 0 && direction < 0) {
+            // back to entry
+            setInputText(cachedInputText);
+        } else if (historyIndex === -1 && direction > 0) {
+            // going from saved index to history
+            setCachedInputText(inputText);
+            if (inputHistory.length > 0) {
+                setInputText(inputHistory[0]);
+                setHistoryIndex(0);
+            }
+        } else if (historyIndex >= 0 && direction > 0) {
+            if (inputHistory.length > historyIndex) {
+                setInputText(inputHistory[historyIndex + 1]);
+                setHistoryIndex(historyIndex + 1);
+            }
+        } else if (historyIndex >= 0 && direction < 0) {
+            if (0 < historyIndex) {
+                setInputText(inputHistory[historyIndex - 1]);
+                setHistoryIndex(historyIndex - 1);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (shouldScroll) {
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages, shouldScroll, bottomRef]);
+
     return (
-        <div style={{
-            width: "100%",
-            height: "100%",
-            display: "grid",
-            gridTemplateRows: "auto 1fr"
-        }}>
-            <h2>Text Client</h2>
-            <div style={{ overflowY: "auto", scrollBehavior:
-                "smooth"
-             }} ref={messagesWindowRef}>
+        <div
+            style={{
+                padding: "1em",
+                boxSizing: "border-box",
+                width: "100%",
+                height: "100%",
+                display: "grid",
+                gridTemplateRows: "auto 1fr auto",
+            }}
+        >
+            <h3>Text Client</h3>
+            <div
+                style={{
+                    overflowY: "auto",
+                    scrollBehavior: "smooth",
+                    padding: "0.25em",
+                }}
+                ref={messagesWindowRef}
+            >
                 {!textClientManager && (
                     <h1>Failed to load text client (no manager)</h1>
                 )}
@@ -37,8 +88,34 @@ const TextClient = () => {
                     messages.map((message, index) => (
                         <ClientMessage key={index} message={message} />
                     ))}
-                    <div ref={bottomRef}></div>
-                    <StickySpacer/>
+                <div ref={bottomRef}></div>
+                <StickySpacer />
+            </div>
+            <div style={{ display: "flex" }}>
+                <PrimaryButton onClick={processInput} $small>
+                    Send
+                </PrimaryButton>
+                <Input
+                    label=""
+                    value={inputText}
+                    type="text"
+                    style={{
+                        flexGrow: 1,
+                    }}
+                    onChange={(e) => {
+                        setInputText(e.target.value);
+                        setHistoryIndex(-1);
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            processInput();
+                        } else if (e.key === "ArrowUp") {
+                            navigateHistory(1);
+                        } else if (e.key === "ArrowDown") {
+                            navigateHistory(-1);
+                        }
+                    }}
+                ></Input>
             </div>
         </div>
     );

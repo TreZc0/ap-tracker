@@ -22,7 +22,11 @@ const OptionsScreen = () => {
     }
 
     return (
-        <div>
+        <div style={{
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
+        }}>
             <OptionBlock title="Theme Settings">
                 <ThemeOptions optionManager={optionManager} />
             </OptionBlock>

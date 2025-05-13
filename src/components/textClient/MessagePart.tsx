@@ -1,45 +1,77 @@
 import React, { useContext } from "react";
 import { API } from "archipelago.js";
 import * as colors from "../../constants/colors";
-import { HintStatus, MessagePart as MsgPart } from "../../services/textClientManager";
+import {
+    HintStatus,
+    MessagePart as MsgPart,
+} from "../../services/textClientManager";
 import ServiceContext from "../../contexts/serviceContext";
 
-const MessagePart = ({part}:{part: MsgPart}) => {
+const MessagePart = ({ part }: { part: MsgPart }) => {
     const services = useContext(ServiceContext);
-    let color = colors.textPrimary;
-    if(part.type === "item"){
-        if(part.flags & API.itemClassifications.progression){
-            color = colors.progressionItem;
+    let textColor = colors.textPrimary;
+    let backgroundColor = undefined;
+    let underline = false;
+    let bold = false;
+    if (part.type === "item") {
+        if (part.flags & API.itemClassifications.progression) {
+            textColor = colors.progressionItem;
         } else if (part.flags & API.itemClassifications.useful) {
-            color = colors.usefulItem;
+            textColor = colors.usefulItem;
         } else if (part.flags & API.itemClassifications.trap) {
-            color = colors.trapItem;
+            textColor = colors.trapItem;
         } else {
-            color = colors.normalItem;
+            textColor = colors.normalItem;
         }
-    }else if(part.type === "location"){
-        color = colors.textClient.green;
-    }else if(part.type === "player"){
-        if(part.text === services.connector?.connection?.slotInfo.alias){
-            color = colors.textClient.magenta;
-        }else{
-            color = colors.textClient.yellow;
+    } else if (part.type === "location") {
+        textColor = colors.textClient.green;
+    } else if (part.type === "player") {
+        if (part.text === services.connector?.connection?.slotInfo.alias) {
+            textColor = colors.textClient.magenta;
+        } else {
+            textColor = colors.textClient.yellow;
         }
-    }else if (part.type === "entrance")  {
-        color = colors.textClient.blue;
-    }else if (part.type === "hint_status") {
-        if(part.hint_status === HintStatus.found){
-            color = colors.textClient.green;
+    } else if (part.type === "entrance") {
+        textColor = colors.textClient.blue;
+    } else if (part.type === "hint_status") {
+        if (part.hint_status === HintStatus.found) {
+            textColor = colors.textClient.green;
         } else if (part.hint_status === HintStatus.avoid) {
-            color = colors.trapItem;
+            textColor = colors.trapItem;
         } else if (part.hint_status === HintStatus.priority) {
-            color = colors.usefulItem;
+            textColor = colors.usefulItem;
         } else {
-            color = colors.textClient.blue;
+            textColor = colors.textClient.blue;
+        }
+    } else if (part.type === "color") {
+        if (part.color === "underline") {
+            underline = true;
+        } else if (part.color === "bold") {
+            bold = true;
+        } else if (part.color && part.color.endsWith("_bg")) {
+            backgroundColor =
+                colors.textClient[
+                    part.color.substring(0, part.color.length - 3)
+                ];
+        } else if (part.color) {
+            textColor = colors.textClient[part.color];
         }
     }
 
-    return <span style={{color}}>{part.text}</span>
-}
+    return (
+        <div
+            style={{
+                color: textColor,
+                backgroundColor,
+                textDecoration: underline ? "underline" : undefined,
+                fontWeight: bold ? "bold" : "normal",
+                whiteSpace: "pre-wrap",
+                display: "inline-block",
+            }}
+        >
+            {part.text}
+        </div>
+    );
+};
 
 export default MessagePart;

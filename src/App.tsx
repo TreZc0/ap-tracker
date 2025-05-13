@@ -67,7 +67,7 @@ const connector = createConnector(
     entranceManager,
     tagManager,
     trackerManager,
-    textClientManager,
+    textClientManager
 );
 const connection = connector.connection;
 
@@ -117,32 +117,25 @@ const App = (): React.ReactNode => {
                                 setOptionWindowOpen(!optionWindowOpen);
                             }}
                         />
-                        {/* <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifySelf: "stretch",
-                                gridArea: "2/1/2/1",
-                                overflow: "auto",
-                            }}
-                            id="test"
-                        > */}
-                            {optionWindowOpen && <OptionsScreen />}
-                            {!optionWindowOpen && (
-                                <>
-                                    {new Set([
-                                        CONNECTION_STATUS.disconnected,
-                                        CONNECTION_STATUS.connecting,
-                                    ]).has(trackerConnectionState) && (
-                                        <StartScreen />
-                                    )}
-                                    {CONNECTION_STATUS.connected ===
-                                        trackerConnectionState && (
-                                        <TrackerScreen />
-                                    )}
-                                </>
-                            )}
-                        {/* </div> */}
+                        {optionWindowOpen && <OptionsScreen />}
+                        {!optionWindowOpen && (
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    overflow: "auto",
+                                }}
+                            >
+                                {new Set([
+                                    CONNECTION_STATUS.disconnected,
+                                    CONNECTION_STATUS.connecting,
+                                ]).has(trackerConnectionState) && (
+                                    <StartScreen />
+                                )}
+                                {CONNECTION_STATUS.connected ===
+                                    trackerConnectionState && <TrackerScreen />}
+                            </div>
+                        )}
                     </ServiceContext.Provider>
                 </TrackerStateContext.Provider>
             </AppScreen>

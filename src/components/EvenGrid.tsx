@@ -36,9 +36,9 @@ const EvenGrid = ({
         <div
             style={{
                 display: "grid",
-                gridTemplateRows: `auto repeat(${rows-1}, 1fr)`,
-                gridTemplateColumns: `auto repeat(${columns-1}, 1fr)`,
-                gap:`0.5em 0.5em`,
+                gridTemplateRows: `repeat(${rows}, auto)`,
+                gridTemplateColumns: `repeat(${columns}, auto)`,
+                gap: `0.5em 0.5em`,
                 ...style,
             }}
             {...props}
