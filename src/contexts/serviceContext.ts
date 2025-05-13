@@ -7,6 +7,7 @@ import { Connector } from "../services/connector/connector";
 import { SectionManager } from "../services/sections/sectionManager";
 import { TagManager } from "../services/tags/tagManager";
 import { OptionManager } from "../services/options/optionManager";
+import TextClientManager from "../services/textClientManager";
 import TrackerManager from "../games/TrackerManager";
 
 const ServiceContext: React.Context<{
@@ -19,6 +20,7 @@ const ServiceContext: React.Context<{
     tagManager?: TagManager,
     optionManager?: OptionManager,
     trackerManager?: TrackerManager,
+    textClientManager?: TextClientManager,
 }> = createContext({})
 
 

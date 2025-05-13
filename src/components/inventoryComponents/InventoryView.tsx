@@ -94,8 +94,8 @@ const InventoryView = () => {
         items,
     ]);
     return (
-        <div style={{ width: "100%", margin: "1em" }}>
-            <h2>Received Items</h2>
+        <div style={{ margin: "1em" }}>
+            <h3>Received Items</h3>
             {sortedItems.map((collection) => (
                 <InventoryItemCollectionView
                     key={collection.id}

@@ -21,6 +21,7 @@ import { readThemeValue } from "./services/theme/theme";
 import TrackerScreen from "./components/TrackerScreen";
 import TrackerManager from "./games/TrackerManager";
 import CustomTrackerManager from "./games/generic/categoryGenerators/customTrackerManager";
+import TextClientManager from "./services/textClientManager";
 
 const AppScreen = styled.div`
     position: absolute;
@@ -52,14 +53,21 @@ const sectionManager = createSectionManager(
     groupManager
 );
 const tagManager = createTagManager(locationManager);
-const trackerManager = new TrackerManager(locationManager, groupManager, sectionManager);
+const trackerManager = new TrackerManager(
+    locationManager,
+    groupManager,
+    sectionManager
+);
+
+const textClientManager = new TextClientManager();
 CustomTrackerManager.readyCallback(trackerManager.loadSavedTrackerChoices);
 const connector = createConnector(
     locationManager,
     inventoryManager,
     entranceManager,
     tagManager,
-    trackerManager
+    trackerManager,
+    textClientManager
 );
 const connection = connector.connection;
 
@@ -100,6 +108,7 @@ const App = (): React.ReactNode => {
                             optionManager,
                             inventoryManager,
                             trackerManager,
+                            textClientManager,
                         }}
                     >
                         <NotificationContainer />
@@ -110,7 +119,13 @@ const App = (): React.ReactNode => {
                         />
                         {optionWindowOpen && <OptionsScreen />}
                         {!optionWindowOpen && (
-                            <>
+                            <div
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    overflow: "auto",
+                                }}
+                            >
                                 {new Set([
                                     CONNECTION_STATUS.disconnected,
                                     CONNECTION_STATUS.connecting,
@@ -119,7 +134,7 @@ const App = (): React.ReactNode => {
                                 )}
                                 {CONNECTION_STATUS.connected ===
                                     trackerConnectionState && <TrackerScreen />}
-                            </>
+                            </div>
                         )}
                     </ServiceContext.Provider>
                 </TrackerStateContext.Provider>

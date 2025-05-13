@@ -15,7 +15,7 @@ import { buildGenericGame } from "../../games/generic/genericGame";
 import { GenericGameMethod } from "../../games/generic/categoryGenerators/genericGameEnums";
 import { exportJSONFile } from "../../utility/jsonExport";
 import Icon from "../icons/icons";
-import ButtonRow from "../shared/ButtonRow";
+import ButtonRow from "../LayoutUtilities/ButtonRow";
 import NameAnalysisModal from "./NameAnalysisModal";
 
 const ModalGrid = styled.div`

@@ -80,11 +80,11 @@ const loadSavedConnectionData = () => {
 
     const connectionData: { connections: { [s: string]: SavedConnection_V2 | SavedConnection_V3; }; version: number; modified: number; } = connectionDataString
         ? JSON.parse(connectionDataString)
-        : {
+        : (cachedConnectionData ?? {
             connections: {},
             version: SAVED_CONNECTION_VERSION,
             modified: Date.now(),
-        };
+        });
 
     const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
     for (const id of connectionIds) {
