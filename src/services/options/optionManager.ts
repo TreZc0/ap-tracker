@@ -1,13 +1,23 @@
 const OPTION_LOCAL_STORAGE_ITEM_NAME: string = "archipelagoTrackerOptionData";
 const DEBUG: boolean = false;
 
-class OptionManager {
-    #optionSubscribers: Map<string, Map<string, Set<()=>void>>>;
-    #options: Map<string, Map<string, number|string|boolean|number[]|string[]|boolean[]>>;
+type JSONValue =
+    | string
+    | number
+    | boolean
+    | null
+    | { [property: string]: JSONValue }
+    | JSONValue[];
 
-    constructor(){
+class OptionManager {
+    #optionSubscribers: Map<string, Map<string, Set<() => void>>>;
+    #options: Map<string, Map<string, JSONValue>>;
+    #defaults: Map<string, Map<string, JSONValue>>;
+
+    constructor() {
         this.#optionSubscribers = new Map();
         this.#options = new Map();
+        this.#defaults = new Map();
     }
 
     /**
@@ -16,18 +26,18 @@ class OptionManager {
      * @param scope The name of the scope thd option is tied to
      * @returns A callback that accepts a listener and returns a clean up method.
      */
-    getSubscriberCallback = (optionName: string, scope: string):  (listener: ()=>void) => () => void => {
-        return (listener: ()=>void): () => void => {
+    getSubscriberCallback = (optionName: string, scope: string): (listener: () => void) => () => void => {
+        return (listener: () => void): () => void => {
             // Ensure there is a map of sets of listeners set up for that scope
-            const optionScopeListeners: Map<string, Set<()=>void>>= this.#optionSubscribers.get(scope) ?? new Map();
+            const optionScopeListeners: Map<string, Set<() => void>> = this.#optionSubscribers.get(scope) ?? new Map();
             this.#optionSubscribers.set(scope, optionScopeListeners);
 
             // Add the listener for the option to the scope
-            const optionListeners: Set<()=>void> = optionScopeListeners.get(optionName) ?? new Set();
+            const optionListeners: Set<() => void> = optionScopeListeners.get(optionName) ?? new Set();
             optionScopeListeners.set(optionName, optionListeners);
             optionListeners.add(listener);
 
-            if(DEBUG && this.getOptionValue(optionName, scope) === null){
+            if (DEBUG && this.getOptionValue(optionName, scope) === null) {
                 console.info(
                     `The option <${scope}.${optionName}> was subscribed to, but does not exist yet. Safe to ignore this message if you plan on adding it later`
                 );
@@ -44,9 +54,9 @@ class OptionManager {
      * @param scope The scope that option is contained in
      * @returns The value of the option, null if no value was found
      */
-    getOptionValue = (optionName: string, scope: string): number|string|boolean|number[]|string[]|boolean[]|null => {
-        const value = this.#options.get(scope)?.get(optionName) ?? null
-        if(DEBUG){
+    getOptionValue = (optionName: string, scope: string): JSONValue => {
+        const value = this.#options.get(scope)?.get(optionName) ?? this.#defaults.get(scope)?.get(optionName) ?? null;
+        if (DEBUG) {
             console.info(`Retrieved option ${scope}.${optionName} as ${value}`)
         }
         return value;
@@ -55,10 +65,10 @@ class OptionManager {
     /**
      * Sets the value of an option in a given scope
      * @param optionName The name of the option to get
-     * @param scope The cope that option is contained in
+     * @param scope The scope that option is contained in
      * @param value The value to set for that option
      */
-    setOptionValue = (optionName: string, scope:string, value:number|string|boolean|number[]|string[]|boolean[]):void => {
+    setOptionValue = (optionName: string, scope: string, value: JSONValue): void => {
         const optionScope = this.#options.get(scope) ?? new Map();
         this.#options.set(scope, optionScope);
         if (value === null) {
@@ -74,21 +84,48 @@ class OptionManager {
             ?.forEach((listener) => {
                 listener();
             });
-        if(DEBUG){
+        if (DEBUG) {
             console.info(`Set option ${scope}.${optionName} to ${value}`)
         }
     }
 
-     /**
-     * Exports the scope to a JSON object.
-     * @param scope The scope to export
-     * @returns JSON version of data
+    /**
+     * Sets the default value of an option in a given scope
+     * @param optionName The name of the option to get
+     * @param scope The scope that option is contained in
+     * @param value The default value to set for that option
      */
-     exportScope = (scope: string): unknown => {
+    setOptionDefault = (optionName: string, scope: string, value: JSONValue): void => {
+        const optionScope = this.#defaults.get(scope) ?? new Map();
+        this.#defaults.set(scope, optionScope);
+        if (value === null) {
+            optionScope.delete(optionName);
+        } else {
+            optionScope.set(optionName, value);
+        }
+
+        // call listeners
+        this.#optionSubscribers
+            .get(scope)
+            ?.get(optionName)
+            ?.forEach((listener) => {
+                listener();
+            });
+        if (DEBUG) {
+            console.info(`Set option default ${scope}.${optionName} to ${value}`)
+        }
+    }
+
+    /**
+    * Exports the scope to a JSON object.
+    * @param scope The scope to export
+    * @returns JSON version of data
+    */
+    exportScope = (scope: string): { [option: string]: JSONValue } => {
         const result = {};
-        for(const option of (this.#options.get(scope) ?? new Map()).keys()){
+        for (const option of (this.#options.get(scope) ?? new Map()).keys()) {
             result[option] = this.#options.get(scope)?.get(option);
-            if(Array.isArray(result[option])){
+            if (Array.isArray(result[option])) {
                 result[option] = [...result[option]];
             }
         }
@@ -105,7 +142,7 @@ class OptionManager {
         const saveData = saveDataString ? JSON.parse(saveDataString) : {};
         saveData[scope] = this.exportScope(scope);
         localStorage.setItem(OPTION_LOCAL_STORAGE_ITEM_NAME, JSON.stringify(saveData));
-        if(DEBUG){
+        if (DEBUG) {
             console.info(`Saved scope ${scope}`);
         }
     };
@@ -114,19 +151,19 @@ class OptionManager {
      * to be global for that scope. (example is a user setting)
      * @param scope 
      */
-    loadScope = (scope: string):void => {
+    loadScope = (scope: string): void => {
         const saveDataString = localStorage.getItem(OPTION_LOCAL_STORAGE_ITEM_NAME);
         const saveData = saveDataString ? JSON.parse(saveDataString) : {};
-        if(Object.hasOwn(saveData, scope)) {
+        if (Object.hasOwn(saveData, scope)) {
             const scopeData = saveData[scope];
             this.setScope(scope, scopeData);
-            if(DEBUG){
+            if (DEBUG) {
                 console.info(`Loaded scope ${scope}`);
             }
-        } else if(DEBUG){
+        } else if (DEBUG) {
             console.info(`Failed to load scope ${scope}`);
         }
-        
+
     };
 
     /**
@@ -137,8 +174,8 @@ class OptionManager {
      * @param scope 
      * @param values 
      */
-    setScope = (scope:string, values:unknown) => {
-        for(const optionName of Object.getOwnPropertyNames(values)){
+    setScope = (scope: string, values: { [option: string]: JSONValue }) => {
+        for (const optionName of Object.getOwnPropertyNames(values)) {
             this.setOptionValue(optionName, scope, values[optionName]);
         }
     };
@@ -160,9 +197,9 @@ class OptionManager {
      * Creates a new options manager with all scope values copied to it.
      * @returns A new options manager, with scope values cloned
      */
-    clone = () : OptionManager => {
+    clone = (): OptionManager => {
         const newManager = new OptionManager();
-        this.#options.forEach( (_, scope) => {
+        this.#options.forEach((_, scope) => {
             const exportedValues = this.exportScope(scope);
             newManager.setScope(scope, exportedValues);
         });
@@ -175,4 +212,4 @@ class OptionManager {
 const globalOptionManager = new OptionManager();
 globalOptionManager.loadScope("global");
 
-export {globalOptionManager, OptionManager};
+export { globalOptionManager, OptionManager };

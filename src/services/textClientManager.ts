@@ -1,165 +1,71 @@
-import { API, Client, JSONMessagePart, Player, PrintJSONPacket, ValidJSONColorType } from "archipelago.js";
+import { Client, Item, MessageNode, Player, ValidJSONColorType } from "archipelago.js";
 import { globalOptionManager } from "./options/optionManager";
 import { generateId } from "../utility/randomIdGen";
 
-globalOptionManager.loadScope("textClient");
-
-// https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/network%20protocol.md#hintstatus
-enum HintStatus {
-    unspecified = 0,
-    no_priority = 10,
-    avoid = 20,
-    priority = 30,
-    found = 40,
-}
-
-interface TextMessagePart {
-    type: "text";
-    text: string;
-}
-
-interface PlayerMessagePart {
-    type: "player";
-    text: string;
-    player?: Player;
-}
-
-interface ItemMessagePart {
-    type: "item";
-    text: string;
-    flags: number;
-    player: Player;
-}
-
-interface LocationMessagePart {
-    type: "location";
-    text: string;
-    player: Player;
-}
-
-interface EntranceMessagePart {
-    type: "entrance";
-    text: string;
-}
-
-interface HintStatusMessagePart {
-    type: "hint_status";
-    text: string;
-    hint_status: HintStatus;
-}
-
-interface ColorMessagePart {
-    type: "color";
-    text: string;
-    color: ValidJSONColorType;
-}
 
 interface APMessage {
-    parts: MessagePart[],
+    parts: (MessageNode | EchoMessageNode)[],
     key: string,
 }
 
-type MessagePart = (TextMessagePart |
-    PlayerMessagePart |
-    ItemMessagePart |
-    LocationMessagePart |
-    EntranceMessagePart |
-    HintStatusMessagePart |
-    ColorMessagePart) & { key: string };
+interface EchoMessageNode {
+    type: "echo",
+    text: string,
+    color: ValidJSONColorType,
+}
 
+type SimpleMessageType = ("command" | "chat" | "status" | "login" | "misc" | "item");
+type ItemType = ("trap" | "progression" | "useful" | "normal");
+type MessageFilter = {
+    allowedTypes: SimpleMessageType[],
+    itemSendFilter: {
+        own: ItemType[],
+        others: ItemType[],
+    }
+}
+
+globalOptionManager.loadScope("textClient");
+globalOptionManager.setOptionDefault("messageFilter", "textClient", {
+    allowedTypes: ["command", "chat", "status", "login", "misc", "item"],
+    itemSendFilter: {
+        own: ["trap", "progression", "useful", "normal"],
+        others: ["trap", "progression", "useful", "normal"],
+    }
+} as MessageFilter)
+
+const messageTypeCategoryMap = {
+    "adminCommand": "command",
+    "userCommand": "command",
+    "chat": "chat",
+    "serverChat": "chat",
+    "collected": "status",
+    "released": "status",
+    "goaled": "status",
+    "tagsUpdated": "status",
+    "connected": "login",
+    "disconnected": "login",
+    "tutorial": "misc",
+    "countDown": "misc",
+    "itemCheated": "item",
+    "itemHinted": "item",
+    "itemSent": "item",
+}
 
 class TextClientManager {
     #messages: APMessage[] = [];
     #listeners: Set<() => void> = new Set();
     messageBufferSize = 500;
-    allowedTypes = new Set(["ItemSend", "ItemCheat", "Hint", "Join", "Part", "Chat", "ServerChat", "Tutorial", "TagsChanged", "CommandResult", "AdminCommandResult", "Goal", "Release", "Collect", "Countdown"]);
+
     #callListeners = () => {
         this.#listeners.forEach(listener => listener());
     }
 
-    #parseMessagePart = (part: JSONMessagePart, client: Client): MessagePart => {
-        let messagePart: MessagePart = null;
-        const key = generateId();
-        if (part.type === "item_id") {
-            const player = client.players.findPlayer(part.player);
-            messagePart = {
-                key,
-                text: client.package.lookupItemName(player.game, Number(part.text)),
-                type: "item",
-                flags: part.flags,
-                player
-            }
-        } else if (part.type === "item_name") {
-            const player = client.players.findPlayer(part.player);
-            messagePart = {
-                key,
-                text: part.text,
-                type: "item",
-                flags: part.flags,
-                player
-            }
-        } else if (part.type === "location_id") {
-            const player = client.players.findPlayer(part.player);
-            messagePart = {
-                key,
-                text: client.package.lookupLocationName(player.game, Number(part.text)),
-                type: "location",
-                player,
-            }
-        } else if (part.type === "location_name") {
-            const player = client.players.findPlayer(part.player);
-            messagePart = {
-                key,
-                text: part.text,
-                type: "location",
-                player,
-            }
-        } else if (part.type === "entrance_name") {
-            messagePart = {
-                key,
-                text: part.text,
-                type: "entrance",
-            }
-        } else if (part.type === "player_id") {
-            const player = client.players.findPlayer(Number(part.text));
-            messagePart = {
-                key,
-                type: "player",
-                text: player.alias,
-                player,
-            }
-        } else if (part.type === "player_name") {
-            messagePart = {
-                key,
-                type: "player",
-                text: part.text,
-            }
-        } else if (part.type === "color") {
-            messagePart = {
-                key,
-                text: part.text,
-                type: "color",
-                color: part.color,
-            }
-        } else {
-            messagePart = {
-                key,
-                text: part.text,
-                type: "text",
-            }
-        }
-
-        return messagePart;
-
-    }
-
     /** Appends a message of a specific color/style */
     echo = (message: string, color: ValidJSONColorType) => {
-        const parts: MessagePart[] = [{
-            key: generateId(),
+        const parts: EchoMessageNode[] = [{
+            type: "echo",
             text: message,
-            type: "color",
-            color,
+            color: color,
         }];
         const apMessage: APMessage = {
             key: generateId(),
@@ -170,27 +76,45 @@ class TextClientManager {
         this.#callListeners();
     }
 
-    /** Processes a PrintJSONPacket into a Simpler message format */
-    addMessage = (packet: PrintJSONPacket, client: Client) => {
-        const itemSendsFilter = globalOptionManager.getOptionValue("itemSendsFilter", "textClient") as "all" | "own" | "own+prog+use+trap" | "prog+use+trap" ?? "all";
-        const player = client.players.self.slot;
-        const { data, type } = packet;
-        const pertainsToPlayer = () => type === "ItemSend" && (player === packet.receiving || player === packet.item.player);
-        if (!this.allowedTypes.has(type)) {
-            return;
+    #isMessageWanted = ({ type, item }: { type: string, player?: Player, item?: Item }, client: Client): boolean => {
+        const messageFilter: MessageFilter = globalOptionManager.getOptionValue("messageFilter", "textClient") as MessageFilter;
+        const simplifiedType: SimpleMessageType = messageTypeCategoryMap[type];
+
+        if (!messageFilter.allowedTypes.includes(simplifiedType)) {
+            return false;
         }
 
-        if (type === "ItemSend" && itemSendsFilter !== "all") {
-            if (itemSendsFilter === "own" && !pertainsToPlayer()) {
-                return;
-            } else if (itemSendsFilter === "own+prog+use+trap" && (!pertainsToPlayer() && !(packet.item.flags & (API.itemClassifications.progression | API.itemClassifications.useful | API.itemClassifications.trap)))) {
-                return;
-            } else if (itemSendsFilter === "prog+use+trap" && !(packet.item.flags & (API.itemClassifications.progression | API.itemClassifications.useful | API.itemClassifications.trap))) {
-                return;
+        if (simplifiedType === "item" && item) {
+            const self = client.players.self;
+            let matches = false;
+            if (item.receiver.slot === self.slot && item.receiver.team === self.team || item.sender.slot === self.slot && item.sender.team === self.team) {
+                if (item.progression && messageFilter.itemSendFilter.own.includes("progression")) {
+                    matches = true;
+                } else if (item.useful && messageFilter.itemSendFilter.own.includes("useful")) {
+                    matches = true;
+                } else if (item.trap && messageFilter.itemSendFilter.own.includes("trap")) {
+                    matches = true;
+                } else if (item.filler && messageFilter.itemSendFilter.own.includes("normal")) {
+                    matches = true;
+                }
+            } else {
+                if (item.progression && messageFilter.itemSendFilter.others.includes("progression")) {
+                    matches = true;
+                } else if (item.useful && messageFilter.itemSendFilter.others.includes("useful")) {
+                    matches = true;
+                } else if (item.trap && messageFilter.itemSendFilter.others.includes("trap")) {
+                    matches = true;
+                } else if (item.filler && messageFilter.itemSendFilter.others.includes("normal")) {
+                    matches = true;
+                }
             }
+            return matches;
         }
+        return true;
+    }
 
-        const parts = data.map((part) => this.#parseMessagePart(part, client));
+    #addMessage = (nodes: MessageNode[]) => {
+        const parts = nodes;//data.map((part) => this.#parseMessagePart(part, client));
         const apMessage: APMessage = {
             key: generateId(),
             parts,
@@ -200,12 +124,33 @@ class TextClientManager {
         this.#callListeners();
     }
 
+    addMessage = (type: string, nodes: MessageNode[], client: Client) => {
+        if (!this.#isMessageWanted({ type }, client)) {
+            return;
+        }
+        this.#addMessage(nodes);
+    }
+
+    addPlayerMessage = (type: string, player: Player, nodes: MessageNode[], client: Client) => {
+        if (!this.#isMessageWanted({ type, player }, client)) {
+            return;
+        }
+        this.#addMessage(nodes);
+    }
+
+    addItemMessage = (type: string, item: Item, nodes: MessageNode[], client: Client) => {
+        if (!this.#isMessageWanted({ type, item }, client)) {
+            return;
+        }
+        this.#addMessage(nodes);
+    }
+
     getMessages = () => {
         return this.#messages;
     }
 
     processCommand = (text: string) => {
-        this.echo(text, "bold");
+        this.echo(text, "underline");
         switch (text) {
             case "help": {
                 this.echo("Available commands:", null);
@@ -245,5 +190,5 @@ class TextClientManager {
 }
 
 export default TextClientManager
-export { HintStatus }
-export type { MessagePart, APMessage }
+// export { HintStatus }
+export type { APMessage, MessageNode, EchoMessageNode, MessageFilter, SimpleMessageType, ItemType }

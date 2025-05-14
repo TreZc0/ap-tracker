@@ -26,8 +26,9 @@ const ClientMessage = ({ message }: { message: APMessage }) => {
                 }
             }}
         >
-            {message.parts.map((part) => (
-                <MessagePart part={part} key={part.key} />
+            {message.parts.map((part, index) => (
+                // Parts will never change order, we can keep the index
+                <MessagePart part={part} key={index} />
             ))}
         </div>
     );
