@@ -2,8 +2,6 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
-import StickySpacer from "../shared/StickySpacer";
-import useOnScreen from "../../hooks/onScreenHook";
 import { GhostButton, PrimaryButton } from "../buttons";
 import { Checkbox, Input } from "../inputs";
 import useOption from "../../hooks/optionHook";
@@ -11,6 +9,8 @@ import Modal from "../shared/Modal";
 import ButtonRow from "../LayoutUtilities/ButtonRow";
 import Icon from "../icons/icons";
 import { ItemType, MessageFilter, SimpleMessageType } from "../../services/textClientManager";
+import { AutoSizer } from "react-virtualized";
+import { VariableSizeList } from "react-window";
 
 const TextClient = () => {
     const services = useContext(ServiceContext);
@@ -18,14 +18,13 @@ const TextClient = () => {
     const textClientManager = services.textClientManager;
     const [showFilterModal, setShowFilterModal] = useState(false);
     const messages = useTextClientMessages(textClientManager);
-    const bottomRef = useRef(null);
-    const messagesWindowRef = useRef(null);
-    const shouldScroll = useOnScreen(bottomRef, messagesWindowRef);
-    const scrollTimeoutRef = useRef(null);
     const [inputText, setInputText] = useState("");
     const [cachedInputText, setCachedInputText] = useState("");
     const [inputHistory, setInputHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const rowHeights: React.Ref<{ [index: number]: number }> = useRef({});
+    const listRef: React.ForwardedRef<VariableSizeList> = useRef(null);
 
     const messageFilter = useOption(optionManager, "messageFilter", "textClient") as MessageFilter;
     const updateAllowedMessages = (checked: boolean, feature: SimpleMessageType) => {
@@ -107,24 +106,34 @@ const TextClient = () => {
         }
     };
 
+    const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+        const rowRef: React.Ref<HTMLDivElement> = useRef(null);
+        useEffect(() => {
+            if (rowRef.current) {
+                setRowHeight(index, rowRef.current.clientHeight);
+            }
+        }, [rowRef]);
+        return <ClientMessage style={style} ref={rowRef} message={messages[index]} />;
+    };
+
+    const setRowHeight = (index: number, size: number) => {
+        listRef.current.resetAfterIndex(0);
+        rowHeights.current = { ...rowHeights.current, [index]: size };
+    };
+
     const scrollToBottom = useCallback(() => {
-        if (scrollTimeoutRef.current) {
-            clearTimeout(scrollTimeoutRef.current);
-        }
-        scrollTimeoutRef.current = setTimeout(() => {
-            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-            scrollTimeoutRef.current = null;
-        }, 10);
-    }, [shouldScroll, messages, bottomRef, scrollTimeoutRef]);
+        listRef.current?.scrollToItem(messages.length - 1, "smart");
+    }, [listRef, messages]);
 
     useEffect(() => {
         scrollToBottom();
     }, []);
+
     useEffect(() => {
-        if (shouldScroll) {
+        if (shouldAutoScroll) {
             scrollToBottom();
         }
-    }, [messages, shouldScroll, bottomRef]);
+    }, [messages]);
 
     return (
         <div
@@ -146,7 +155,12 @@ const TextClient = () => {
                 }}
             >
                 <h3>Text Client</h3>
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap:"1em" }}>
+                    <Checkbox
+                        onChange={(event) => setShouldAutoScroll(event.target.checked)}
+                        label="Auto Scroll"
+                        checked={shouldAutoScroll}
+                    />
                     <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
                         <Icon fontSize="12pt" type="filter_alt" />
                     </PrimaryButton>
@@ -154,16 +168,22 @@ const TextClient = () => {
             </div>
             <div
                 style={{
-                    overflowY: "auto",
-                    scrollBehavior: "smooth",
                     padding: "0.25em",
                 }}
-                ref={messagesWindowRef}
             >
-                {!textClientManager && <h1>Failed to load text client (no manager provided)</h1>}
-                {textClientManager && messages.map((message) => <ClientMessage key={message.key} message={message} />)}
-                <div ref={bottomRef}></div>
-                <StickySpacer />
+                <AutoSizer>
+                    {({ height, width }) => (
+                        <VariableSizeList
+                            itemCount={messages.length}
+                            itemSize={(index) => rowHeights.current[index] ?? 30}
+                            height={height}
+                            width={width}
+                            ref={listRef}
+                        >
+                            {Row}
+                        </VariableSizeList>
+                    )}
+                </AutoSizer>
             </div>
             <div style={{ display: "flex" }}>
                 <PrimaryButton onClick={processInput} $small>
@@ -234,7 +254,7 @@ const TextClient = () => {
                     <div>
                         <h4>Advanced Item Send Filters:</h4>
                         <div style={{ display: "flex", gap: "1em" }}>
-                            <div style={{width: "30%", flex:"0 1 50%"}}>
+                            <div style={{ width: "30%", flex: "0 1 50%" }}>
                                 <p>Filter items based on what you send or receive</p>
                                 <Checkbox
                                     label="Show Own Progression"
@@ -264,7 +284,7 @@ const TextClient = () => {
                                     onChange={(event) => updateOwnFilter(event.target.checked, "normal")}
                                 />
                             </div>
-                            <div style={{width: "30%", flex:"0 1 50%"}}>
+                            <div style={{ width: "30%", flex: "0 1 50%" }}>
                                 <p>Filter items based on what others send or receive</p>
                                 <Checkbox
                                     label="Show Other's Progression"

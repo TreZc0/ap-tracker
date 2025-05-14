@@ -45,7 +45,7 @@ const messageTypeCategoryMap = {
     "connected": "login",
     "disconnected": "login",
     "tutorial": "misc",
-    "countDown": "misc",
+    "countdown": "misc",
     "itemCheated": "item",
     "itemHinted": "item",
     "itemSent": "item",
@@ -54,7 +54,7 @@ const messageTypeCategoryMap = {
 class TextClientManager {
     #messages: APMessage[] = [];
     #listeners: Set<() => void> = new Set();
-    messageBufferSize = 500;
+    messageBufferSize = 10000;
 
     #callListeners = () => {
         this.#listeners.forEach(listener => listener());
