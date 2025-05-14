@@ -1,11 +1,11 @@
 import React, { memo } from "react";
 import MessagePart from "./MessagePart";
-import { MessagePart as MsgPart } from "../../services/textClientManager";
+import { APMessage } from "../../services/textClientManager";
 import NotificationManager from "../../services/notifications/notifications";
 import { MessageType } from "../../services/notifications/notifications";
 
-const ClientMessage = ({ message }: { message: MsgPart[] }) => {
-    const text = message
+const ClientMessage = ({ message }: { message: APMessage }) => {
+    const text = message.parts
         .map((part) => part.text)
         .reduce((a, b) => a + " " + b, "");
     return (
@@ -26,7 +26,7 @@ const ClientMessage = ({ message }: { message: MsgPart[] }) => {
                 }
             }}
         >
-            {message.map((part) => (
+            {message.parts.map((part) => (
                 <MessagePart part={part} key={part.key} />
             ))}
         </div>

@@ -134,11 +134,11 @@ const TextClient = () => {
                 ref={messagesWindowRef}
             >
                 {!textClientManager && (
-                    <h1>Failed to load text client (no manager)</h1>
+                    <h1>Failed to load text client (no manager provided)</h1>
                 )}
                 {textClientManager &&
-                    messages.map((message, index) => (
-                        <ClientMessage key={index} message={message} />
+                    messages.map((message) => (
+                        <ClientMessage key={message.key} message={message} />
                     ))}
                 <div ref={bottomRef}></div>
                 <StickySpacer />

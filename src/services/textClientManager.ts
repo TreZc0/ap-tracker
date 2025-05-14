@@ -1,11 +1,8 @@
 import { API, Client, JSONMessagePart, Player, PrintJSONPacket, ValidJSONColorType } from "archipelago.js";
 import { globalOptionManager } from "./options/optionManager";
+import { generateId } from "../utility/randomIdGen";
 
 globalOptionManager.loadScope("textClient");
-const keyGen = (() => {
-    let next = 0;
-    return () => next++;
-})()
 
 // https://github.com/ArchipelagoMW/Archipelago/blob/main/docs/network%20protocol.md#hintstatus
 enum HintStatus {
@@ -57,17 +54,22 @@ interface ColorMessagePart {
     color: ValidJSONColorType;
 }
 
+interface APMessage {
+    parts: MessagePart[],
+    key: string,
+}
+
 type MessagePart = (TextMessagePart |
     PlayerMessagePart |
     ItemMessagePart |
     LocationMessagePart |
     EntranceMessagePart |
     HintStatusMessagePart |
-    ColorMessagePart) & { key: number };
+    ColorMessagePart) & { key: string };
 
 
 class TextClientManager {
-    #messages: MessagePart[][] = [];
+    #messages: APMessage[] = [];
     #listeners: Set<() => void> = new Set();
     messageBufferSize = 500;
     allowedTypes = new Set(["ItemSend", "ItemCheat", "Hint", "Join", "Part", "Chat", "ServerChat", "Tutorial", "TagsChanged", "CommandResult", "AdminCommandResult", "Goal", "Release", "Collect", "Countdown"]);
@@ -77,7 +79,7 @@ class TextClientManager {
 
     #parseMessagePart = (part: JSONMessagePart, client: Client): MessagePart => {
         let messagePart: MessagePart = null;
-        const key = keyGen();
+        const key = generateId();
         if (part.type === "item_id") {
             const player = client.players.findPlayer(part.player);
             messagePart = {
@@ -151,16 +153,20 @@ class TextClientManager {
 
     }
 
-    /** Appends a message of a specific color, note color is not really used at the moment */
+    /** Appends a message of a specific color/style */
     echo = (message: string, color: ValidJSONColorType) => {
-        const simplifiedMessageParts: MessagePart[] = [{
-            key: keyGen(),
+        const parts: MessagePart[] = [{
+            key: generateId(),
             text: message,
             type: "color",
             color,
         }];
+        const apMessage: APMessage = {
+            key: generateId(),
+            parts,
+        }
         const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
-        this.#messages = [...this.#messages.slice(start), simplifiedMessageParts];
+        this.#messages = [...this.#messages.slice(start), apMessage];
         this.#callListeners();
     }
 
@@ -184,9 +190,13 @@ class TextClientManager {
             }
         }
 
-        const simplifiedMessageParts = data.map((part) => this.#parseMessagePart(part, client));
+        const parts = data.map((part) => this.#parseMessagePart(part, client));
+        const apMessage: APMessage = {
+            key: generateId(),
+            parts,
+        }
         const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
-        this.#messages = [...this.#messages.slice(start), simplifiedMessageParts];
+        this.#messages = [...this.#messages.slice(start), apMessage];
         this.#callListeners();
     }
 
@@ -236,4 +246,4 @@ class TextClientManager {
 
 export default TextClientManager
 export { HintStatus }
-export type { MessagePart }
+export type { MessagePart, APMessage }
