@@ -54,7 +54,7 @@ const messageTypeCategoryMap = {
 class TextClientManager {
     #messages: APMessage[] = [];
     #listeners: Set<() => void> = new Set();
-    messageBufferSize = 10000;
+    messageBufferSize = 1000;
 
     #callListeners = () => {
         this.#listeners.forEach(listener => listener());

@@ -117,7 +117,7 @@ const TextClient = () => {
     };
 
     const setRowHeight = (index: number, size: number) => {
-        listRef.current.resetAfterIndex(0);
+        listRef.current.resetAfterIndex(0, false);
         rowHeights.current = { ...rowHeights.current, [index]: size };
     };
 
@@ -155,7 +155,7 @@ const TextClient = () => {
                 }}
             >
                 <h3>Text Client</h3>
-                <div style={{ display: "flex", justifyContent: "flex-end", gap:"1em" }}>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em" }}>
                     <Checkbox
                         onChange={(event) => setShouldAutoScroll(event.target.checked)}
                         label="Auto Scroll"
@@ -175,10 +175,11 @@ const TextClient = () => {
                     {({ height, width }) => (
                         <VariableSizeList
                             itemCount={messages.length}
-                            itemSize={(index) => rowHeights.current[index] ?? 30}
+                            itemSize={(index) => rowHeights.current[index] ?? 19}
                             height={height}
                             width={width}
                             ref={listRef}
+                            overscanCount={30}
                         >
                             {Row}
                         </VariableSizeList>
