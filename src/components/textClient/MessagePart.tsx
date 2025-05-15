@@ -1,24 +1,22 @@
 import React, { useContext } from "react";
-import { API } from "archipelago.js";
+import { MessageNode } from "archipelago.js";
 import * as colors from "../../constants/colors";
-import {
-    HintStatus,
-    MessagePart as MsgPart,
-} from "../../services/textClientManager";
 import ServiceContext from "../../contexts/serviceContext";
+import { EchoMessageNode } from "../../services/textClientManager";
 
-const MessagePart = ({ part }: { part: MsgPart }) => {
+
+const MessagePart = ({ part }: { part: MessageNode | EchoMessageNode }) => {
     const services = useContext(ServiceContext);
     let textColor = colors.textPrimary;
     let backgroundColor = undefined;
     let underline = false;
     let bold = false;
     if (part.type === "item") {
-        if (part.flags & API.itemClassifications.progression) {
+        if (part.item.progression) {
             textColor = colors.progressionItem;
-        } else if (part.flags & API.itemClassifications.useful) {
+        } else if (part.item.useful) {
             textColor = colors.usefulItem;
-        } else if (part.flags & API.itemClassifications.trap) {
+        } else if (part.item.trap) {
             textColor = colors.trapItem;
         } else {
             textColor = colors.normalItem;
@@ -33,17 +31,7 @@ const MessagePart = ({ part }: { part: MsgPart }) => {
         }
     } else if (part.type === "entrance") {
         textColor = colors.textClient.blue;
-    } else if (part.type === "hint_status") {
-        if (part.hint_status === HintStatus.found) {
-            textColor = colors.textClient.green;
-        } else if (part.hint_status === HintStatus.avoid) {
-            textColor = colors.trapItem;
-        } else if (part.hint_status === HintStatus.priority) {
-            textColor = colors.usefulItem;
-        } else {
-            textColor = colors.textClient.blue;
-        }
-    } else if (part.type === "color") {
+    } else if (part.type === "color" || part.type === "echo") {
         if (part.color === "underline") {
             underline = true;
         } else if (part.color === "bold") {
