@@ -54,10 +54,18 @@ const messageTypeCategoryMap = {
 class TextClientManager {
     #messages: APMessage[] = [];
     #listeners: Set<() => void> = new Set();
-    messageBufferSize = 1000;
+    messageBufferTrimToSize = 1000;
+    messageBufferMaxSize = 1500;
+    listenerDelay = 10;
+    #timeout = 0;
 
     #callListeners = () => {
-        this.#listeners.forEach(listener => listener());
+        if(!this.#timeout){
+            this.#timeout = window.setTimeout(()=>{
+                this.#listeners.forEach(listener => listener());
+                this.#timeout = 0;
+            }, this.listenerDelay);
+        }
     }
 
     /** Appends a message of a specific color/style */
@@ -71,8 +79,10 @@ class TextClientManager {
             key: generateId(),
             parts,
         }
-        const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
-        this.#messages = [...this.#messages.slice(start), apMessage];
+        this.#messages = [...this.#messages, apMessage];
+        if(this.#messages.length >= this.messageBufferMaxSize){
+            this.#messages = [...this.#messages.slice(this.#messages.length - this.messageBufferTrimToSize)];
+        }
         this.#callListeners();
     }
 
@@ -119,8 +129,10 @@ class TextClientManager {
             key: generateId(),
             parts,
         }
-        const start = Math.max(0, (this.#messages.length + 1) - this.messageBufferSize)
-        this.#messages = [...this.#messages.slice(start), apMessage];
+        this.#messages = [...this.#messages, apMessage];
+        if(this.#messages.length >= this.messageBufferMaxSize){
+            this.#messages = [...this.#messages.slice(this.#messages.length - this.messageBufferTrimToSize)];
+        }
         this.#callListeners();
     }
 

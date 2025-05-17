@@ -1,32 +1,102 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState, createContext, forwardRef } from "react";
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
 import { GhostButton, PrimaryButton } from "../buttons";
-import { Checkbox, Input } from "../inputs";
+import { Checkbox } from "../inputs";
 import useOption from "../../hooks/optionHook";
 import Modal from "../shared/Modal";
 import ButtonRow from "../LayoutUtilities/ButtonRow";
 import Icon from "../icons/icons";
-import { ItemType, MessageFilter, SimpleMessageType } from "../../services/textClientManager";
-import { AutoSizer } from "react-virtualized";
+import { APMessage, ItemType, MessageFilter, SimpleMessageType } from "../../services/textClientManager";
 import { VariableSizeList } from "react-window";
+import TextClientTextBox from "./TextClientTextBox";
+
+const defaultRowSize = 19;
+
+const TextClientContext: React.Context<{
+    messages: APMessage[];
+    setRowHeight: (index: number, value: number) => void;
+    rowHeights: { [index: number]: number };
+}> = createContext({ messages: [], setRowHeight: () => {}, rowHeights: {} });
+
+const MessageRow = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const rowRef: React.Ref<HTMLDivElement> = useRef(null);
+    const textClientContext = useContext(TextClientContext);
+    // Update row heights with the current height of the row
+    useEffect(() => {
+        if (rowRef.current) {
+            textClientContext.setRowHeight(index, rowRef.current.clientHeight);
+        }
+        const resizeObserver = new ResizeObserver((entries) => {
+            const entry = entries[0];
+            if (entry && rowRef.current) {
+                textClientContext.setRowHeight(index, rowRef.current.clientHeight);
+            }
+        });
+        const currentElement = rowRef.current;
+        if (currentElement) {
+            resizeObserver.observe(currentElement);
+        }
+        return () => {
+            if (currentElement) {
+                resizeObserver.unobserve(currentElement);
+            }
+        };
+    }, [rowRef.current]);
+    return <ClientMessage style={style} ref={rowRef} message={textClientContext.messages[index]} />;
+};
+
+// extracted to prevent re-renders every time the parent component updates
+const MessageList = forwardRef(
+    (
+        {
+            height,
+            width,
+            listRef,
+        }: {
+            height: number;
+            width: number;
+            listRef: React.ForwardedRef<VariableSizeList>;
+        },
+        ref
+    ) => {
+        const textClientContext = useContext(TextClientContext);
+        return (
+            <VariableSizeList
+                itemCount={textClientContext.messages.length}
+                itemSize={(index) => textClientContext.rowHeights[index] || defaultRowSize}
+                height={height}
+                width={width}
+                ref={listRef}
+                overscanCount={10}
+                outerRef={ref}
+            >
+                {MessageRow}
+            </VariableSizeList>
+        );
+    }
+);
+MessageList.displayName = "MessageList";
 
 const TextClient = () => {
     const services = useContext(ServiceContext);
     const optionManager = services.optionManager;
     const textClientManager = services.textClientManager;
-    const [showFilterModal, setShowFilterModal] = useState(false);
-    const messages = useTextClientMessages(textClientManager);
-    const [inputText, setInputText] = useState("");
-    const [cachedInputText, setCachedInputText] = useState("");
-    const [inputHistory, setInputHistory] = useState([]);
-    const [historyIndex, setHistoryIndex] = useState(-1);
-    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const rowHeights: React.Ref<{ [index: number]: number }> = useRef({});
-    const listRef: React.ForwardedRef<VariableSizeList> = useRef(null);
 
+    const messages = useTextClientMessages(textClientManager);
     const messageFilter = useOption(optionManager, "messageFilter", "textClient") as MessageFilter;
+
+    const [showFilterModal, setShowFilterModal] = useState(false);
+    const [followMessages, setFollowMessages] = useState(true);
+    const [rowHeights, setRowHeights] = useState({});
+    const [listDim, setListDim] = useState({ width: 0, height: 0 });
+    const listUpdateDebounceTimer = useRef(0);
+    const scrollDebounceTimer = useRef(0);
+    const listContainerRef: React.ForwardedRef<HTMLDivElement> = useRef(null);
+    const listRef: React.ForwardedRef<VariableSizeList> = useRef(null);
+    const listElementRef: React.ForwardedRef<HTMLElement> = useRef(null);
+
     const updateAllowedMessages = (checked: boolean, feature: SimpleMessageType) => {
         const newFilter: MessageFilter = {
             ...messageFilter,
@@ -42,175 +112,120 @@ const TextClient = () => {
         optionManager.saveScope("textClient");
     };
 
-    const updateOwnFilter = (checked: boolean, feature: ItemType) => {
+    const updateItemSendFilter = (checked: boolean, feature: ItemType, who: "own" | "others") => {
         const newFilter: MessageFilter = {
             ...messageFilter,
         };
-        const ownTypes = new Set(messageFilter.itemSendFilter.own);
+        const allowedItemSendTypes = new Set(messageFilter.itemSendFilter[who]);
         if (checked) {
-            ownTypes.add(feature);
+            allowedItemSendTypes.add(feature);
         } else {
-            ownTypes.delete(feature);
+            allowedItemSendTypes.delete(feature);
         }
-        newFilter.itemSendFilter.own = [...ownTypes];
+        newFilter.itemSendFilter[who] = [...allowedItemSendTypes];
         optionManager.setOptionValue("messageFilter", "textClient", newFilter);
         optionManager.saveScope("textClient");
     };
 
-    const updateOthersFilter = (checked: boolean, feature: ItemType) => {
-        const newFilter: MessageFilter = {
-            ...messageFilter,
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver((entries) => {
+            const entry = entries[0];
+            if (entry) {
+                setListDim({
+                    height: listContainerRef.current.clientHeight,
+                    width: listContainerRef.current.clientWidth,
+                });
+            }
+        });
+        const currentElement = listContainerRef.current;
+        if (currentElement) {
+            resizeObserver.observe(currentElement);
+        }
+        return () => {
+            if (currentElement) {
+                resizeObserver.unobserve(currentElement);
+            }
         };
-        const othersTypes = new Set(messageFilter.itemSendFilter.others);
-        if (checked) {
-            othersTypes.add(feature);
-        } else {
-            othersTypes.delete(feature);
-        }
-        newFilter.itemSendFilter.others = [...othersTypes];
-        optionManager.setOptionValue("messageFilter", "textClient", newFilter);
-        optionManager.saveScope("textClient");
-    };
+    }, [listContainerRef]);
 
-    const processInput = () => {
-        if (inputText) {
-            setInputHistory([inputText, ...inputHistory]);
-            textClientManager.processInput(inputText, services.connector?.connection.client);
-            setInputText("");
-            setCachedInputText("");
-            setHistoryIndex(-1);
-        }
-    };
-
-    const navigateHistory = (direction: number) => {
-        if (historyIndex === 0 && direction < 0) {
-            // back to entry
-            setInputText(cachedInputText);
-        } else if (historyIndex === -1 && direction > 0) {
-            // going from saved index to history
-            setCachedInputText(inputText);
-            if (inputHistory.length > 0) {
-                setInputText(inputHistory[0]);
-                setHistoryIndex(0);
-            }
-        } else if (historyIndex >= 0 && direction > 0) {
-            if (inputHistory.length > historyIndex) {
-                setInputText(inputHistory[historyIndex + 1]);
-                setHistoryIndex(historyIndex + 1);
-            }
-        } else if (historyIndex >= 0 && direction < 0) {
-            if (0 < historyIndex) {
-                setInputText(inputHistory[historyIndex - 1]);
-                setHistoryIndex(historyIndex - 1);
-            }
-        }
-    };
-
-    const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-        const rowRef: React.Ref<HTMLDivElement> = useRef(null);
-        useEffect(() => {
-            if (rowRef.current) {
-                setRowHeight(index, rowRef.current.clientHeight);
-            }
-        }, [rowRef]);
-        return <ClientMessage style={style} ref={rowRef} message={messages[index]} />;
-    };
-
-    const setRowHeight = (index: number, size: number) => {
-        listRef.current.resetAfterIndex(0, false);
-        rowHeights.current = { ...rowHeights.current, [index]: size };
-    };
-
-    const scrollToBottom = useCallback(() => {
-        listRef.current?.scrollToItem(messages.length - 1, "smart");
-    }, [listRef, messages]);
+    const setRowHeight = useCallback(
+        (index: number, size: number) => {
+            setRowHeights((r) => ({ ...r, [index]: size }));
+        },
+        [rowHeights]
+    );
 
     useEffect(() => {
-        scrollToBottom();
-    }, []);
+        if (!listUpdateDebounceTimer.current) {
+            listUpdateDebounceTimer.current = window.setTimeout(() => {
+                listRef.current?.resetAfterIndex(0);
+                listUpdateDebounceTimer.current = 0;
+            });
+        }
+    }, [listRef, rowHeights]);
+
+    const scrollToBottom = () => {
+        // listRef.current?.scrollToItem(messages.length, "smart");
+        scrollDebounceTimer.current = 0;
+        listElementRef.current?.scrollTo({
+            behavior: "smooth",
+            top: messages.map((_, index) => rowHeights[index] || defaultRowSize).reduce((a, b) => a + b, 0),
+        })
+    };
 
     useEffect(() => {
-        if (shouldAutoScroll) {
-            scrollToBottom();
+        if (followMessages && !scrollDebounceTimer.current) {
+            scrollDebounceTimer.current = window.setTimeout(
+                scrollToBottom, 100
+            )
         }
-    }, [messages]);
+    }, [messages, rowHeights]);
 
     return (
-        <div
-            style={{
-                padding: "1em",
-                boxSizing: "border-box",
-                width: "100%",
-                height: "100%",
-                display: "grid",
-                gridTemplateRows: "3em 1fr auto",
-            }}
-        >
+        <>
             <div
                 style={{
+                    padding: "1em",
+                    boxSizing: "border-box",
+                    width: "100%",
+                    height: "100%",
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    position: "sticky",
-                    top: "0px",
+                    gridTemplateRows: "3em 1fr auto",
+                    overflow: "hidden",
                 }}
             >
-                <h3>Text Client</h3>
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em" }}>
-                    <Checkbox
-                        onChange={(event) => setShouldAutoScroll(event.target.checked)}
-                        label="Auto Scroll"
-                        checked={shouldAutoScroll}
-                    />
-                    <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
-                        <Icon fontSize="12pt" type="filter_alt" />
-                    </PrimaryButton>
-                </div>
-            </div>
-            <div
-                style={{
-                    padding: "0.25em",
-                }}
-            >
-                <AutoSizer>
-                    {({ height, width }) => (
-                        <VariableSizeList
-                            itemCount={messages.length}
-                            itemSize={(index) => rowHeights.current[index] ?? 19}
-                            height={height}
-                            width={width}
-                            ref={listRef}
-                            overscanCount={30}
-                        >
-                            {Row}
-                        </VariableSizeList>
-                    )}
-                </AutoSizer>
-            </div>
-            <div style={{ display: "flex" }}>
-                <PrimaryButton onClick={processInput} $small>
-                    Send
-                </PrimaryButton>
-                <Input
-                    label=""
-                    value={inputText}
-                    type="text"
+                <div
                     style={{
-                        flexGrow: 1,
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        position: "sticky",
+                        top: "0px",
                     }}
-                    onChange={(e) => {
-                        setInputText(e.target.value);
-                        setHistoryIndex(-1);
+                >
+                    <h3>Text Client - {messages.length}</h3>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em" }}>
+                        <Checkbox
+                            onChange={(event) => setFollowMessages(event.target.checked)}
+                            label="Follow Messages"
+                            checked={followMessages}
+                        />
+                        <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
+                            <Icon fontSize="12pt" type="filter_alt" />
+                        </PrimaryButton>
+                    </div>
+                </div>
+                <div
+                    style={{
+                        boxSizing: "border-box",
+                        overflow: "hidden",
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            processInput();
-                        } else if (e.key === "ArrowUp") {
-                            navigateHistory(1);
-                        } else if (e.key === "ArrowDown") {
-                            navigateHistory(-1);
-                        }
-                    }}
-                ></Input>
+                    ref={listContainerRef}
+                >
+                    <TextClientContext.Provider value={{ messages, setRowHeight, rowHeights: rowHeights }}>
+                        <MessageList listRef={listRef} ref={listElementRef} {...listDim} />
+                    </TextClientContext.Provider>
+                </div>
+                <TextClientTextBox />
             </div>
             <Modal open={showFilterModal}>
                 <div>
@@ -261,28 +276,30 @@ const TextClient = () => {
                                     label="Show Own Progression"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.own.includes("progression")}
-                                    onChange={(event) => updateOwnFilter(event.target.checked, "progression")}
+                                    onChange={(event) =>
+                                        updateItemSendFilter(event.target.checked, "progression", "own")
+                                    }
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Own Traps"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.own.includes("trap")}
-                                    onChange={(event) => updateOwnFilter(event.target.checked, "trap")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "trap", "own")}
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Own Useful"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.own.includes("useful")}
-                                    onChange={(event) => updateOwnFilter(event.target.checked, "useful")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "useful", "own")}
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Own Normal"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.own.includes("normal")}
-                                    onChange={(event) => updateOwnFilter(event.target.checked, "normal")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "normal", "own")}
                                 />
                             </div>
                             <div style={{ width: "30%", flex: "0 1 50%" }}>
@@ -291,28 +308,30 @@ const TextClient = () => {
                                     label="Show Other's Progression"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.others.includes("progression")}
-                                    onChange={(event) => updateOthersFilter(event.target.checked, "progression")}
+                                    onChange={(event) =>
+                                        updateItemSendFilter(event.target.checked, "progression", "others")
+                                    }
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Other's Traps"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.others.includes("trap")}
-                                    onChange={(event) => updateOthersFilter(event.target.checked, "trap")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "trap", "others")}
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Other's Useful"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.others.includes("useful")}
-                                    onChange={(event) => updateOthersFilter(event.target.checked, "useful")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "useful", "others")}
                                 />
                                 <br />
                                 <Checkbox
                                     label="Show Other's Normal"
                                     disabled={!messageFilter.allowedTypes.includes("item")}
                                     checked={messageFilter.itemSendFilter.others.includes("normal")}
-                                    onChange={(event) => updateOthersFilter(event.target.checked, "normal")}
+                                    onChange={(event) => updateItemSendFilter(event.target.checked, "normal", "others")}
                                 />
                             </div>
                         </div>
@@ -331,7 +350,7 @@ const TextClient = () => {
                     </ButtonRow>
                 </div>
             </Modal>
-        </div>
+        </>
     );
 };
 
