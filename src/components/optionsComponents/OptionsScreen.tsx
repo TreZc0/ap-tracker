@@ -13,9 +13,7 @@ const OptionsScreen = () => {
     const serviceContext = useContext(ServiceContext);
     const optionManager = serviceContext.optionManager;
     if (!optionManager) {
-        throw new Error(
-            "No option manager provided for option screen, you should be worried"
-        );
+        throw new Error("No option manager provided for option screen, you should be worried");
     }
     const trackerManager = serviceContext.trackerManager;
     if (!trackerManager) {
@@ -58,20 +56,11 @@ const OptionsScreen = () => {
             </OptionBlock>
 
             <OptionBlock title="Attributions">
-                <img
-                    src="./icon.svg"
-                    width={"64px"}
-                    style={{ float: "left", marginRight: "1em" }}
-                />
-                The Archipelago Logos used by this app are the modified works of
-                Krista Corkos and Christopher Wilson (© 2022) and is licensed
-                under Attribution-NonCommercial 4.0 International. To view a
-                copy of this license, visit{" "}
-                <a
-                    href="http://creativecommons.org/licenses/by-nc/4.0/"
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                <img src="./icon.svg" width={"64px"} style={{ float: "left", marginRight: "1em" }} />
+                The Archipelago Logos used by this app are the modified works of Krista Corkos and Christopher Wilson (©
+                2022) and is licensed under Attribution-NonCommercial 4.0 International. To view a copy of this license,
+                visit{" "}
+                <a href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noreferrer">
                     http://creativecommons.org/licenses/by-nc/4.0/
                 </a>
                 <br />
@@ -85,21 +74,12 @@ const OptionsScreen = () => {
                     NextJS
                 </a>{" "}
                 with{" "}
-                <a
-                    href="https://github.com/ThePhar/archipelago.js"
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                <a href="https://github.com/ThePhar/archipelago.js" target="_blank" rel="noreferrer">
                     Archipelago.js
                 </a>{" "}
                 to connect to Archipelago. <br />
-                More information about other libraries used and their licenses
-                can be found on this project&apos;s{" "}
-                <a
-                    href="https://github.com/DrAwesome4333/ap-tracker"
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                More information about other libraries used and their licenses can be found on this project&apos;s{" "}
+                <a href="https://github.com/DrAwesome4333/ap-tracker" target="_blank" rel="noreferrer">
                     GitHub repository
                 </a>
                 . Please report any problems you find there.

@@ -58,6 +58,9 @@ a {
 
 .App {
     background-color: var(--background);
+    scrollbar-width: thin;
+    scrollbar-color: var(--background-secondary) var(--background);
+    scrollbar-gutter: stable;
 }
 
 .material-symbols-rounded {

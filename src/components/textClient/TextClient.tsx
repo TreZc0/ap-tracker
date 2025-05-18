@@ -2,15 +2,14 @@ import React, { useCallback, useContext, useEffect, useRef, useState, createCont
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
-import { GhostButton, PrimaryButton } from "../buttons";
+import { PrimaryButton } from "../buttons";
 import { Checkbox } from "../inputs";
-import useOption from "../../hooks/optionHook";
-import Modal from "../shared/Modal";
-import ButtonRow from "../LayoutUtilities/ButtonRow";
 import Icon from "../icons/icons";
-import { APMessage, ItemType, MessageFilter, SimpleMessageType } from "../../services/textClientManager";
+import { APMessage } from "../../services/textClientManager";
 import { VariableSizeList } from "react-window";
 import TextClientTextBox from "./TextClientTextBox";
+import TextClientFilterModal from "./TextClientFilterModal";
+import PanelHeader from "../shared/PanelHeader";
 
 const defaultRowSize = 19;
 
@@ -81,11 +80,8 @@ MessageList.displayName = "MessageList";
 
 const TextClient = () => {
     const services = useContext(ServiceContext);
-    const optionManager = services.optionManager;
     const textClientManager = services.textClientManager;
-
     const messages = useTextClientMessages(textClientManager);
-    const messageFilter = useOption(optionManager, "messageFilter", "textClient") as MessageFilter;
 
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [followMessages, setFollowMessages] = useState(true);
@@ -97,36 +93,7 @@ const TextClient = () => {
     const listRef: React.ForwardedRef<VariableSizeList> = useRef(null);
     const listElementRef: React.ForwardedRef<HTMLElement> = useRef(null);
 
-    const updateAllowedMessages = (checked: boolean, feature: SimpleMessageType) => {
-        const newFilter: MessageFilter = {
-            ...messageFilter,
-        };
-        const allowedTypes = new Set(messageFilter.allowedTypes);
-        if (checked) {
-            allowedTypes.add(feature);
-        } else {
-            allowedTypes.delete(feature);
-        }
-        newFilter.allowedTypes = [...allowedTypes];
-        optionManager.setOptionValue("messageFilter", "textClient", newFilter);
-        optionManager.saveScope("textClient");
-    };
-
-    const updateItemSendFilter = (checked: boolean, feature: ItemType, who: "own" | "others") => {
-        const newFilter: MessageFilter = {
-            ...messageFilter,
-        };
-        const allowedItemSendTypes = new Set(messageFilter.itemSendFilter[who]);
-        if (checked) {
-            allowedItemSendTypes.add(feature);
-        } else {
-            allowedItemSendTypes.delete(feature);
-        }
-        newFilter.itemSendFilter[who] = [...allowedItemSendTypes];
-        optionManager.setOptionValue("messageFilter", "textClient", newFilter);
-        optionManager.saveScope("textClient");
-    };
-
+    // Monitor the container size of the list to pass the size to the Variable Size list
     useEffect(() => {
         const resizeObserver = new ResizeObserver((entries) => {
             const entry = entries[0];
@@ -146,11 +113,14 @@ const TextClient = () => {
                 resizeObserver.unobserve(currentElement);
             }
         };
-    }, [listContainerRef]);
+    }, [listContainerRef.current]);
 
+    // used to update the reported height of each row
     const setRowHeight = useCallback(
         (index: number, size: number) => {
-            setRowHeights((r) => ({ ...r, [index]: size }));
+            if(rowHeights[index] !== size){
+                setRowHeights((r) => ({ ...r, [index]: size }));
+            }
         },
         [rowHeights]
     );
@@ -165,27 +135,27 @@ const TextClient = () => {
     }, [listRef, rowHeights]);
 
     const scrollToBottom = () => {
-        // listRef.current?.scrollToItem(messages.length, "smart");
+        const totalListHeight = messages
+            .map((_, index) => rowHeights[index] || defaultRowSize)
+            .reduce((a, b) => a + b, 0);
         scrollDebounceTimer.current = 0;
         listElementRef.current?.scrollTo({
             behavior: "smooth",
-            top: messages.map((_, index) => rowHeights[index] || defaultRowSize).reduce((a, b) => a + b, 0),
-        })
+            top: totalListHeight,
+        });
     };
 
+    // Scroll to bottom when followMessages is enabled, new messages come in, or a row size change happens
     useEffect(() => {
         if (followMessages && !scrollDebounceTimer.current) {
-            scrollDebounceTimer.current = window.setTimeout(
-                scrollToBottom, 100
-            )
+            scrollDebounceTimer.current = window.setTimeout(scrollToBottom, 100);
         }
-    }, [messages, rowHeights]);
+    }, [messages, rowHeights, followMessages]);
 
     return (
         <>
             <div
                 style={{
-                    padding: "1em",
                     boxSizing: "border-box",
                     width: "100%",
                     height: "100%",
@@ -194,26 +164,16 @@ const TextClient = () => {
                     overflow: "hidden",
                 }}
             >
-                <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        position: "sticky",
-                        top: "0px",
-                    }}
-                >
-                    <h3>Text Client - {messages.length}</h3>
-                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em" }}>
-                        <Checkbox
-                            onChange={(event) => setFollowMessages(event.target.checked)}
-                            label="Follow Messages"
-                            checked={followMessages}
-                        />
-                        <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
-                            <Icon fontSize="12pt" type="filter_alt" />
-                        </PrimaryButton>
-                    </div>
-                </div>
+                <PanelHeader title={"Text Client"}>
+                    <Checkbox
+                        onChange={(event) => setFollowMessages(event.target.checked)}
+                        label="Follow Messages"
+                        checked={followMessages}
+                    />
+                    <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
+                        <Icon fontSize="12pt" type="filter_alt" />
+                    </PrimaryButton>
+                </PanelHeader>
                 <div
                     style={{
                         boxSizing: "border-box",
@@ -227,129 +187,7 @@ const TextClient = () => {
                 </div>
                 <TextClientTextBox />
             </div>
-            <Modal open={showFilterModal}>
-                <div>
-                    <h2>Text Client Filters</h2>
-                    <div>
-                        <Checkbox
-                            label="Show Item Sends"
-                            checked={messageFilter.allowedTypes.includes("item")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "item")}
-                        />
-                        <br />
-                        <Checkbox
-                            label="Show Commands"
-                            checked={messageFilter.allowedTypes.includes("command")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "command")}
-                        />
-                        <br />
-                        <Checkbox
-                            label="Show Chat"
-                            checked={messageFilter.allowedTypes.includes("chat")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "chat")}
-                        />
-                        <br />
-                        <Checkbox
-                            label="Show Status Updates"
-                            checked={messageFilter.allowedTypes.includes("status")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "status")}
-                        />
-                        <br />
-                        <Checkbox
-                            label="Show Log-in/Log-out"
-                            checked={messageFilter.allowedTypes.includes("login")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "login")}
-                        />
-                        <br />
-                        <Checkbox
-                            label="Show Miscellaneous"
-                            checked={messageFilter.allowedTypes.includes("misc")}
-                            onChange={(event) => updateAllowedMessages(event.target.checked, "misc")}
-                        />
-                    </div>
-                    <div>
-                        <h4>Advanced Item Send Filters:</h4>
-                        <div style={{ display: "flex", gap: "1em" }}>
-                            <div style={{ width: "30%", flex: "0 1 50%" }}>
-                                <p>Filter items based on what you send or receive</p>
-                                <Checkbox
-                                    label="Show Own Progression"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.own.includes("progression")}
-                                    onChange={(event) =>
-                                        updateItemSendFilter(event.target.checked, "progression", "own")
-                                    }
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Own Traps"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.own.includes("trap")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "trap", "own")}
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Own Useful"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.own.includes("useful")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "useful", "own")}
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Own Normal"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.own.includes("normal")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "normal", "own")}
-                                />
-                            </div>
-                            <div style={{ width: "30%", flex: "0 1 50%" }}>
-                                <p>Filter items based on what others send or receive</p>
-                                <Checkbox
-                                    label="Show Other's Progression"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.others.includes("progression")}
-                                    onChange={(event) =>
-                                        updateItemSendFilter(event.target.checked, "progression", "others")
-                                    }
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Other's Traps"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.others.includes("trap")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "trap", "others")}
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Other's Useful"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.others.includes("useful")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "useful", "others")}
-                                />
-                                <br />
-                                <Checkbox
-                                    label="Show Other's Normal"
-                                    disabled={!messageFilter.allowedTypes.includes("item")}
-                                    checked={messageFilter.itemSendFilter.others.includes("normal")}
-                                    onChange={(event) => updateItemSendFilter(event.target.checked, "normal", "others")}
-                                />
-                            </div>
-                        </div>
-
-                        <br />
-                    </div>
-
-                    <ButtonRow>
-                        <GhostButton
-                            onClick={() => {
-                                setShowFilterModal(false);
-                            }}
-                        >
-                            Close
-                        </GhostButton>
-                    </ButtonRow>
-                </div>
-            </Modal>
+            <TextClientFilterModal open={showFilterModal} onClose={() => setShowFilterModal(false)} />
         </>
     );
 };

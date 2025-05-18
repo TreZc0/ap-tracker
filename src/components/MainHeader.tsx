@@ -21,6 +21,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 position: "sticky",
                 top: "0px",
                 boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
+                zIndex: "2",
                 backgroundColor: background,
             }}
         >
