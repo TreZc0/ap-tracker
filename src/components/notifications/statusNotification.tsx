@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import { MessageType } from "../../services/notifications/notifications";
 import { filledTextPrimary, secondary } from "../../constants/colors";
+import Spinner from "../icons/spinner";
 const STATUS_HEIGHT_EM = 4;
 const StatusNotificationView = ({
     message,
@@ -20,28 +21,6 @@ const StatusNotificationView = ({
     /** Makes the notification invisible and off screen, toggle this to animate the notification appearing/leaving */
     hide: boolean;
 }) => {
-    const animationFrameRef = useRef(0);
-    const timeRef = useRef(0);
-    const [animationTime, setAnimationTime] = useState(0);
-
-    useEffect(() => {
-        const update = (time: number) => {
-            animationFrameRef.current = requestAnimationFrame(update);
-            if (!timeRef.current) {
-                timeRef.current = time;
-                return;
-            }
-            const delta = time - timeRef.current;
-            timeRef.current = time;
-            setAnimationTime((prev) => prev + delta);
-        };
-
-        animationFrameRef.current = requestAnimationFrame(update);
-        return () => {
-            cancelAnimationFrame(animationFrameRef.current);
-        };
-    });
-
     let boxColor = "grey";
     let icon = "ⓘ";
     switch (type) {
@@ -80,13 +59,7 @@ const StatusNotificationView = ({
     const top = 4 + STATUS_HEIGHT_EM * index;
     const onScreen = !hide;
     const right = onScreen ? 10 : -600;
-    let animationValue = (animationTime % 1000) / 1000;
-    let arc = 2;
-    if (progress >= 0) {
-        animationValue = 0;
-        arc = Math.PI * 2 * progress;
-    }
-    const radius = 20;
+
     return (
         <div
             style={{
@@ -107,8 +80,10 @@ const StatusNotificationView = ({
                 pointerEvents: "all",
             }}
         >
-            <svg
-                viewBox="-25 -25 50 50"
+            <Spinner
+                size={50}
+                arc={progress < 0 ? 2 : Math.PI * 2 * progress}
+                color="black"
                 style={{
                     gridColumn: "1 / span 1",
                     gridRow: "1 /span 1",
@@ -116,17 +91,7 @@ const StatusNotificationView = ({
                     alignSelf: "center",
                     textAlign: "center",
                 }}
-            >
-                <circle
-                    stroke="black"
-                    strokeDasharray={`${radius * arc} ${7 * radius}`}
-                    strokeOpacity={0.25}
-                    strokeWidth={5}
-                    r={radius}
-                    fill="none"
-                    transform={`rotate(${animationValue * 360})`}
-                />
-            </svg>
+            />
             <div
                 style={{
                     gridColumn: "1 / span 1",

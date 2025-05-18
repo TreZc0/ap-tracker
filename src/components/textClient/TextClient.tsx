@@ -118,9 +118,7 @@ const TextClient = () => {
     // used to update the reported height of each row
     const setRowHeight = useCallback(
         (index: number, size: number) => {
-            if(rowHeights[index] !== size){
-                setRowHeights((r) => ({ ...r, [index]: size }));
-            }
+            setRowHeights((r) => ({ ...r, [index]: size }));
         },
         [rowHeights]
     );
