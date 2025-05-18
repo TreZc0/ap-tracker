@@ -20,10 +20,10 @@ const CollectionContainer = styled.div<{
         props.$collection.progression
             ? progressionItem
             : props.$collection.useful
-            ? usefulItem
-            : props.$collection.trap
-            ? trapItem
-            : normalItem};
+              ? usefulItem
+              : props.$collection.trap
+                ? trapItem
+                : normalItem};
     &:hover {
         text-decoration: underline;
     }
@@ -64,11 +64,15 @@ const InventoryItemCollectionView = ({
                                     onClick={(event) => {
                                         const location = item.location;
                                         const status =
-                                            locationManager.getLocationStatus(location);
+                                            locationManager.getLocationStatus(
+                                                location
+                                            );
                                         event.stopPropagation();
                                         let found = false;
                                         status.tags?.forEach((tag) => {
-                                            if (tag.tagId === `${location}-star`) {
+                                            if (
+                                                tag.tagId === `${location}-star`
+                                            ) {
                                                 found = true;
                                             }
                                         });

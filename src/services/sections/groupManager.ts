@@ -17,10 +17,12 @@ interface GroupData {
 interface GroupManager {
     groups: Map<string, Group>;
     createNullGroup: () => Group;
-    loadGroups: (data: { [x: string]: GroupData; }) => void;
+    loadGroups: (data: { [x: string]: GroupData }) => void;
 }
 
-const createGroupManager = (_entranceManager: EntranceManager): GroupManager => {
+const createGroupManager = (
+    _entranceManager: EntranceManager
+): GroupManager => {
     const groups: Map<string, Group> = new Map();
 
     const checkToGroup: Map<string, string> = new Map();
@@ -84,8 +86,7 @@ const createGroupManager = (_entranceManager: EntranceManager): GroupManager => 
         };
     };
 
-
-    const loadGroups = (data: { [s: string]: GroupData; }) => {
+    const loadGroups = (data: { [s: string]: GroupData }) => {
         for (const key of Object.getOwnPropertyNames(data)) {
             groups.set(key, loadGroup(key, data[key]));
         }
@@ -94,4 +95,4 @@ const createGroupManager = (_entranceManager: EntranceManager): GroupManager => 
 };
 
 export { createGroupManager };
-export type {GroupManager, GroupData};
+export type { GroupManager, GroupData };

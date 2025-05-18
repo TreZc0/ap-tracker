@@ -7,8 +7,11 @@ import NotePad from "./NotePad";
 import { CONNECTION_STATUS } from "../services/connector/connector";
 import ConnectionIcon from "./icons/ConnectionIcon";
 
-const MainHeader = ({ optionsCallback, ...props }:{
-    optionsCallback: React.MouseEventHandler
+const MainHeader = ({
+    optionsCallback,
+    ...props
+}: {
+    optionsCallback: React.MouseEventHandler;
 }) => {
     const trackerState = useContext(TrackerStateContext);
     const [notePadOpen, setNotePadOpen] = useState(false);
@@ -40,7 +43,11 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 <div style={{ width: "2.5em", margin: "0.25em" }}>
                     <ConnectionIcon status={trackerState.connectionStatus} />
                 </div>
-                {slot?.alias && <div style={{textOverflow:"ellipsis", flex:"auto"}}>{slot.alias}</div>}
+                {slot?.alias && (
+                    <div style={{ textOverflow: "ellipsis", flex: "auto" }}>
+                        {slot.alias}
+                    </div>
+                )}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <PrimaryButton
@@ -55,10 +62,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 >
                     <Icon type="sticky_note" />
                 </PrimaryButton>
-                <SecondaryButton
-                    $small
-                    onClick={optionsCallback}
-                >
+                <SecondaryButton $small onClick={optionsCallback}>
                     <Icon type="settings" />
                 </SecondaryButton>
             </div>

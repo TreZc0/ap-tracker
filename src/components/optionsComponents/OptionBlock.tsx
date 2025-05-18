@@ -1,6 +1,12 @@
 import React from "react";
 import { textPrimary } from "../../constants/colors";
-const OptionBlock = ({ title, children }: { title: string; children: React.ReactNode }) => {
+const OptionBlock = ({
+    title,
+    children,
+}: {
+    title: string;
+    children: React.ReactNode;
+}) => {
     return (
         <div
             style={{

@@ -4,7 +4,7 @@ enum MessageType {
     error = "error",
     warning = "warning",
     success = "success",
-};
+}
 
 const randomId = () => {
     let result = "randomID-";
@@ -41,7 +41,8 @@ interface ToastNotification {
     id: string;
 }
 const NotificationManager = (() => {
-    const statusListeners: Set<(status: StatusNotification) => void> = new Set();
+    const statusListeners: Set<(status: StatusNotification) => void> =
+        new Set();
     const toastListeners: Set<(toast: ToastNotification) => void> = new Set();
     /**
      *
@@ -52,7 +53,19 @@ const NotificationManager = (() => {
      * @param {string} [params.id]
      * @param {number} [params.duration] Number of seconds message should pop up, defaults to 5
      */
-    const createToast = ({ message, type, details, id, duration = 7 }: { message: string; details?: string; type: MessageType; id?: string; duration?: number; }) => {
+    const createToast = ({
+        message,
+        type,
+        details,
+        id,
+        duration = 7,
+    }: {
+        message: string;
+        details?: string;
+        type: MessageType;
+        id?: string;
+        duration?: number;
+    }) => {
         const toast: ToastNotification = {
             type,
             message,
@@ -70,7 +83,9 @@ const NotificationManager = (() => {
         toastListeners.add(listener);
     };
 
-    const removeToastListener = (listener: (toast: ToastNotification) => void) => {
+    const removeToastListener = (
+        listener: (toast: ToastNotification) => void
+    ) => {
         toastListeners.delete(listener);
     };
 
@@ -84,13 +99,25 @@ const NotificationManager = (() => {
      * @param {number} [params.progress] [0-1] on how much progress has been made, defaults to -1 (spinner)
      * @returns {StatusNotificationHandel}
      */
-    const createStatus = ({ message, type, id, duration, progress=-1 }: { message: string; type: MessageType; id?: string; duration?: number; progress?: number; }): StatusNotificationHandel => {
+    const createStatus = ({
+        message,
+        type,
+        id,
+        duration,
+        progress = -1,
+    }: {
+        message: string;
+        type: MessageType;
+        id?: string;
+        duration?: number;
+        progress?: number;
+    }): StatusNotificationHandel => {
         /** @type {StatusNotification} */
         let status: StatusNotification = {
             type,
             message,
             progress,
-            duration: duration === undefined? undefined : duration * 1000,
+            duration: duration === undefined ? undefined : duration * 1000,
             id: id ?? randomId(),
         };
 
@@ -103,22 +130,27 @@ const NotificationManager = (() => {
                 status = {
                     ...status,
                     ...values,
-                    duration: values.duration === undefined ? undefined : values.duration * 1000
-                }
+                    duration:
+                        values.duration === undefined
+                            ? undefined
+                            : values.duration * 1000,
+                };
                 statusListeners.forEach((listener) => {
                     listener(status);
                 });
-            }
-        }
-
-
+            },
+        };
     };
 
-    const addStatusListener = (listener: (status: StatusNotification) => void) => {
+    const addStatusListener = (
+        listener: (status: StatusNotification) => void
+    ) => {
         statusListeners.add(listener);
     };
 
-    const removeStatusListener = (listener: (status: StatusNotification) => void) => {
+    const removeStatusListener = (
+        listener: (status: StatusNotification) => void
+    ) => {
         statusListeners.delete(listener);
     };
 
@@ -135,4 +167,4 @@ const NotificationManager = (() => {
 
 export default NotificationManager;
 export { MessageType };
-export type {ToastNotification, StatusNotification}
+export type { ToastNotification, StatusNotification };

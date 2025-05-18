@@ -9,7 +9,9 @@ const ClientMessage = forwardRef(
         { message, style }: { message: APMessage; style?: React.CSSProperties },
         ref: React.ForwardedRef<HTMLDivElement>
     ) => {
-        const text = message.parts.map((part) => part.text).reduce((a, b) => a + " " + b, "");
+        const text = message.parts
+            .map((part) => part.text)
+            .reduce((a, b) => a + " " + b, "");
         return (
             <div style={style}>
                 <div

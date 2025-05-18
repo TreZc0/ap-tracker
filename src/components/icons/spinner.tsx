@@ -34,7 +34,11 @@ const Spinner = ({
     const radius = size / 2 - 5;
 
     return (
-        <SvgContainer $animate={animate} viewBox={`${-size / 2} ${-size / 2} ${size} ${size}`} {...props}>
+        <SvgContainer
+            $animate={animate}
+            viewBox={`${-size / 2} ${-size / 2} ${size} ${size}`}
+            {...props}
+        >
             <circle
                 stroke={color}
                 strokeDasharray={`${radius * arc} ${7 * radius}`}

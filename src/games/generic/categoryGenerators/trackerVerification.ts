@@ -4,15 +4,21 @@ import { SectionConfigData } from "../../../services/sections/sectionManager";
 
 /**
  * Performs validation checks on section and group data provided
- * @param sectionData 
- * @param groupData 
+ * @param sectionData
+ * @param groupData
  * @param locationManager If not present, validation for check completeness will not be performed
- * @returns 
+ * @returns
  */
-const verifyTrackerConfig = (sectionData: SectionConfigData, groupData: {[groupKey: string]:GroupData}, locationManager?: LocationManager) => {
+const verifyTrackerConfig = (
+    sectionData: SectionConfigData,
+    groupData: { [groupKey: string]: GroupData },
+    locationManager?: LocationManager
+) => {
     const errors = [];
     // Do verification
-    const remainingChecks = locationManager?.getMatchingLocations(LocationManager.filters.exist) ?? new Set();
+    const remainingChecks =
+        locationManager?.getMatchingLocations(LocationManager.filters.exist) ??
+        new Set();
     const remainingGroups = new Set(Object.getOwnPropertyNames(groupData));
     const allGroups = new Set(Object.getOwnPropertyNames(groupData));
     const remainingSections = new Set(

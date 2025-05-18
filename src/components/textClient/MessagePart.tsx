@@ -4,7 +4,6 @@ import * as colors from "../../constants/colors";
 import ServiceContext from "../../contexts/serviceContext";
 import { EchoMessageNode } from "../../services/textClientManager";
 
-
 const MessagePart = ({ part }: { part: MessageNode | EchoMessageNode }) => {
     const services = useContext(ServiceContext);
     let textColor = colors.textPrimary;

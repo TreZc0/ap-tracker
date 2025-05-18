@@ -1,4 +1,4 @@
-let systemTheme: "light"|"dark" = "light";
+let systemTheme: "light" | "dark" = "light";
 // https://stackoverflow.com/questions/56393880/how-do-i-detect-dark-mode-using-javascript
 if (
     window.matchMedia &&
@@ -10,9 +10,11 @@ if (
 /**
  * Reads a string into a theme value
  * @param value Should be one of "light"|"dark"|"system"|null
- * @returns 
+ * @returns
  */
-const readThemeValue = (value: "light"|"dark"|"system"|null): "light"|"dark" => {
+const readThemeValue = (
+    value: "light" | "dark" | "system" | null
+): "light" | "dark" => {
     switch (value) {
         case "dark": {
             return "dark";

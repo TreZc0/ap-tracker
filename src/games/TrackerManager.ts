@@ -8,13 +8,19 @@ import { buildGenericGame } from "./generic/genericGame";
 const modified = Symbol("modified");
 const TRACKER_CHOICE_KEY = "Archipelago_Checklist_saved_tracker_choices";
 
-type TrackerBuilder = (locationManager: LocationManager, entranceManager: EntranceManager, groupManager: GroupManager, sectionManager: SectionManager, slotData: unknown) => void;
-type TrackerInitParams = {
-    gameName: string
+type TrackerBuilder = (
+    locationManager: LocationManager,
     entranceManager: EntranceManager,
-    slotData?: unknown,
-    groups: { [groupName: string]: string[] },
-}
+    groupManager: GroupManager,
+    sectionManager: SectionManager,
+    slotData: unknown
+) => void;
+type TrackerInitParams = {
+    gameName: string;
+    entranceManager: EntranceManager;
+    slotData?: unknown;
+    groups: { [groupName: string]: string[] };
+};
 
 interface Tracker {
     name: string;
@@ -39,16 +45,20 @@ class TrackerManager {
     static #trackersByGame: Map<string, Set<string>> = new Map();
     static #directoryListeners: Set<() => void> = new Set();
     static #directoryModified = Date.now();
-    static #cachedDirectory: { games: string[]; trackers: Tracker[];[modified]: number; } = {
+    static #cachedDirectory: {
+        games: string[];
+        trackers: Tracker[];
+        [modified]: number;
+    } = {
         games: [],
         trackers: [],
         [modified]: 0,
     };
     static #callDirectoryListeners = () => {
         TrackerManager.#directoryListeners.forEach((listener) => listener());
-    }
+    };
     static directory = {
-        getSubscriberCallback: (): (listener: () => void) => (() => void) => {
+        getSubscriberCallback: (): ((listener: () => void) => () => void) => {
             return (listener) => {
                 TrackerManager.#directoryListeners.add(listener);
                 return () => {
@@ -56,8 +66,11 @@ class TrackerManager {
                 };
             };
         },
-        getDirectory: (): { games: string[]; trackers: Tracker[]; } => {
-            if (TrackerManager.#directoryModified > TrackerManager.#cachedDirectory[modified]) {
+        getDirectory: (): { games: string[]; trackers: Tracker[] } => {
+            if (
+                TrackerManager.#directoryModified >
+                TrackerManager.#cachedDirectory[modified]
+            ) {
                 const result = {
                     games: [...TrackerManager.#trackersByGame.keys()],
                     trackers: [...TrackerManager.#allTrackers.values()],
@@ -74,36 +87,53 @@ class TrackerManager {
                 );
             }
             TrackerManager.#allTrackers.set(tracker.id, tracker);
-            const currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
+            const currentTrackers =
+                TrackerManager.#trackersByGame.get(tracker.gameName) ??
+                new Set();
             currentTrackers.add(tracker.id);
-            TrackerManager.#trackersByGame.set(tracker.gameName, currentTrackers);
+            TrackerManager.#trackersByGame.set(
+                tracker.gameName,
+                currentTrackers
+            );
             TrackerManager.#directoryModified = Date.now();
             TrackerManager.#callDirectoryListeners();
         },
         removeTracker: (trackerId: string) => {
-
             const tracker = TrackerManager.#allTrackers.get(trackerId);
             if (tracker) {
                 TrackerManager.#allTrackers.delete(trackerId);
-                const currentTrackers = TrackerManager.#trackersByGame.get(tracker.gameName) ?? new Set();
+                const currentTrackers =
+                    TrackerManager.#trackersByGame.get(tracker.gameName) ??
+                    new Set();
                 currentTrackers.delete(tracker.id);
                 if (currentTrackers.size > 0) {
-                    TrackerManager.#trackersByGame.set(tracker.gameName, currentTrackers);
+                    TrackerManager.#trackersByGame.set(
+                        tracker.gameName,
+                        currentTrackers
+                    );
                 } else {
                     TrackerManager.#trackersByGame.delete(tracker.gameName);
                 }
                 TrackerManager.#directoryModified = Date.now();
-                TrackerManager.#managers.forEach(trackerManager => {
-                    if (trackerManager.getGameTracker(tracker.gameName)?.id === tracker.id && tracker.id) {
+                TrackerManager.#managers.forEach((trackerManager) => {
+                    if (
+                        trackerManager.getGameTracker(tracker.gameName)?.id ===
+                            tracker.id &&
+                        tracker.id
+                    ) {
                         trackerManager.setGameTracker(tracker.gameName, null);
                     }
-                })
+                });
                 TrackerManager.#callDirectoryListeners();
             }
-        }
-    }
+        },
+    };
 
-    constructor(locationManager: LocationManager, groupManager: GroupManager, sectionManager: SectionManager) {
+    constructor(
+        locationManager: LocationManager,
+        groupManager: GroupManager,
+        sectionManager: SectionManager
+    ) {
         TrackerManager.#managers.add(this);
         this.#locationManager = locationManager;
         this.#groupManager = groupManager;
@@ -111,7 +141,9 @@ class TrackerManager {
     }
 
     /** Returns a callback that can have a listener passed in that will be called when tracker changes occur and returns a clean up call.*/
-    getTrackerSubscriberCallback = (): (listener: () => void) => (() => void) => {
+    getTrackerSubscriberCallback = (): ((
+        listener: () => void
+    ) => () => void) => {
         return (listener: () => void) => {
             this.#trackerListeners.add(listener);
             return () => {
@@ -120,7 +152,11 @@ class TrackerManager {
         };
     };
 
-    setGameTracker = (game: string, _tracker: Tracker | string | null, save?: boolean) => {
+    setGameTracker = (
+        game: string,
+        _tracker: Tracker | string | null,
+        save?: boolean
+    ) => {
         // TODO, make it so setting with game name of "" will set the default tracker for games
         if (!game) {
             throw new Error(
@@ -128,13 +164,16 @@ class TrackerManager {
             );
         }
 
-        const tracker: Tracker = typeof _tracker === "string" ? TrackerManager.#allTrackers.get(_tracker) : _tracker;
+        const tracker: Tracker =
+            typeof _tracker === "string"
+                ? TrackerManager.#allTrackers.get(_tracker)
+                : _tracker;
         if (!tracker && _tracker === "string") {
             throw new Error(`Failed to find tracker with id ${_tracker}`);
         }
 
         if (tracker) {
-            this.#registeredTrackers.set(game, tracker)
+            this.#registeredTrackers.set(game, tracker);
         } else {
             this.#registeredTrackers.delete(game);
         }
@@ -153,7 +192,10 @@ class TrackerManager {
             } else {
                 delete trackerChoices[game];
             }
-            localStorage.setItem(TRACKER_CHOICE_KEY, JSON.stringify(trackerChoices));
+            localStorage.setItem(
+                TRACKER_CHOICE_KEY,
+                JSON.stringify(trackerChoices)
+            );
         }
 
         this.#callTrackerListeners();
@@ -167,14 +209,18 @@ class TrackerManager {
         if (!this.#trackerParams) {
             return;
         }
-        const {
-            gameName, entranceManager, slotData, groups
-        } = this.#trackerParams;
+        const { gameName, entranceManager, slotData, groups } =
+            this.#trackerParams;
         let tracker: Tracker = null;
         if (this.#registeredTrackers.has(gameName)) {
             tracker = this.#registeredTrackers.get(gameName);
         } else {
-            tracker = buildGenericGame(gameName, this.#locationManager, groups, GenericGameMethod.locationGroup);
+            tracker = buildGenericGame(
+                gameName,
+                this.#locationManager,
+                groups,
+                GenericGameMethod.locationGroup
+            );
         }
         this.#sectionManager.deleteAllSections();
         tracker.buildTracker(
@@ -184,7 +230,7 @@ class TrackerManager {
             this.#sectionManager,
             slotData
         );
-    }
+    };
 
     initializeTracker = (initParams: TrackerInitParams) => {
         this.#trackerParams = initParams;
@@ -194,7 +240,7 @@ class TrackerManager {
     /** Removes the manager from the list of managed managers */
     remove = () => {
         TrackerManager.#managers.delete(this);
-    }
+    };
 
     loadSavedTrackerChoices = () => {
         const savedChoicesString = localStorage.getItem(TRACKER_CHOICE_KEY);
@@ -202,22 +248,23 @@ class TrackerManager {
             ? JSON.parse(savedChoicesString)
             : {};
         Object.getOwnPropertyNames(trackerChoices).forEach((gameName) => {
-            const tracker = TrackerManager.#allTrackers.get(trackerChoices[gameName]);
+            const tracker = TrackerManager.#allTrackers.get(
+                trackerChoices[gameName]
+            );
             if (tracker) {
                 this.setGameTracker(gameName, tracker);
             }
         });
-    }
+    };
 
     getTrackerInitParams = (): TrackerInitParams => {
         return this.#trackerParams;
-    }
+    };
 
     #callTrackerListeners = () => {
         this.#trackerListeners.forEach((listener) => listener());
     };
-
 }
 
 export default TrackerManager;
-export type { Tracker, TrackerBuilder, TrackerInitParams }
+export type { Tracker, TrackerBuilder, TrackerInitParams };

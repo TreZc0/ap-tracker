@@ -37,7 +37,9 @@ const AppScreen = styled.div`
     justify-items: stretch;
     align-items: stretch;
     color: ${textPrimary};
-    transition: background-color 0.25s ease-in-out, color 0.25s ease-in-out;
+    transition:
+        background-color 0.25s ease-in-out,
+        color 0.25s ease-in-out;
     grid-template-rows: 3em 1fr;
     grid-template-columns: auto;
 `;

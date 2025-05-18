@@ -30,7 +30,7 @@ const SectionView = ({
 }) => {
     const isClosable = name !== "root";
     const [isOpen, setIsOpen] = useState(
-        isClosable ? startOpen ?? false : true
+        isClosable ? (startOpen ?? false) : true
     );
     const serviceContext = useContext(ServiceContext);
     const sectionManager = serviceContext.sectionManager;
@@ -139,11 +139,7 @@ const SectionView = ({
                                         )}
                                         {values.size}
                                         {counterType?.showTotal &&
-                                            `/${
-                                                section?.checkReport.tagTotals.get(
-                                                    id
-                                                )?.size ?? 0
-                                            }`}{" "}
+                                            `/${section?.checkReport.tagTotals.get(id)?.size ?? 0}`}{" "}
                                     </i>
                                 );
                             }
@@ -156,7 +152,8 @@ const SectionView = ({
                                 {locations.map(
                                     (location) =>
                                         location &&
-                                        (!section?.checks.get(location)?.checked ||
+                                        (!section?.checks.get(location)
+                                            ?.checked ||
                                             checkedLocationBehavior ===
                                                 "nothing") && (
                                             <LocationView

@@ -209,7 +209,6 @@ const NotificationContainer = () => {
         toastTimerStopped.current = false;
     };
 
-
     // Effect to run timer animations, set listeners on notifications
     useEffect(() => {
         const addToast = (toast: ToastNotification) => {

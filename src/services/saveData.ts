@@ -2,43 +2,53 @@ const DB_STORE_KEYS = {
     dataPackageCache: "data_packages",
     locationGroupCache: "location_groups",
     customTrackers: "custom_trackers",
-
-}
+};
 
 const database_request = window.indexedDB.open("checklist_db", 4);
 let database_open = false;
 let queuedEvents: (() => void)[] = [];
 
 database_request.onerror = () => {
-    console.error("Data base error: ")
+    console.error("Data base error: ");
     console.error(database_request.error);
 };
 
 database_request.onsuccess = () => {
     database_open = true;
-    queuedEvents.forEach(event => event());
+    queuedEvents.forEach((event) => event());
     queuedEvents = [];
-}
+};
 
 database_request.onblocked = () => {
     console.warn("Database operation blocked");
-}
+};
 
 database_request.onupgradeneeded = (_event) => {
     const db = database_request.result;
     if (!db.objectStoreNames.contains(DB_STORE_KEYS.dataPackageCache)) {
-        const dataPackageStore = db.createObjectStore(DB_STORE_KEYS.dataPackageCache, { keyPath: "seed" });
+        const dataPackageStore = db.createObjectStore(
+            DB_STORE_KEYS.dataPackageCache,
+            { keyPath: "seed" }
+        );
         dataPackageStore.createIndex("seed", "seed", { unique: true });
     }
     if (!db.objectStoreNames.contains(DB_STORE_KEYS.locationGroupCache)) {
-        const locationGroupStore = db.createObjectStore(DB_STORE_KEYS.locationGroupCache, { keyPath: "connectionId" });
-        locationGroupStore.createIndex("connectionId", "connectionId", { unique: true });
+        const locationGroupStore = db.createObjectStore(
+            DB_STORE_KEYS.locationGroupCache,
+            { keyPath: "connectionId" }
+        );
+        locationGroupStore.createIndex("connectionId", "connectionId", {
+            unique: true,
+        });
     }
     if (!db.objectStoreNames.contains(DB_STORE_KEYS.customTrackers)) {
-        const locationGroupStore = db.createObjectStore(DB_STORE_KEYS.customTrackers, { keyPath: "id" });
+        const locationGroupStore = db.createObjectStore(
+            DB_STORE_KEYS.customTrackers,
+            { keyPath: "id" }
+        );
         locationGroupStore.createIndex("id", "id", { unique: true });
     }
-}
+};
 
 /**
  * Gets an item from the database
@@ -57,10 +67,10 @@ const getItem = (storeName: string, key: string): Promise<unknown> => {
                 const request = objectStore.get(key);
                 request.onerror = () => {
                     resolve(null);
-                }
+                };
                 request.onsuccess = () => {
                     resolve(request.result ?? null);
-                }
+                };
             } catch {
                 if (hasFailed) {
                     resolve(null);
@@ -69,7 +79,7 @@ const getItem = (storeName: string, key: string): Promise<unknown> => {
                     setTimeout(attemptLoad, 500);
                 }
             }
-        }
+        };
         if (key) {
             if (database_open) {
                 attemptLoad();
@@ -80,7 +90,7 @@ const getItem = (storeName: string, key: string): Promise<unknown> => {
             resolve(null);
         }
     });
-}
+};
 
 /**
  * Stores an item
@@ -99,10 +109,10 @@ const storeItem = (storeName: string, item: unknown): Promise<boolean> => {
                 const request = objectStore.put(item);
                 request.onerror = () => {
                     resolve(false);
-                }
+                };
                 request.onsuccess = () => {
                     resolve(true);
-                }
+                };
             } catch {
                 if (hasFailed) {
                     resolve(false);
@@ -111,15 +121,14 @@ const storeItem = (storeName: string, item: unknown): Promise<boolean> => {
                     setTimeout(attemptSave, 500);
                 }
             }
-        }
+        };
         if (database_open) {
             attemptSave();
         } else {
             queuedEvents.push(attemptSave);
         }
-
-    })
-}
+    });
+};
 
 /**
  * Removes an item from the data store
@@ -138,10 +147,10 @@ const deleteItem = (storeName: string, key: string): Promise<boolean> => {
                 const request = objectStore.delete(key);
                 request.onerror = () => {
                     resolve(false);
-                }
+                };
                 request.onsuccess = () => {
                     resolve(true);
-                }
+                };
             } catch {
                 if (hasFailed) {
                     resolve(false);
@@ -150,21 +159,19 @@ const deleteItem = (storeName: string, key: string): Promise<boolean> => {
                     setTimeout(attemptDelete, 500);
                 }
             }
-        }
+        };
         if (database_open) {
             attemptDelete();
         } else {
             queuedEvents.push(attemptDelete);
         }
-    })
-}
-
-
+    });
+};
 
 const SaveData = {
     getItem,
     storeItem,
     deleteItem,
-}
+};
 
-export { SaveData, DB_STORE_KEYS }
+export { SaveData, DB_STORE_KEYS };

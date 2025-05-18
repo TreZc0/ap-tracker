@@ -11,17 +11,16 @@ import TextClientManager from "../services/textClientManager";
 import TrackerManager from "../games/TrackerManager";
 
 const ServiceContext: React.Context<{
-    locationManager?: LocationManager,
-    inventoryManager?: InventoryManager,
-    groupManager?: GroupManager,
-    entranceManager?: EntranceManager,
-    connector?: Connector,
-    sectionManager?: SectionManager,
-    tagManager?: TagManager,
-    optionManager?: OptionManager,
-    trackerManager?: TrackerManager,
-    textClientManager?: TextClientManager,
-}> = createContext({})
+    locationManager?: LocationManager;
+    inventoryManager?: InventoryManager;
+    groupManager?: GroupManager;
+    entranceManager?: EntranceManager;
+    connector?: Connector;
+    sectionManager?: SectionManager;
+    tagManager?: TagManager;
+    optionManager?: OptionManager;
+    trackerManager?: TrackerManager;
+    textClientManager?: TextClientManager;
+}> = createContext({});
 
-
-export default ServiceContext
+export default ServiceContext;

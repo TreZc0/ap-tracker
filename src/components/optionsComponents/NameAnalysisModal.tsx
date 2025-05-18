@@ -16,7 +16,9 @@ import SectionView from "../sectionComponents/SectionView";
 import { createTagManager } from "../../services/tags/tagManager";
 import { buildGenericGame } from "../../games/generic/genericGame";
 import { GenericGameMethod } from "../../games/generic/categoryGenerators/genericGameEnums";
-import NotificationManager, { MessageType } from "../../services/notifications/notifications";
+import NotificationManager, {
+    MessageType,
+} from "../../services/notifications/notifications";
 import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import { exportJSONFile } from "../../utility/jsonExport";
 
@@ -46,33 +48,49 @@ const previewLocationManager = new LocationManager();
 const previewEntranceManager = createEntranceManager();
 const previewGroupManager = createGroupManager(previewEntranceManager);
 const previewTagManager = createTagManager(previewLocationManager);
-const previewSectionManager = createSectionManager(previewLocationManager, previewEntranceManager, previewGroupManager);
-const previewTrackerManager = new TrackerManager(previewLocationManager, previewGroupManager, previewSectionManager);
+const previewSectionManager = createSectionManager(
+    previewLocationManager,
+    previewEntranceManager,
+    previewGroupManager
+);
+const previewTrackerManager = new TrackerManager(
+    previewLocationManager,
+    previewGroupManager,
+    previewSectionManager
+);
 
-const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+const NameAnalysisModal = ({
+    open,
+    onClose,
+}: {
+    open: boolean;
+    onClose: () => void;
+}) => {
     const services = useContext(ServiceContext);
     const mainTrackerManager = services.trackerManager;
 
     const [tokenOptions, setTokenOptions]: [
         NameTokenizationOptions,
-        React.Dispatch<React.SetStateAction<NameTokenizationOptions>>
+        React.Dispatch<React.SetStateAction<NameTokenizationOptions>>,
     ] = useState({
         splitCharacters: [" ", ".", "_", "-", ":"],
         splitOnCase: true,
         characterSplit: false,
     });
 
-    const [otherOptions, setOtherOptions]: [AdditionalParams, React.Dispatch<React.SetStateAction<AdditionalParams>>] =
-        useState({
-            maxDepth: 1,
-            useAllChecksInDataPackage: true,
-            minChecksPerGroup: 3,
-            minTokenCount: 1,
-        });
+    const [otherOptions, setOtherOptions]: [
+        AdditionalParams,
+        React.Dispatch<React.SetStateAction<AdditionalParams>>,
+    ] = useState({
+        maxDepth: 1,
+        useAllChecksInDataPackage: true,
+        minChecksPerGroup: 3,
+        minTokenCount: 1,
+    });
 
     const [textOptionsTemp, setTextOptionsTemp]: [
         { [key: string]: string },
-        React.Dispatch<React.SetStateAction<{ [key: string]: string }>>
+        React.Dispatch<React.SetStateAction<{ [key: string]: string }>>,
     ] = useState({
         maxDepth: "1",
         minChecksPerGroup: "3",
@@ -100,7 +118,8 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
         const mainTrackerParams = mainTrackerManager.getTrackerInitParams();
         if (
             mainTrackerParams &&
-            previewTrackerManager.getTrackerInitParams()?.gameName !== mainTrackerParams.gameName
+            previewTrackerManager.getTrackerInitParams()?.gameName !==
+                mainTrackerParams.gameName
         ) {
             previewTrackerManager.initializeTracker(mainTrackerParams);
             previewLocationManager.pauseUpdateBroadcast();
@@ -119,7 +138,8 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                 mainTrackerParams.groups,
                 GenericGameMethod.nameAnalysis,
                 {
-                    useAllChecksInDataPackage: otherOptions.useAllChecksInDataPackage,
+                    useAllChecksInDataPackage:
+                        otherOptions.useAllChecksInDataPackage,
                     tokenizationOptions: tokenOptions,
                     groupingOptions: {
                         minGroupSize: otherOptions.minChecksPerGroup,
@@ -128,7 +148,10 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                     },
                 }
             );
-            previewTrackerManager.setGameTracker(mainTrackerParams.gameName, tracker);
+            previewTrackerManager.setGameTracker(
+                mainTrackerParams.gameName,
+                tracker
+            );
         }
     }, [mainTrackerManager, tokenOptions, otherOptions]);
 
@@ -146,9 +169,10 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                     <h3>Preview</h3>
                     <ServiceContext.Provider
                         value={{
-                            locationManager: otherOptions.useAllChecksInDataPackage
-                                ? previewLocationManager
-                                : previewLocationManager,
+                            locationManager:
+                                otherOptions.useAllChecksInDataPackage
+                                    ? previewLocationManager
+                                    : previewLocationManager,
                             entranceManager: previewEntranceManager,
                             groupManager: previewGroupManager,
                             sectionManager: previewSectionManager,
@@ -272,8 +296,9 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                         type="number"
                         value={textOptionsTemp.minChecksPerGroup}
                         invalid={
-                            isNaN(parseInt(textOptionsTemp.minChecksPerGroup)) ||
-                            parseInt(textOptionsTemp.minChecksPerGroup) < 2
+                            isNaN(
+                                parseInt(textOptionsTemp.minChecksPerGroup)
+                            ) || parseInt(textOptionsTemp.minChecksPerGroup) < 2
                         }
                         min="2"
                         label="Min checks per group"
@@ -294,7 +319,10 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                     <Input
                         type="number"
                         value={textOptionsTemp.maxDepth}
-                        invalid={isNaN(parseInt(textOptionsTemp.maxDepth)) || parseInt(textOptionsTemp.maxDepth) < 0}
+                        invalid={
+                            isNaN(parseInt(textOptionsTemp.maxDepth)) ||
+                            parseInt(textOptionsTemp.maxDepth) < 0
+                        }
                         min="0"
                         label="Max depth"
                         onChange={(e) => {
@@ -339,10 +367,12 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
             <ButtonRow>
                 <PrimaryButton
                     onClick={async () => {
-                        const customTracker = previewTrackerManager.getGameTracker(
-                            services.connector.connection.slotInfo.game
-                        );
-                        const customTrackerExport = customTracker.exportTracker();
+                        const customTracker =
+                            previewTrackerManager.getGameTracker(
+                                services.connector.connection.slotInfo.game
+                            );
+                        const customTrackerExport =
+                            customTracker.exportTracker();
                         if (!customTracker || !customTrackerExport) {
                             NotificationManager.createToast({
                                 message: "Failed to export and save tracker",
@@ -351,8 +381,13 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                             return;
                         }
 
-                        await CustomTrackerManager.addCustomTracker(customTrackerExport);
-                        mainTrackerManager.setGameTracker(customTracker.gameName, customTrackerExport.id);
+                        await CustomTrackerManager.addCustomTracker(
+                            customTrackerExport
+                        );
+                        mainTrackerManager.setGameTracker(
+                            customTracker.gameName,
+                            customTrackerExport.id
+                        );
                         NotificationManager.createStatus({
                             message: "Successfully added tracker",
                             type: MessageType.success,
@@ -365,9 +400,10 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                 </PrimaryButton>
                 <SecondaryButton
                     onClick={() => {
-                        const customTracker = previewTrackerManager.getGameTracker(
-                            services.connector.connection.slotInfo.game
-                        );
+                        const customTracker =
+                            previewTrackerManager.getGameTracker(
+                                services.connector.connection.slotInfo.game
+                            );
                         if (!customTracker) {
                             NotificationManager.createToast({
                                 message: "Failed to export tracker",
@@ -375,7 +411,10 @@ const NameAnalysisModal = ({ open, onClose }: { open: boolean; onClose: () => vo
                             });
                             return;
                         }
-                        exportJSONFile(`tracker-export-${Date.now().toString()}`, customTracker.exportTracker());
+                        exportJSONFile(
+                            `tracker-export-${Date.now().toString()}`,
+                            customTracker.exportTracker()
+                        );
                     }}
                 >
                     Export <Icon type="download" fontSize="14px" />
