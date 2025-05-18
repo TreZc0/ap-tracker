@@ -1,44 +1,40 @@
-import React, { useRef, useReducer, useEffect } from "react";
+import React from "react";
 import { textPrimary } from "../../constants/colors";
+import styled from "styled-components";
 
-const timerReducer = (time: number, delta: number) => {
-    return time + delta;
-};
+const SvgContainer = styled.svg<{ $animate: boolean }>`
+    & circle {
+        transform: rotate(-90deg);
+        ${(props) => props.$animate && "animation: spin 1s linear infinite;"}
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+`;
 
 const Spinner = ({
     size = 28,
     arc = 2,
     color = textPrimary,
+    animate = true,
     ...props
 }: {
     size?: number;
     arc?: number;
     color?: string;
+    style?: React.CSSProperties;
+    animate?: boolean;
 }) => {
     const radius = size / 2 - 5;
-    const [timer, updateTimer] = useReducer(timerReducer, 0);
-    const frameRef = useRef(null);
-    const timeRef = useRef(null);
-    const animationValue = ((timer * 2) % 1000) / 1000;
-    useEffect(() => {
-        const update = (time: number) => {
-            if (!timeRef.current) {
-                timeRef.current = time;
-                return;
-            }
-            const delta = time - timeRef.current;
-            timeRef.current = time;
-            updateTimer(delta);
-            frameRef.current = requestAnimationFrame(update);
-        };
-        frameRef.current = requestAnimationFrame(update);
-        return () => {
-            cancelAnimationFrame(frameRef.current);
-        };
-    });
 
     return (
-        <svg viewBox={`${-size / 2} ${-size / 2} ${size} ${size}`} {...props}>
+        <SvgContainer $animate={animate} viewBox={`${-size / 2} ${-size / 2} ${size} ${size}`} {...props}>
             <circle
                 stroke={color}
                 strokeDasharray={`${radius * arc} ${7 * radius}`}
@@ -46,9 +42,8 @@ const Spinner = ({
                 strokeWidth={5}
                 r={radius}
                 fill="none"
-                transform={`rotate(${animationValue * 360})`}
             />
-        </svg>
+        </SvgContainer>
     );
 };
 

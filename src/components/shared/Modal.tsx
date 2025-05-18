@@ -14,6 +14,7 @@ const BackDrop = styled.div`
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
+    z-index: 10;
 `;
 
 const Container = styled.div`
@@ -31,6 +32,7 @@ const Container = styled.div`
     border: 0px solid black;
     pointer-events: all;
     box-shadow: 4px 8px 0px rgba(0, 0, 0, 0.5);
+    z-index: 11;
 `;
 /**
  *

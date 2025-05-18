@@ -18,9 +18,11 @@ const MainHeader = ({ optionsCallback, ...props }:{
             style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
+                width: "100vw",
                 position: "sticky",
                 top: "0px",
                 boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
+                zIndex: "2",
                 backgroundColor: background,
             }}
         >
@@ -30,6 +32,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                     display: "flex",
                     columnGap: "1rem",
                     alignItems: "center",
+                    overflow: "auto",
                 }}
                 {...props}
             >
@@ -37,8 +40,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 <div style={{ width: "2.5em", margin: "0.25em" }}>
                     <ConnectionIcon status={trackerState.connectionStatus} />
                 </div>
-                <div>{trackerState.connectionStatus}</div>
-                {slot?.alias && <div>{slot.alias}</div>}
+                {slot?.alias && <div style={{textOverflow:"ellipsis", flex:"auto"}}>{slot.alias}</div>}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <PrimaryButton

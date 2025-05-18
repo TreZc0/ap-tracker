@@ -7,11 +7,7 @@ import TrackerManager from "../../games/TrackerManager";
 /**
  * A UI for selecting which tracker to use with which game
  */
-const TrackerPicker = ({
-    trackerManager,
-}: {
-    trackerManager: TrackerManager;
-}) => {
+const TrackerPicker = ({ trackerManager }: { trackerManager: TrackerManager }) => {
     const trackerDirectory = useTrackerDirectory();
 
     return (
@@ -22,19 +18,12 @@ const TrackerPicker = ({
                     trackerDirectory.games.map((game) => {
                         return (
                             <div key={game}>
-                                {game}:{" "}
-                                <TrackerDropdown
-                                    game={game}
-                                    trackerManager={trackerManager}
-                                />
+                                {game}: <TrackerDropdown game={game} trackerManager={trackerManager} />
                             </div>
                         );
                     })
                 ) : (
-                    <i style={{ color: tertiary }}>
-                        No options available, add some custom trackers to have
-                        options.
-                    </i>
+                    <i style={{ color: tertiary }}>No options available, add some custom trackers to have options.</i>
                 )}
             </div>
         </div>

@@ -1,11 +1,6 @@
 import React, { useMemo } from "react";
-import {
-    useCurrentGameTracker,
-    useTrackerDirectory,
-} from "../../hooks/trackerHooks";
-import NotificationManager, {
-    MessageType,
-} from "../../services/notifications/notifications";
+import { useCurrentGameTracker, useTrackerDirectory } from "../../hooks/trackerHooks";
+import NotificationManager, { MessageType } from "../../services/notifications/notifications";
 import TrackerManager from "../../games/TrackerManager";
 import { naturalSort } from "../../utility/comparisons";
 /**
@@ -13,19 +8,11 @@ import { naturalSort } from "../../utility/comparisons";
  * @param param0
  * @returns
  */
-const TrackerDropdown = ({
-    game,
-    trackerManager,
-}: {
-    game: string;
-    trackerManager: TrackerManager;
-}) => {
+const TrackerDropdown = ({ game, trackerManager }: { game: string; trackerManager: TrackerManager }) => {
     const directory = useTrackerDirectory();
     const currentSelection = useCurrentGameTracker(game, trackerManager);
     const trackers = useMemo(() => {
-        const list = directory.trackers.filter(
-            (tracker) => tracker.gameName === game
-        );
+        const list = directory.trackers.filter((tracker) => tracker.gameName === game);
         list.sort((a, b) => naturalSort(a.name, b.name));
         return list;
     }, [directory.trackers]);
@@ -36,11 +23,7 @@ const TrackerDropdown = ({
             onChange={(e) => {
                 try {
                     if (e.target.value) {
-                        trackerManager.setGameTracker(
-                            game,
-                            e.target.value,
-                            true
-                        );
+                        trackerManager.setGameTracker(game, e.target.value, true);
                     } else {
                         trackerManager.setGameTracker(game, null, true);
                     }

@@ -3,11 +3,7 @@ import useOption from "../../hooks/optionHook";
 import { OptionManager } from "../../services/options/optionManager";
 
 const ThemeOptions = ({ optionManager }: { optionManager: OptionManager }) => {
-    const themeValue = useOption(optionManager, "theme", "global") as
-        | "light"
-        | "dark"
-        | "system"
-        | null;
+    const themeValue = useOption(optionManager, "theme", "global") as "light" | "dark" | "system" | null;
 
     return (
         <>

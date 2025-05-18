@@ -1,14 +1,16 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
-const StickySpacer = () => {
-    return <div
-    style={{
-        position: "sticky",
-        bottom: "0px",
-        height: "5vh",
-        pointerEvents: "none",
-    }}
-/>
-}
+const StickySpacer = forwardRef<HTMLDivElement>((_, ref) => (
+    <div
+        ref={ref}
+        style={{
+            position: "sticky",
+            bottom: "0px",
+            height: "5vh",
+            pointerEvents: "none",
+        }}
+    />
+));
+StickySpacer.displayName = "StickySpacer";
 
 export default StickySpacer;
