@@ -53,16 +53,22 @@ const messageTypeCategoryMap = {
 
 class TextClientManager {
     #messages: APMessage[] = [];
-    #listeners: Set<() => void> = new Set();
+    #history: string[] = [];
+    #messageListeners: Set<() => void> = new Set();
+    #historyListeners: Set<() => void> = new Set();
     messageBufferTrimToSize = 1000;
     messageBufferMaxSize = 1500;
     listenerDelay = 10;
     #timeout = 0;
 
-    #callListeners = () => {
-        if(!this.#timeout){
-            this.#timeout = window.setTimeout(()=>{
-                this.#listeners.forEach(listener => listener());
+    #callHistoryListeners = () => {
+        this.#historyListeners.forEach(listener => listener());
+    }
+
+    #callMessageListeners = () => {
+        if (!this.#timeout) {
+            this.#timeout = window.setTimeout(() => {
+                this.#messageListeners.forEach(listener => listener());
                 this.#timeout = 0;
             }, this.listenerDelay);
         }
@@ -80,10 +86,10 @@ class TextClientManager {
             parts,
         }
         this.#messages = [...this.#messages, apMessage];
-        if(this.#messages.length >= this.messageBufferMaxSize){
+        if (this.#messages.length >= this.messageBufferMaxSize) {
             this.#messages = [...this.#messages.slice(this.#messages.length - this.messageBufferTrimToSize)];
         }
-        this.#callListeners();
+        this.#callMessageListeners();
     }
 
     #isMessageWanted = ({ type, item }: { type: string, player?: Player, item?: Item }, client: Client): boolean => {
@@ -124,16 +130,16 @@ class TextClientManager {
     }
 
     #addMessage = (nodes: MessageNode[]) => {
-        const parts = nodes;//data.map((part) => this.#parseMessagePart(part, client));
+        const parts = nodes;
         const apMessage: APMessage = {
             key: generateId(),
             parts,
         }
         this.#messages = [...this.#messages, apMessage];
-        if(this.#messages.length >= this.messageBufferMaxSize){
+        if (this.#messages.length >= this.messageBufferMaxSize) {
             this.#messages = [...this.#messages.slice(this.#messages.length - this.messageBufferTrimToSize)];
         }
-        this.#callListeners();
+        this.#callMessageListeners();
     }
 
     addMessage = (type: string, nodes: MessageNode[], client: Client) => {
@@ -161,6 +167,10 @@ class TextClientManager {
         return this.#messages;
     }
 
+    getHistory = () => {
+        return this.#history;
+    }
+
     processCommand = (text: string) => {
         this.echo(text, "underline");
         switch (text) {
@@ -176,11 +186,17 @@ class TextClientManager {
         }
     }
 
-    processInput = (text: string, client: Client) => {
+    processInput = async (text: string, client: Client) => {
+        if (!text) {
+            return;
+        }
+        this.#history = [text, ...this.#history];
+        this.#callHistoryListeners();
+
         if (text.startsWith("/")) {
             return this.processCommand(text.substring(1));
         }
-        client.messages.say(text);
+        await client.messages.say(text);
     }
 
 
@@ -190,10 +206,24 @@ class TextClientManager {
      */
     getMessageSubscriber = (): (listener: () => void) => () => void => {
         return (listener) => {
-            this.#listeners.add(listener);
+            this.#messageListeners.add(listener);
             return () => {
                 // Clean up callback
-                this.#listeners.delete(listener);
+                this.#messageListeners.delete(listener);
+            }
+        }
+    }
+
+    /**
+     * Creates a callback that can be used to subscribe to new history
+     * @returns A callback that accepts a listener callback as a parameter and returns a clean up callback.
+     */
+    getHistorySubscriber = (): (listener: () => void) => () => void => {
+        return (listener) => {
+            this.#historyListeners.add(listener);
+            return () => {
+                // Clean up callback
+                this.#historyListeners.delete(listener);
             }
         }
     }
@@ -202,5 +232,4 @@ class TextClientManager {
 }
 
 export default TextClientManager
-// export { HintStatus }
 export type { APMessage, MessageNode, EchoMessageNode, MessageFilter, SimpleMessageType, ItemType }
