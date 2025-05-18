@@ -8,9 +8,7 @@ import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import { textPrimary } from "../../constants/colors";
 import { GhostButton } from "../buttons";
-const LocationView = ({ location } : {
-    location: string
-}) => {
+const LocationView = ({ location }: { location: string }) => {
     const [showDetails, setShowDetails] = useState(false);
     const serviceContext = useContext(ServiceContext);
     const locationManager = serviceContext.locationManager;
@@ -123,7 +121,9 @@ const LocationView = ({ location } : {
                                         event.stopPropagation();
                                         let found = false;
                                         status.tags?.forEach((tag) => {
-                                            if (tag.tagId === `${location}-star`) {
+                                            if (
+                                                tag.tagId === `${location}-star`
+                                            ) {
                                                 found = true;
                                             }
                                         });

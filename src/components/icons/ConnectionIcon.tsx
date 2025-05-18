@@ -24,70 +24,100 @@ const SvgContainer = styled.svg<{ $state: string }>`
     & .color1 {
         fill: ${baseColors[0]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color1 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color1 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color2 {
         fill: ${baseColors[1]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color2 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color2 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color3 {
         fill: ${baseColors[2]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color3 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color3 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color4 {
         fill: ${baseColors[3]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color4 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color4 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color5 {
         fill: ${baseColors[4]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color5 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color5 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color6 {
         fill: ${baseColors[5]};
         ${(props) =>
-            props.$state === CONNECTION_STATUS.connecting ? `animation: color6 ${animationTime}s linear infinite;` : ""}
+            props.$state === CONNECTION_STATUS.connecting
+                ? `animation: color6 ${animationTime}s linear infinite;`
+                : ""}
     }
     & .color {
         ${(props) =>
             props.$state === CONNECTION_STATUS.disconnected
                 ? `fill: ${disconnectedColor};`
                 : props.$state === CONNECTION_STATUS.error
-                ? `fill: ${errorColor};`
-                : ""}
+                  ? `fill: ${errorColor};`
+                  : ""}
     }
 
     @keyframes color1 {
         ${genColorSeq(0)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
     @keyframes color2 {
         ${genColorSeq(1)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
     @keyframes color3 {
         ${genColorSeq(2)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
     @keyframes color4 {
         ${genColorSeq(3)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
     @keyframes color5 {
         ${genColorSeq(4)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
     @keyframes color6 {
         ${genColorSeq(5)
-            .map((val, index) => `${Math.floor((index / 6) * 100)}% {fill: ${val};}`)
+            .map(
+                (val, index) =>
+                    `${Math.floor((index / 6) * 100)}% {fill: ${val};}`
+            )
             .join("\n")}
     }
 `;
@@ -169,7 +199,10 @@ const ConnectionIcon = ({ status }: { status: string }) => {
                 />
             </g>
 
-            <g transform="matrix(8.96 0 0 8.96 723.18 812.52)" id="b816040d-9f14-48ce-8169-63ddfa99bb11">
+            <g
+                transform="matrix(8.96 0 0 8.96 723.18 812.52)"
+                id="b816040d-9f14-48ce-8169-63ddfa99bb11"
+            >
                 <path
                     style={{
                         ...commonStyle,

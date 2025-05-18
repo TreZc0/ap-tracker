@@ -1,8 +1,12 @@
 import { API, Client } from "archipelago.js";
 import CONNECTION_MESSAGES from "./connectionMessages";
 import { setAPLocations, setupAPCheckSync } from "./checkSync";
-import SavedConnectionManager, { SavedConnectionInfo } from "../savedConnections/savedConnectionManager";
-import NotificationManager, { MessageType } from "../notifications/notifications";
+import SavedConnectionManager, {
+    SavedConnectionInfo,
+} from "../savedConnections/savedConnectionManager";
+import NotificationManager, {
+    MessageType,
+} from "../notifications/notifications";
 import { enableDataSync } from "./remoteSync";
 import { setupAPInventorySync } from "./inventorySync";
 import { LocationManager } from "../locations/locationManager";
@@ -30,8 +34,22 @@ interface SlotInfo {
 }
 
 interface Connector {
-    connectToAP: ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string; }, seed?: string) => Promise<void>;
-    connection: { status: string; readonly subscribe: (listener: () => void) => () => void; readonly unsubscribe: (listener: () => void) => void; readonly client: Client; readonly slotInfo: SlotInfo; };
+    connectToAP: (
+        {
+            host,
+            port,
+            slot,
+            password,
+        }: { host: string; port: string; slot: string; password: string },
+        seed?: string
+    ) => Promise<void>;
+    connection: {
+        status: string;
+        readonly subscribe: (listener: () => void) => () => void;
+        readonly unsubscribe: (listener: () => void) => void;
+        readonly client: Client;
+        readonly slotInfo: SlotInfo;
+    };
 }
 
 const createConnector = (
@@ -40,12 +58,18 @@ const createConnector = (
     entranceManager: EntranceManager,
     tagManager: TagManager,
     trackerManager: TrackerManager,
-    textClientManager: TextClientManager,
+    textClientManager: TextClientManager
 ): Connector => {
     const client = new Client({ debugLogVersions: false });
     const connection = (() => {
         let connectionStatus = CONNECTION_STATUS.disconnected;
-        let slotInfo: SlotInfo = { slotName: "", alias: "", connectionId: "", name: "", game: "" };
+        let slotInfo: SlotInfo = {
+            slotName: "",
+            alias: "",
+            connectionId: "",
+            name: "",
+            game: "",
+        };
         const listeners: Set<() => void> = new Set();
         const subscribe = (listener: () => void) => {
             listeners.add(listener);
@@ -85,7 +109,11 @@ const createConnector = (
     })();
 
     let apTags = ["Tracker", "Checklist"];
-    let receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+    let receiveText =
+        (globalOptionManager.getOptionValue(
+            "showTextClient",
+            "global"
+        ) as boolean) ?? true;
 
     const updateTags = () => {
         apTags = ["Tracker", "Checklist"];
@@ -95,20 +123,40 @@ const createConnector = (
         if (client.authenticated) {
             client.updateTags(apTags);
         }
-    }
+    };
 
     const toggleText = () => {
-        receiveText = globalOptionManager.getOptionValue("showTextClient", "global") as boolean ?? true;
+        receiveText =
+            (globalOptionManager.getOptionValue(
+                "showTextClient",
+                "global"
+            ) as boolean) ?? true;
         updateTags();
-    }
+    };
 
-    globalOptionManager.getSubscriberCallback("showTextClient", "global")(toggleText);
+    globalOptionManager.getSubscriberCallback(
+        "showTextClient",
+        "global"
+    )(toggleText);
 
     setupAPCheckSync(client, locationManager, tagManager, connection);
     setupAPInventorySync(client, inventoryManger);
     setupAPTextSync(client, textClientManager);
 
-    const connectToAP = async ({ host, port, slot, password }: { host: string; port: string; slot: string; password: string | undefined; }, seed: string) => {
+    const connectToAP = async (
+        {
+            host,
+            port,
+            slot,
+            password,
+        }: {
+            host: string;
+            port: string;
+            slot: string;
+            password: string | undefined;
+        },
+        seed: string
+    ) => {
         if (connection.status !== CONNECTION_STATUS.disconnected) {
             if (connection.status === CONNECTION_STATUS.connected) {
                 throw CONNECTION_MESSAGES.alreadyConnected();
@@ -148,7 +196,8 @@ const createConnector = (
         });
 
         // Load cached data package for the seed
-        const dataPackage = await SavedConnectionManager.getCachedDataPackage(seed);
+        const dataPackage =
+            await SavedConnectionManager.getCachedDataPackage(seed);
         if (dataPackage) {
             // will not take effect until this is properly fixed in ap.js
             client.package.importPackage(dataPackage);
@@ -231,32 +280,43 @@ const createConnector = (
                 }
                 setAPLocations(client, locationManager);
                 // Load groups from save data or request them from AP
-                const getGroups = async (): Promise<{ [groupName: string]: string[] }> => {
-                    const cachedGroups = await SavedConnectionManager.getCachedLocationGroups(connection.slotInfo.connectionId);
+                const getGroups = async (): Promise<{
+                    [groupName: string]: string[];
+                }> => {
+                    const cachedGroups =
+                        await SavedConnectionManager.getCachedLocationGroups(
+                            connection.slotInfo.connectionId
+                        );
                     if (cachedGroups) {
                         return cachedGroups;
                     }
                     // @ts-expect-error, typing error in archipelago.js
-                    const groups: { [groupName: string]: string[] } = await client.storage
-                        .fetchLocationNameGroups(client.game)
-                        .then(
-                            (a) =>
-                                a[`_read_location_name_groups_${client.game}`]
-                        );
-                    SavedConnectionManager.cacheLocationGroups(connection.slotInfo.connectionId, groups);
+                    const groups: { [groupName: string]: string[] } =
+                        await client.storage
+                            .fetchLocationNameGroups(client.game)
+                            .then(
+                                (a) =>
+                                    a[
+                                        `_read_location_name_groups_${client.game}`
+                                    ]
+                            );
+                    SavedConnectionManager.cacheLocationGroups(
+                        connection.slotInfo.connectionId,
+                        groups
+                    );
                     return groups;
                 };
-                getGroups().then((groups: { [groupName: string]: string[] }) => {
-                    trackerManager.initializeTracker({
-                        gameName: savedConnectionInfo.game,
-                        entranceManager,
-                        slotData: {},
-                        groups
+                getGroups().then(
+                    (groups: { [groupName: string]: string[] }) => {
+                        trackerManager.initializeTracker({
+                            gameName: savedConnectionInfo.game,
+                            entranceManager,
+                            slotData: {},
+                            groups,
+                        });
+                        tagManager.loadTags(connection.slotInfo.connectionId);
                     }
-
-                    );
-                    tagManager.loadTags(connection.slotInfo.connectionId);
-                });
+                );
                 enableDataSync(client, tagManager);
                 // SavedConnectionManager.cacheDataPackage(savedConnectionInfo.seed, client.package.exportPackage());
             })
@@ -286,4 +346,4 @@ const createConnector = (
 };
 
 export { CONNECTION_STATUS, createConnector };
-export type { Connector }
+export type { Connector };

@@ -6,7 +6,6 @@ interface ConnectionMessage {
     details?: string;
 }
 
-
 const CONNECTION_MESSAGES = {
     alreadyConnected: (): ConnectionMessage => ({
         type: MessageType.info,
@@ -21,7 +20,13 @@ const CONNECTION_MESSAGES = {
         type: MessageType.success,
         message: `Successfully connected as ${playerAlias} playing ${game}`,
     }),
-    connectionFailed: ({ host, port, slot, game: _game, error }): ConnectionMessage => {
+    connectionFailed: ({
+        host,
+        port,
+        slot,
+        game: _game,
+        error,
+    }): ConnectionMessage => {
         let serverHelp = "";
         switch (host) {
             case "archipelago.gg": {
@@ -74,4 +79,4 @@ Please verify you have the correct slot details.`;
 };
 
 export default CONNECTION_MESSAGES;
-export type {ConnectionMessage}
+export type { ConnectionMessage };

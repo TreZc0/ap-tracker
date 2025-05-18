@@ -27,10 +27,24 @@ const PanelHeader = ({
                 ...style,
             }}
         >
-            <div style={{ display: "flex", alignItems: "center"}}>
-                <h3 style={{ margin: "auto 1em auto 0", textOverflow: "ellipsis" }}>{title}</h3>
+            <div style={{ display: "flex", alignItems: "center" }}>
+                <h3
+                    style={{
+                        margin: "auto 1em auto 0",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {title}
+                </h3>
             </div>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "1em", alignItems: "center"}}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "1em",
+                    alignItems: "center",
+                }}
+            >
                 {children}
             </div>
         </div>

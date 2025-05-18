@@ -3,13 +3,13 @@ const red = "var(--red)";
 const green = "var(--green)";
 const yellow = "var(--yellow)";
 const blue = "var(--blue)";
-const magenta = "var(--magenta)"
-const cyan = "var(--cyan)"
-const slateblue = "var(--slateblue)"
-const plum = "var(--plum)"
-const salmon = "var(--salmon)"
-const white = "var(--white)"
-const orange = "var(--orange)"
+const magenta = "var(--magenta)";
+const cyan = "var(--cyan)";
+const slateblue = "var(--slateblue)";
+const plum = "var(--plum)";
+const salmon = "var(--salmon)";
+const white = "var(--white)";
+const orange = "var(--orange)";
 
 const primary = "var(--background-primary)";
 const secondary = "var(--background-secondary)";
@@ -38,6 +38,19 @@ const textClient = {
     salmon,
     white,
     orange,
-}
+};
 
-export { primary, secondary, tertiary, textPrimary, filledTextPrimary, danger, background, progressionItem, usefulItem, normalItem, trapItem, textClient };
+export {
+    primary,
+    secondary,
+    tertiary,
+    textPrimary,
+    filledTextPrimary,
+    danger,
+    background,
+    progressionItem,
+    usefulItem,
+    normalItem,
+    trapItem,
+    textClient,
+};

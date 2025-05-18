@@ -42,7 +42,10 @@ const NewConnection = ({ ...props }) => {
     const serviceContext = useContext(ServiceContext);
     const connector = serviceContext.connector;
     let disabled = false;
-    if (!connector || connector.connection.status !== CONNECTION_STATUS.disconnected) {
+    if (
+        !connector ||
+        connector.connection.status !== CONNECTION_STATUS.disconnected
+    ) {
         disabled = true;
     }
 
@@ -83,13 +86,11 @@ const NewConnection = ({ ...props }) => {
             />
             <PrimaryButton
                 onClick={() => {
-                    connector
-                        ?.connectToAP(connectionInfo)
-                        .catch((result) => {
-                            NotificationManager.createToast({
-                                ...result,
-                            });
+                    connector?.connectToAP(connectionInfo).catch((result) => {
+                        NotificationManager.createToast({
+                            ...result,
                         });
+                    });
                 }}
                 disabled={disabled}
             >

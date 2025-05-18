@@ -62,10 +62,10 @@ const Tabs = ({
     const tabMap = new Map(tabs.map((tab) => [tab.key, tab]));
 
     useEffect(() => {
-        if(!selectedTabKey || !tabMap.has(selectedTabKey)) {
+        if (!selectedTabKey || !tabMap.has(selectedTabKey)) {
             setSelectedTabKey(tabs.length > 0 ? tabs[0].key : null);
         }
-    }, [tabs])
+    }, [tabs]);
 
     return (
         <div

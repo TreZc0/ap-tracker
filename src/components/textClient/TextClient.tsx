@@ -1,4 +1,12 @@
-import React, { useCallback, useContext, useEffect, useRef, useState, createContext, forwardRef } from "react";
+import React, {
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+    createContext,
+    forwardRef,
+} from "react";
 import { useTextClientMessages } from "../../hooks/textClientHook";
 import ServiceContext from "../../contexts/serviceContext";
 import ClientMessage from "./ClientMessage";
@@ -19,7 +27,13 @@ const TextClientContext: React.Context<{
     rowHeights: { [index: number]: number };
 }> = createContext({ messages: [], setRowHeight: () => {}, rowHeights: {} });
 
-const MessageRow = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+const MessageRow = ({
+    index,
+    style,
+}: {
+    index: number;
+    style: React.CSSProperties;
+}) => {
     const rowRef: React.Ref<HTMLDivElement> = useRef(null);
     const textClientContext = useContext(TextClientContext);
     // Update row heights with the current height of the row
@@ -30,7 +44,10 @@ const MessageRow = ({ index, style }: { index: number; style: React.CSSPropertie
         const resizeObserver = new ResizeObserver((entries) => {
             const entry = entries[0];
             if (entry && rowRef.current) {
-                textClientContext.setRowHeight(index, rowRef.current.clientHeight);
+                textClientContext.setRowHeight(
+                    index,
+                    rowRef.current.clientHeight
+                );
             }
         });
         const currentElement = rowRef.current;
@@ -43,7 +60,13 @@ const MessageRow = ({ index, style }: { index: number; style: React.CSSPropertie
             }
         };
     }, [rowRef.current]);
-    return <ClientMessage style={style} ref={rowRef} message={textClientContext.messages[index]} />;
+    return (
+        <ClientMessage
+            style={style}
+            ref={rowRef}
+            message={textClientContext.messages[index]}
+        />
+    );
 };
 
 // extracted to prevent re-renders every time the parent component updates
@@ -64,7 +87,9 @@ const MessageList = forwardRef(
         return (
             <VariableSizeList
                 itemCount={textClientContext.messages.length}
-                itemSize={(index) => textClientContext.rowHeights[index] || defaultRowSize}
+                itemSize={(index) =>
+                    textClientContext.rowHeights[index] || defaultRowSize
+                }
                 height={height}
                 width={width}
                 ref={listRef}
@@ -146,7 +171,10 @@ const TextClient = () => {
     // Scroll to bottom when followMessages is enabled, new messages come in, or a row size change happens
     useEffect(() => {
         if (followMessages && !scrollDebounceTimer.current) {
-            scrollDebounceTimer.current = window.setTimeout(scrollToBottom, 100);
+            scrollDebounceTimer.current = window.setTimeout(
+                scrollToBottom,
+                100
+            );
         }
     }, [messages, rowHeights, followMessages]);
 
@@ -164,11 +192,17 @@ const TextClient = () => {
             >
                 <PanelHeader title={"Text Client"}>
                     <Checkbox
-                        onChange={(event) => setFollowMessages(event.target.checked)}
+                        onChange={(event) =>
+                            setFollowMessages(event.target.checked)
+                        }
                         label="Follow Messages"
                         checked={followMessages}
                     />
-                    <PrimaryButton $tiny style={{ height: "20px" }} onClick={() => setShowFilterModal(true)}>
+                    <PrimaryButton
+                        $tiny
+                        style={{ height: "20px" }}
+                        onClick={() => setShowFilterModal(true)}
+                    >
                         <Icon fontSize="12pt" type="filter_alt" />
                     </PrimaryButton>
                 </PanelHeader>
@@ -179,13 +213,26 @@ const TextClient = () => {
                     }}
                     ref={listContainerRef}
                 >
-                    <TextClientContext.Provider value={{ messages, setRowHeight, rowHeights: rowHeights }}>
-                        <MessageList listRef={listRef} ref={listElementRef} {...listDim} />
+                    <TextClientContext.Provider
+                        value={{
+                            messages,
+                            setRowHeight,
+                            rowHeights: rowHeights,
+                        }}
+                    >
+                        <MessageList
+                            listRef={listRef}
+                            ref={listElementRef}
+                            {...listDim}
+                        />
                     </TextClientContext.Provider>
                 </div>
                 <TextClientTextBox />
             </div>
-            <TextClientFilterModal open={showFilterModal} onClose={() => setShowFilterModal(false)} />
+            <TextClientFilterModal
+                open={showFilterModal}
+                onClose={() => setShowFilterModal(false)}
+            />
         </>
     );
 };

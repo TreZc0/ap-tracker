@@ -49,7 +49,11 @@ const TextClientTextBox = () => {
     };
     return (
         <div style={{ display: "flex", padding: "0 0.5em 0.25em 0" }}>
-            <PrimaryButton onClick={processInput} $small disabled={sendingMessage}>
+            <PrimaryButton
+                onClick={processInput}
+                $small
+                disabled={sendingMessage}
+            >
                 Send
             </PrimaryButton>
             <Input

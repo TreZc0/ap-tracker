@@ -48,8 +48,7 @@ const supportedIcons = [
     "delete_forever",
     "delete",
     "download",
-    "upload_file"
-
+    "upload_file",
 ];
 
 const link = document.createElement("link");

@@ -12,11 +12,21 @@ import PanelHeader from "./shared/PanelHeader";
 
 const TrackerScreen = () => {
     const services = useContext(ServiceContext);
-    const showTextClient = (useOption(services.optionManager, "showTextClient", "global") as boolean) ?? true;
+    const showTextClient =
+        (useOption(
+            services.optionManager,
+            "showTextClient",
+            "global"
+        ) as boolean) ?? true;
     const layoutMode =
-        (useOption(services.optionManager, "trackerLayoutMode", "global") as "auto" | "tab" | "flex") ?? "auto";
+        (useOption(services.optionManager, "trackerLayoutMode", "global") as
+            | "auto"
+            | "tab"
+            | "flex") ?? "auto";
     const orientation = useOrientation();
-    const useTabLayout = layoutMode === "tab" || (layoutMode === "auto" && !orientation.includes("landscape"));
+    const useTabLayout =
+        layoutMode === "tab" ||
+        (layoutMode === "auto" && !orientation.includes("landscape"));
     const inventory = (
         <>
             <InventoryView />
@@ -33,9 +43,14 @@ const TrackerScreen = () => {
     );
 
     const textClient = <TextClient />;
-    const clientAndList = <Flex direction="column" child1={checklist} child2={textClient} />;
+    const clientAndList = (
+        <Flex direction="column" child1={checklist} child2={textClient} />
+    );
     const tabs = useMemo(() => {
-        const res = [new Tab("Locations", checklist), new Tab("Inventory", inventory)];
+        const res = [
+            new Tab("Locations", checklist),
+            new Tab("Inventory", inventory),
+        ];
         if (showTextClient) {
             res.push(new Tab("Text Client", textClient));
         }

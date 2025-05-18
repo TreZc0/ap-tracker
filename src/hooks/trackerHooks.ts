@@ -19,7 +19,10 @@ const useCustomTrackerDirectory = () => {
     );
 };
 
-const useCurrentGameTracker = (game: string, trackerManager: TrackerManager) => {
+const useCurrentGameTracker = (
+    game: string,
+    trackerManager: TrackerManager
+) => {
     return useSyncExternalStore(
         trackerManager.getTrackerSubscriberCallback(),
         () => trackerManager.getGameTracker(game),

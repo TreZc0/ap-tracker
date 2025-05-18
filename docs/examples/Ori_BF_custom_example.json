@@ -408,9 +408,7 @@
             "Horu": {
                 "title": "Horu",
                 "theme": "fire",
-                "children": [
-                    "Cutscene"
-                ],
+                "children": ["Cutscene"],
                 "groupKey": "Horu"
             },
             "ProgressiveMap": {

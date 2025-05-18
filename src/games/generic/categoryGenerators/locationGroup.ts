@@ -6,12 +6,12 @@ const GROUP_DEBUG = false;
 const DEBUG_PARENT_GROUP_ORGANIZATION = GROUP_DEBUG;
 const DEBUG_GROUP_CLASSIFICATION = GROUP_DEBUG;
 
-const generateCategories = (groups: { [s: string]: string[]; }) => {
+const generateCategories = (groups: { [s: string]: string[] }) => {
     const unclassifiedLocations = new Set(groups["Everywhere"]);
     if (GROUP_DEBUG) {
         console.log("Location groups provided:", groups);
     }
-    const groupConfig: { [s: string]: GroupData; } = {};
+    const groupConfig: { [s: string]: GroupData } = {};
 
     const categoryConfig: SectionConfigData = {
         categories: {
@@ -242,7 +242,9 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
         } else {
             const parents = [...possibleParents.values()];
             // sort the list ascending order
-            parents.sort((a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size);
+            parents.sort(
+                (a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size
+            );
             const parent = parents[0];
             const siblings = childTable.get(parent) ?? new Set();
             siblings.add(groupName);
@@ -276,7 +278,9 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
             } else {
                 const parents = [...possibleParents.values()];
                 // sort the list ascending order
-                parents.sort((a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size);
+                parents.sort(
+                    (a, b) => groupSets.get(a)?.size - groupSets.get(b)?.size
+                );
                 const parent = parents[0];
                 const siblings = childTable.get(parent) ?? new Set();
                 siblings.add(groupName);
@@ -325,7 +329,9 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
             groupKey: `group_${groupName}`,
         };
         if (roots.has(groupName)) {
-            categoryConfig.categories.root.children.push(`section_${groupName}`);
+            categoryConfig.categories.root.children.push(
+                `section_${groupName}`
+            );
         }
     }
 
@@ -339,7 +345,7 @@ const generateCategories = (groups: { [s: string]: string[]; }) => {
             return -1;
         }
         return 1;
-    })
+    });
 
     if (unclassifiedLocations.size > 0) {
         groupConfig["group_unclassified"] = {

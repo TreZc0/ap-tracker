@@ -19,21 +19,25 @@ class LocationReport {
         this.checked = this.checked.union(report.checked);
         this.ignored = this.ignored.union(report.ignored);
         report.tagCounts.forEach((counter, counterName) => {
-            const updatedCounter: Set<string> = counter.union(this.tagCounts.get(counterName) ?? new Set());
+            const updatedCounter: Set<string> = counter.union(
+                this.tagCounts.get(counterName) ?? new Set()
+            );
             this.tagCounts.set(counterName, updatedCounter);
         });
         report.tagTotals.forEach((counter, counterName) => {
-            const updatedCounter: Set<string> = counter.union(this.tagTotals.get(counterName) ?? new Set());
+            const updatedCounter: Set<string> = counter.union(
+                this.tagTotals.get(counterName) ?? new Set()
+            );
             this.tagTotals.set(counterName, updatedCounter);
         });
         return this;
-    }
+    };
 
     /**
      * Adds the status of a check to the report
-     * @param locationManager 
-     * @param locationName 
-     * @returns 
+     * @param locationManager
+     * @param locationName
+     * @returns
      */
     addLocation = (locationManager: LocationManager, locationName: string) => {
         const status = locationManager.getLocationStatus(locationName);
@@ -81,7 +85,7 @@ class LocationReport {
             this.tagCounts.set(counter.id, counterCount);
         });
         return status;
-    }
+    };
 }
 
 const defaultTheme = {
@@ -107,7 +111,6 @@ const sectionDefaults = {
 const themeDefaults = {
     color: "black",
 };
-
 
 interface SectionDef {
     title: string;
@@ -173,11 +176,16 @@ interface SectionManager {
     deleteAllSections: () => void;
     deleteSection: (sectionName: string) => void;
     getSectionStatus: (sectionName: string) => Section | null;
-    getSubscriberCallback: (sectionName: string) => (listener: () => void) => () => void;
+    getSubscriberCallback: (
+        sectionName: string
+    ) => (listener: () => void) => () => void;
 }
 
-
-const createSectionManager = (locationManager: LocationManager, _entranceManager: EntranceManager, groupManager: GroupManager): SectionManager => {
+const createSectionManager = (
+    locationManager: LocationManager,
+    _entranceManager: EntranceManager,
+    groupManager: GroupManager
+): SectionManager => {
     const sectionData: Map<string, Section> = new Map();
     const sectionConfigData: Map<string, SectionConfig> = new Map();
     const sectionSubscribers: Map<string, Set<() => void>> = new Map();
@@ -194,7 +202,10 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
         names.map((name) => deleteSection(name));
     };
 
-    const updateSectionStatus = (sectionName: string, section: SectionUpdate) => {
+    const updateSectionStatus = (
+        sectionName: string,
+        section: SectionUpdate
+    ) => {
         sectionData.set(sectionName, {
             ...(sectionData.get(sectionName) ?? defaultSectionStatus),
             ...section,
@@ -242,7 +253,10 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
          * @param categoryName
          * @param parents
          */
-        const readCategory = (categoryName: string, parents: Set<string> = new Set()) => {
+        const readCategory = (
+            categoryName: string,
+            parents: Set<string> = new Set()
+        ) => {
             if (parents.has(categoryName)) {
                 console.warn(
                     `Circular dependency detected, ${categoryName} had a descendant that was itself. Parents: \n${[
@@ -337,7 +351,10 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
                 const locationReport = new LocationReport();
                 const locations: Map<string, LocationStatus> = new Map();
                 node.checks.forEach((location) =>
-                    locations.set(location, locationReport.addLocation(locationManager, location))
+                    locations.set(
+                        location,
+                        locationReport.addLocation(locationManager, location)
+                    )
                 );
                 node.children.forEach((child) =>
                     locationReport.addReport(child.checkReport)
@@ -402,10 +419,11 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
 
             // set up listeners on checks
 
-            const subscribe = locationManager.getSubscriberCallback(new Set(node.checks));
+            const subscribe = locationManager.getSubscriberCallback(
+                new Set(node.checks)
+            );
             const cleanUpCall = subscribe(update);
             listenerCleanUpCalls.add(cleanUpCall);
-
 
             // create children
             const childLineage = new Set([...lineage.values(), sectionName]);
@@ -452,4 +470,10 @@ const createSectionManager = (locationManager: LocationManager, _entranceManager
 };
 
 export { createSectionManager };
-export type { Section, SectionConfigData, SectionManager, SectionTheme, SectionThemeDef }
+export type {
+    Section,
+    SectionConfigData,
+    SectionManager,
+    SectionTheme,
+    SectionThemeDef,
+};

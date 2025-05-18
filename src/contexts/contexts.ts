@@ -23,7 +23,4 @@ const TrackerStateContext: React.Context<_TrackerStateContext> = createContext({
     connectionStatus: "Disconnected",
 });
 
-
-export {
-    TrackerStateContext,
-};
+export { TrackerStateContext };

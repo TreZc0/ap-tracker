@@ -19,7 +19,12 @@ const hintToText = (client: Client, hint: Hint) => {
     return `${ownerString} ${hint.item.name} is at ${hint.item.locationName} in ${finderString} world. ${entranceString}`;
 };
 
-const addHint = (client: Client, hint: Hint, tagManager: TagManager, saveId: string) => {
+const addHint = (
+    client: Client,
+    hint: Hint,
+    tagManager: TagManager,
+    saveId: string
+) => {
     if (hint.item.sender.slot === client.players.self.slot) {
         const tagData = tagManager.createTagData();
         tagData.checkName = hint.item.locationName;
@@ -35,13 +40,17 @@ const setAPLocations = (client: Client, locationManager: LocationManager) => {
     client.room.allLocations.forEach((locationId) =>
         locationManager.updateLocationStatus(
             client.package.lookupLocationName(client.game, locationId),
-            { exists: true }
+            {
+                exists: true,
+            }
         )
     );
     client.room.checkedLocations.forEach((locationId) =>
         locationManager.updateLocationStatus(
             client.package.lookupLocationName(client.game, locationId),
-            { checked: true }
+            {
+                checked: true,
+            }
         )
     );
 
@@ -50,15 +59,22 @@ const setAPLocations = (client: Client, locationManager: LocationManager) => {
         // April fools joke
         client.deathLink.enableDeathLink();
     }
-
 };
 
-const setupAPCheckSync = (client: Client, locationManager: LocationManager, tagManager: TagManager, connection: { slotInfo: { connectionId: string; }; }) => {
+const setupAPCheckSync = (
+    client: Client,
+    locationManager: LocationManager,
+    tagManager: TagManager,
+    connection: { slotInfo: { connectionId: string } }
+) => {
     client.room.on("locationsChecked", (locationIds) => {
         locationIds.forEach((id) =>
             locationManager.updateLocationStatus(
                 client.package.lookupLocationName(client.game, id),
-                { checked: true, id }
+                {
+                    checked: true,
+                    id,
+                }
             )
         );
     });
@@ -72,26 +88,42 @@ const setupAPCheckSync = (client: Client, locationManager: LocationManager, tagM
                     tagManager,
                     connection.slotInfo.connectionId
                 )
-            )
+            );
             // remove once ap.js hints are fixed
-            client.storage.notify([`_read_hints_${client.players.self.team}_${client.players.self.slot}`], (_key, value: NetworkHint[], _old_value?: NetworkHint[]) => {
-                const seenLocations = new Set(
-                    _old_value?.filter((nHint) => nHint.finding_player === client.players.self.slot).map((nHint) => nHint.location)
-                );
-                value.forEach((nHint) => {
-                    const hint = new Hint(client, nHint);
-                    if (nHint.finding_player === client.players.self.slot && !seenLocations.has(nHint.location)) {
-                        addHint(client, hint, tagManager, connection.slotInfo.connectionId);
-                    }
-                })
-            });
-        }
-
-        )
+            client.storage.notify(
+                [
+                    `_read_hints_${client.players.self.team}_${client.players.self.slot}`,
+                ],
+                (_key, value: NetworkHint[], _old_value?: NetworkHint[]) => {
+                    const seenLocations = new Set(
+                        _old_value
+                            ?.filter(
+                                (nHint) =>
+                                    nHint.finding_player ===
+                                    client.players.self.slot
+                            )
+                            .map((nHint) => nHint.location)
+                    );
+                    value.forEach((nHint) => {
+                        const hint = new Hint(client, nHint);
+                        if (
+                            nHint.finding_player === client.players.self.slot &&
+                            !seenLocations.has(nHint.location)
+                        ) {
+                            addHint(
+                                client,
+                                hint,
+                                tagManager,
+                                connection.slotInfo.connectionId
+                            );
+                        }
+                    });
+                }
+            );
+        })
         .on("hintReceived", (hint) =>
             addHint(client, hint, tagManager, connection.slotInfo.connectionId)
         );
-
 };
 
 export { setAPLocations, setupAPCheckSync };
