@@ -1,6 +1,7 @@
 # Project Architecture Overview
 
 This project primarily uses these libraries to function:
+
 - ReactJS: For creating the UI
 - NextJS: For building and deploying the app
 - Archipelago.js: For communicating with archipelago servers
@@ -10,15 +11,18 @@ The app is primarily written in Typescript.
 ## Data flow and structure:
 
 The app has 3 primary layers:
+
 - A UI or View layer:
     - Consists primarily of functional React components, the purpose is to display data provided by the services, usually obtained from a React Hook designed for the retrieved data.
 - A Service Layer
+
     - Consists of the logic code for the app. These layers provide interfaces for both the UI and the Server to communicate effectively, while abstracting them from each other. Most services are designed to have data passed into them and be managed by another service or piece of code and normally called a `manager`. For example the `locationManager` service provides a way for React to get the data it needs to display a location name and any tags related to it. The `locationManger` is populated and maintained via callbacks established by the `connector` service linked to Archipelago.js event handlers. There are also other services that interact with the `locationManger` to provide data to it. Documentation for each service is provided at (TBD).
 
 - A Data/Server layer
     - Consists primarily of Archipelago.js and Browser storage API's
 
 Simple version:
+
 ```mermaid
 graph TD;
     react[React UI]<-->|React Hooks|services[Services];
@@ -27,8 +31,10 @@ graph TD;
     services-->|Commands|server;
 ```
 
-## Services 
+## Services
+
 Service outline and Data flow:
+
 ```mermaid
 graph TD;
     ap_js[Archipelago.js];
@@ -72,10 +78,11 @@ graph TD;
 ```
 
 #### Notes on graph:
+
 - Direction of arrows show which service starts the action.
 - This shows how things currently are, not how they should be.
 - With the exception of the Text Client Manager and the connector, most services are designed to function in the absence of Archipelago.js to some capacity.
-- *Datapackage caching functionality currently does not work due to a bug in the release version of Archipelago.js.
+- \*Datapackage caching functionality currently does not work due to a bug in the release version of Archipelago.js.
 
 ### Using services:
 
@@ -128,6 +135,7 @@ export default InventoryView;
 ```
 
 #### From another service:
+
 If one service depends on another, the dependencies should be passed in to the service as arguments on creation.
 
 Example in [App.tsx](../../src/App.tsx)
@@ -151,100 +159,98 @@ If the service is intended to be a singleton (only one should exist for the whol
 
 If the service is intended to be scoped and allow for multiple to exist at once, then a Class based or factory based creation method is preferred, an example can be found in the [LocationManager](../../src/services/locations/locationManager.ts) Writing services in this way allows for the easy creation of alternative service contexts for use in testing and demonstration purposes. One example of such a use case is in the [checklist settings](../../src/components/optionsComponents/ChecklistSettings.tsx) where multiple mock services are created to display the effect each option has on a real list of locations without needing to use all the locations that their game may have loaded (note that these services are created outside of the react component to not link them to the lifecycle of the component).
 
-
 ### Services:
 
-See the services folder for the code related to these services:
-
-#### Connector (singleton):
+#### [Connector](../../src/services/connector/connector.ts) (singleton):
 
 The primary driver of communication between `archipelago.js` and the rest of the app. This service:
+
 - Sets up location, item, and hint syncing callbacks on archipelago.js events to other services that may need them
 - Manages log-in to the archipelago server
 
-#### EntranceManager (outdated and unused):
+#### [EntranceManager](../../src/services/entrances/entranceManager.ts) (outdated and unused):
 
 Manages saving and loading of entrance related data. It is currently a remnant of older code that never saw a release and needs to be rewritten to work with the current code base.
 
 related hook: [useEntrance ](../../src/hooks/entranceHook.ts)
 
-#### InventoryManager:
+#### [InventoryManager](../../src/services/inventory/inventoryManager.ts):
 
-Manages the inventory of the current session and groups the items into collections. 
+Manages the inventory of the current session and groups the items into collections.
 
 Related hook: [useInventoryItems](../../src/hooks/inventoryHook.ts)
 
-#### LocationManager:
+#### [LocationManager](../../src/services/locations/locationManager.ts):
 
-Manages the status and tags of locations within a session. 
+Manages the status and tags of locations within a session.
 
 Related hook: none but should have one, must use `useSyncExternalStore` directly for now
 
-#### NotificationManager:
+#### [NotificationManager](../../src/services/notifications/notifications.ts):
 
 Manages the routing of notifications to listeners.
 
 Related hook: none, listeners are best subscribed to directly. Remember to clean up listeners when they are no longer needed.
 
-#### OptionsManager:
+#### [OptionsManager](../../src/services/options/optionManager.ts):
 
 Manages the settings and saving of options shared across the app.
 
 Related hook: [useOption](../../src/hooks/optionHook.ts)
 
-#### SavedConnectionsManager (singleton):
+#### [SavedConnectionsManager](../../src/services/savedConnections/savedConnectionManager.ts) (singleton):
 
 Maintains a saved list of previous connections as well as per-session save data.
 
 Related hook: none but should have one, this is currently subscribed to using `useSyncExternalStore`
 
-#### GroupManager:
+#### [GroupManager](../../src/services/sections/groupManager.ts):
 
 Maintains a list of groups and what locations are contained with-in. Has some unused properties related to entrances and section collapsing that is currently not used.
 
 No hooks.
 
-#### SectionManager:
+#### [SectionManager](../../src/services/sections/sectionManager.ts):
 
 Maintains the state of the sections and which locations each one has. Build and maintains reports related to tags and location counts.
 
 Related hooks: none but should have one, this is currently subscribed to using `useSyncExternalStore`.
 
-#### TagManager:
+#### [TagManager](../../src/services/tags/tagManager.ts):
 
 Manages tags placed on locations by submitting them as updates to the LocationManager, and saving appropriate ones to the SavedConnectionManager.
 
 No hooks.
 
-#### Theme:
+#### [Theme](../../src/services/theme/theme.ts):
 
 Mostly just decodes the theme option into a theme recognized by the CSS code, taking into account system preferences. Will be expanded at a later point in time.
 
-#### SaveData:
+#### [SaveData](../../src/services/saveData.ts):
 
 Stores registered keys into `IndexedDB`, must be updated directly to add new databases. This is mostly used for large data that would quickly outgrow the capacity of `localstorage` such as archipelago data packages and custom tracker files.
 
 No hooks.
 
-#### TextClientManager:
+#### [TextClientManager](../../src/services/textClientManager.ts):
 
 Manages messages sent from archipelago.js and processes user input for the Text Client.
 
 Related hooks: [useTextClientMessages, useTextClientHistory](../../src/hooks/textClientHook.ts)
 
-#### TrackerManager (defined in the games folder):
+#### [TrackerManager](../../src/games/TrackerManager.ts):
 
-Manages the loading and creation of trackers by updating the Group and Section managers. 
+Manages the loading and creation of trackers by updating the Group and Section managers.
 
 Related Hooks: [useCurrentGameTracker, useTrackerDirectory](../../src/hooks/trackerHooks.ts)
 
-#### CustomTrackerManager (singleton, defined in the games folder):
+#### [CustomTrackerManager](../../src/games/generic/categoryGenerators/customTrackerManager.ts) (singleton, defined in the games folder):
 
 Manages the loading, storing, creation and validation of custom trackers loaded by the user.
 
 Related Hooks: [useCustomTrackerDirectory](../../src/hooks/trackerHooks.ts)
 
-#### GenericTrackerGenerator (defined in the games folder):
+#### [GenericTrackerGenerator](../../src/games/generic/genericGame.ts):
 
 A collection of code that analyzes location names and groups to build a usable `Tracker` out of them.
 
@@ -257,5 +263,5 @@ Note that this is not a real service, but I for some reason included this in the
 A library for getting connected to the archipelago server. [Repository link](https://github.com/ThePhar/archipelago.js), [Documentation](https://archipelago.js.org/stable/)
 
 ### Browser API's:
-localstorage and IndexedDB
 
+localstorage and IndexedDB
