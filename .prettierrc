@@ -3,5 +3,6 @@
     "trailingComma": "es5",
     "arrowParens": "always",
     "printWidth": 80,
-    "bracketSameLine": false
+    "bracketSameLine": false,
+    "endOfLine": "crlf"
 }
