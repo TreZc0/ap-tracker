@@ -22,7 +22,7 @@ This project is setup with prettier for code formatting, while there is no autom
 
 Your IDE may provide plugins to work with prettier automatically. If you need to run prettier on all the files, run `npx prettier . --write` on your command line.
 
-## Code style:
+## Code style
 
 This list is not exhaustive by any means, please try to use your best judgement and follow good programming practices.
 
