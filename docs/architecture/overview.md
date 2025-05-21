@@ -265,3 +265,24 @@ A library for getting connected to the archipelago server. [Repository link](htt
 ### Browser API's:
 
 localstorage and IndexedDB
+
+## File structure:
+
+All code related to the app should be in the `src` folder. Here is an outline of the folders within `src`:
+
+- `app`: this folder is the root of the application in terms of navigation. It contains a single `[[../slug]]` folder that tells NextJS to render our `App.tsx` as the main component of the app. There is nothing really interesting here apart from the icons and should not need to be changed often as the app runs as a single page application.
+
+- `components`: All React UI components go here. If a component will have one or more child components, place these in a folder together with a descriptive name. If a component is intended to be reused across the app, place it in the `shared` folder or the `LayoutUtilities` folder (with layout utilities being used for common layouts).
+
+- `constants`: Global constants should be placed here if they don't make sense else where, at the moment this just holds a list of color strings.
+
+- `contexts`: This contains any React Context that is intended to be used across the app.
+
+- `games`: This folder is planned to have different built-in trackers and code for routing that is built, however this currently just home to the `generic` game for building trackers based on location groups and location names.
+
+- `hooks`: This folder holds all React Hooks for use across the app
+
+- `services`: This folder contains the code for the service layer
+
+- `utility`: Code that is not a service but may be shared across the app. Currently this contains code related to natural sorting, downloading json files,
+  and random id generation.

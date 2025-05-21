@@ -17,7 +17,7 @@ Please first find a issue on the [the issues](https://github.com/DrAwesome4333/a
 
 When writing code, please do so in a fork or branch. When the time comes to create a pull request, do so against the `main` branch for now (subject to change if project grows).
 
-In the pull request, please mention the issues this PR relates to as well as giving a summary of the intent and reasoning behind the pull request. Your code will be reviewed and after all concerns have been resolved, the code will be merged and deployed.
+In the pull request, please mention the issues this PR relates to (by putting `#<issue number>`) as well as giving a summary of the intent and reasoning behind the pull request. Your code will be reviewed and after all concerns have been resolved, the code will be merged and deployed.
 
 ## Have a question about something or need to discuss something?
 
