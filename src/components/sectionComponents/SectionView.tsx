@@ -1,15 +1,38 @@
 // @ts-check
-import React, {
-    useContext,
-    useMemo,
-    useState,
-    useSyncExternalStore,
-} from "react";
+import React, { useContext, useMemo, useState } from "react";
 import LocationView from "./LocationView";
 import ServiceContext from "../../contexts/serviceContext";
 import Icon from "../icons/icons";
 import useOption from "../../hooks/optionHook";
 import { naturalSort } from "../../utility/comparisons";
+import { globalOptionManager } from "../../services/options/optionManager";
+import { useSection } from "../../hooks/sectionHooks";
+import LargeList, { RowGenerator } from "../LayoutUtilities/LargeList";
+
+globalOptionManager.setOptionDefault(
+    "checkedLocationBehavior",
+    "global",
+    "nothing"
+);
+
+globalOptionManager.setOptionDefault(
+    "checkedSectionBehavior",
+    "global",
+    "nothing"
+);
+
+globalOptionManager.setOptionDefault("checkOrderBehavior", "global", "natural");
+
+const rowGenerator: RowGenerator<string> = ({ ref, item }) => {
+    return (
+        <LocationView
+            location={item}
+            ref={ref as React.ForwardedRef<HTMLDivElement>}
+        />
+    );
+};
+
+const virtualizationThreshold = 30;
 
 /**
  *
@@ -43,11 +66,8 @@ const SectionView = ({
     if (!optionManager) {
         throw new Error("No option manager provided");
     }
-    const section = useSyncExternalStore(
-        sectionManager.getSubscriberCallback(name),
-        () => sectionManager.getSectionStatus(name),
-        () => sectionManager.getSectionStatus(name)
-    );
+
+    const section = useSection(sectionManager, name);
     const style = {
         borderLeft: `2px dashed ${section?.theme.color ?? "Black"}`,
         paddingLeft: "0.5em",
@@ -59,42 +79,116 @@ const SectionView = ({
         (section?.checkReport.checked.size ?? 0) +
         (section?.checkReport.ignored.size ?? 0);
     const totalLocationCount = section?.checkReport.existing.size ?? 0;
-    const checkedLocationBehavior_ = useOption(
+    const checkedLocationBehavior = useOption(
         optionManager,
         "checkedLocationBehavior",
         "global"
-    );
-    const checkedLocationBehavior = checkedLocationBehavior_ ?? "nothing";
+    ) as "nothing" | "separate" | "hide";
 
-    const clearedSectionBehavior_ = useOption(
+    const clearedSectionBehavior = useOption(
         optionManager,
         "clearedSectionBehavior",
         "global"
-    );
-    const clearedSectionBehavior = clearedSectionBehavior_ ?? "nothing";
+    ) as "nothing" | "separate" | "hide";
 
-    const checkOrderBehavior_ = useOption(
+    const locationOrderBehavior = useOption(
         optionManager,
         "checkOrderBehavior",
         "global"
-    );
-    const checkOrderBehavior = checkOrderBehavior_ ?? "natural";
+    ) as "lexical" | "natural" | "id";
 
-    const locations = useMemo(() => {
-        const checkNames = [...(section?.checks.keys() ?? [])];
-        if (checkOrderBehavior === "lexical") {
-            checkNames.sort();
-        } else if (checkOrderBehavior === "natural") {
-            checkNames.sort(naturalSort);
-        } else if (checkOrderBehavior === "id") {
-            checkNames.sort(
-                (a, b) =>
-                    locationManager.getLocationStatus(b).id -
-                    locationManager.getLocationStatus(a).id
-            );
+    /**
+     * Compares two locations to determine their relative order
+     * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     * @param a Location name a
+     * @param b Location name b
+     * @returns negative if a is before b, positive if a is after b, 0 if they are equivalent
+     */
+    const locationCompare = (a: string, b: string): number => {
+        const statusA = locationManager.getLocationStatus(a);
+        const statusB = locationManager.getLocationStatus(b);
+        if (
+            checkedLocationBehavior === "separate" &&
+            statusA.checked !== statusB.checked
+        ) {
+            return statusA.checked ? 1 : -1;
         }
-        return checkNames;
-    }, [checkOrderBehavior, section?.checks, locationManager]);
+
+        if (locationOrderBehavior === "natural") {
+            return naturalSort(a, b);
+        } else if (locationOrderBehavior === "id") {
+            return statusA.id - statusB.id;
+        }
+        return a < b ? -1 : 1;
+    };
+
+    /**
+     * Filter that removes any locations that do not exist or are hidden by settings.
+     * @param locationName
+     * @returns
+     */
+    const locationFilter = (locationName: string): boolean => {
+        const locationStatus = locationManager.getLocationStatus(locationName);
+        return (
+            locationStatus.exists &&
+            (checkedLocationBehavior !== "hide" || !locationStatus.checked)
+        );
+    };
+
+    const locations: string[] = useMemo(() => {
+        const locationNames = [...(section?.checks.keys() ?? [])].filter(
+            locationFilter
+        );
+        locationNames.sort(locationCompare);
+        return locationNames;
+    }, [locationOrderBehavior, section?.checks, locationManager]);
+
+    /**
+     * Compares two sections to determine their relative order
+     * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+     * @param a section name a
+     * @param b section name b
+     * @returns negative if a is before b, positive if a is after b, 0 if they are equivalent
+     */
+    const sectionCompare = (a: string, b: string): number => {
+        const sectionA = sectionManager.getSectionStatus(a);
+        const sectionB = sectionManager.getSectionStatus(b);
+        const indexA = section.children.indexOf(a);
+        const indexB = section.children.indexOf(b);
+        const sectionAClear =
+            sectionA.checkReport.checked.size ===
+            sectionA.checkReport.existing.size;
+        const sectionBClear =
+            sectionB.checkReport.checked.size ===
+            sectionB.checkReport.existing.size;
+
+        if (
+            clearedSectionBehavior === "separate" &&
+            sectionAClear !== sectionBClear
+        ) {
+            return sectionAClear ? 1 : -1;
+        }
+        // maintain original order;
+        return indexA - indexB;
+    };
+
+    /**
+     * Removes any section that should be hidden by settings such as empty and cleared sections
+     * @param sectionName The name of the section being filtered
+     * @returns
+     */
+    const sectionFilter = (sectionName: string) => {
+        const sectionInQuestion = sectionManager.getSectionStatus(sectionName);
+        return (
+            sectionInQuestion?.checkReport.existing.size > 0 &&
+            (clearedSectionBehavior !== "hide" ||
+                sectionInQuestion.checkReport.checked.size <
+                    sectionInQuestion.checkReport.existing.size)
+        );
+    };
+
+    const childSections = section?.children.filter(sectionFilter) ?? [];
+    childSections.sort(sectionCompare);
 
     return (
         <>
@@ -148,88 +242,38 @@ const SectionView = ({
                     </h3>
                     {isOpen && (
                         <>
-                            <div>
-                                {locations.map(
-                                    (location) =>
-                                        location &&
-                                        (!section?.checks.get(location)
-                                            ?.checked ||
-                                            checkedLocationBehavior ===
-                                                "nothing") && (
-                                            <LocationView
-                                                location={location}
-                                                key={location}
-                                            />
-                                        )
-                                )}
-                            </div>
-                            {checkedLocationBehavior === "separate" && (
-                                <div>
-                                    {locations.map(
-                                        (location) =>
-                                            location &&
-                                            section?.checks.get(location)
-                                                ?.checked && (
-                                                <LocationView
-                                                    location={location}
-                                                    key={location}
-                                                />
-                                            )
-                                    )}
-                                </div>
+                            {locations.length < virtualizationThreshold ? (
+                                locations.map((location) => (
+                                    <LocationView
+                                        location={location}
+                                        key={location}
+                                    />
+                                ))
+                            ) : (
+                                <LargeList<string>
+                                    items={locations}
+                                    defaultRowSize={22}
+                                    rowGenerator={rowGenerator}
+                                    style={{
+                                        width: "95%",
+                                        overflow: "hidden",
+                                        resize: "vertical",
+                                        height: "25vh",
+                                        boxShadow:
+                                            "2px 3px 5px rgba(0, 0, 0, 0.5)",
+                                    }}
+                                />
                             )}
-                            {section?.children &&
-                                section.children.map((childName) => {
-                                    const child =
-                                        sectionManager.getSectionStatus(
-                                            childName
-                                        );
-                                    if (
-                                        child &&
-                                        (clearedSectionBehavior === "nothing" ||
-                                            ((clearedSectionBehavior ===
-                                                "hide" ||
-                                                clearedSectionBehavior ===
-                                                    "separate") &&
-                                                child.checkReport.checked
-                                                    .size !==
-                                                    child.checkReport.existing
-                                                        .size))
-                                    ) {
-                                        return (
-                                            <SectionView
-                                                name={childName}
-                                                context={context}
-                                                key={childName}
-                                                startOpen={startOpen}
-                                            />
-                                        );
-                                    }
-                                    return <React.Fragment key={childName} />;
-                                })}
-                            {clearedSectionBehavior === "separate" &&
-                                section?.children &&
-                                section.children.map((childName) => {
-                                    const child =
-                                        sectionManager.getSectionStatus(
-                                            childName
-                                        );
-                                    if (
-                                        child &&
-                                        child.checkReport.checked.size ===
-                                            child.checkReport.existing.size
-                                    ) {
-                                        return (
-                                            <SectionView
-                                                name={childName}
-                                                context={context}
-                                                key={childName}
-                                                startOpen={startOpen}
-                                            />
-                                        );
-                                    }
-                                    return <React.Fragment key={childName} />;
-                                })}
+                            {childSections.map((childName) => {
+                                return (
+                                    <SectionView
+                                        name={childName}
+                                        context={context}
+                                        key={childName}
+                                        startOpen={startOpen}
+                                    />
+                                );
+                            })}
                         </>
                     )}
                 </div>
