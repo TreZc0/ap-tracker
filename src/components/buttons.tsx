@@ -24,6 +24,19 @@ const BaseButton = styled.button.attrs({ className: "interactive" })<{
     background-color: transparent;
 `;
 
+const TextButton = styled.button`
+    border: none;
+    background: none;
+    color: inherit;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+    &:hover {
+        text-decoration: underline;
+    }
+`;
+
 const PrimaryButton = styled(BaseButton)`
     color: ${filledTextPrimary};
     background-color: ${primary};
@@ -44,4 +57,10 @@ const GhostButton = styled(BaseButton)`
     background-color: ${background};
 `;
 
-export { PrimaryButton, DangerButton, SecondaryButton, GhostButton };
+export {
+    PrimaryButton,
+    DangerButton,
+    SecondaryButton,
+    GhostButton,
+    TextButton,
+};

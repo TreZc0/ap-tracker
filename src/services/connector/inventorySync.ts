@@ -1,5 +1,6 @@
 import { Client, Item } from "archipelago.js";
 import { InventoryItem, InventoryManager } from "../inventory/inventoryManager";
+import { randomUUID } from "../../utility/uuid";
 
 const convertAPItem = (
     client: Client,
@@ -9,6 +10,7 @@ const convertAPItem = (
     return {
         name: item.name,
         id: item.id,
+        uuid: randomUUID(),
         progression: item.progression,
         useful: item.useful,
         trap: item.trap,

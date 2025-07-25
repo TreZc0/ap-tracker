@@ -1,10 +1,13 @@
 const DB_STORE_KEYS = {
     dataPackageCache: "data_packages",
-    locationGroupCache: "location_groups",
-    customTrackers: "custom_trackers",
+    locationGroupCache_deprecated: "location_groups",
+    groupCache: "cached_groups",
+    customTrackers_old: "custom_trackers",
+    customTrackers: "custom_trackers_v2",
+    customTrackersDirectory: "custom_tracker_manifests_v2",
 };
 
-const database_request = window.indexedDB.open("checklist_db", 4);
+const database_request = window.indexedDB.open("checklist_db", 7);
 let database_open = false;
 let queuedEvents: (() => void)[] = [];
 
@@ -32,21 +35,47 @@ database_request.onupgradeneeded = (_event) => {
         );
         dataPackageStore.createIndex("seed", "seed", { unique: true });
     }
-    if (!db.objectStoreNames.contains(DB_STORE_KEYS.locationGroupCache)) {
+
+    if (
+        db.objectStoreNames.contains(
+            DB_STORE_KEYS.locationGroupCache_deprecated
+        )
+    ) {
+        db.deleteObjectStore(DB_STORE_KEYS.locationGroupCache_deprecated);
+    }
+
+    if (!db.objectStoreNames.contains(DB_STORE_KEYS.groupCache)) {
         const locationGroupStore = db.createObjectStore(
-            DB_STORE_KEYS.locationGroupCache,
+            DB_STORE_KEYS.groupCache,
             { keyPath: "connectionId" }
         );
         locationGroupStore.createIndex("connectionId", "connectionId", {
             unique: true,
         });
     }
-    if (!db.objectStoreNames.contains(DB_STORE_KEYS.customTrackers)) {
-        const locationGroupStore = db.createObjectStore(
-            DB_STORE_KEYS.customTrackers,
+
+    if (!db.objectStoreNames.contains(DB_STORE_KEYS.customTrackers_old)) {
+        const customTrackerStore = db.createObjectStore(
+            DB_STORE_KEYS.customTrackers_old,
             { keyPath: "id" }
         );
-        locationGroupStore.createIndex("id", "id", { unique: true });
+        customTrackerStore.createIndex("id", "id", { unique: true });
+    }
+
+    if (!db.objectStoreNames.contains(DB_STORE_KEYS.customTrackers)) {
+        const customTrackerStore = db.createObjectStore(
+            DB_STORE_KEYS.customTrackers,
+            { keyPath: ["uuid", "version", "type"] }
+        );
+        customTrackerStore.createIndex("uuid", "uuid", { unique: false });
+    }
+
+    if (!db.objectStoreNames.contains(DB_STORE_KEYS.customTrackersDirectory)) {
+        const customTrackerStore = db.createObjectStore(
+            DB_STORE_KEYS.customTrackersDirectory,
+            { keyPath: ["uuid", "version", "type"] }
+        );
+        customTrackerStore.createIndex("uuid", "uuid", { unique: false });
     }
 };
 
@@ -56,7 +85,10 @@ database_request.onupgradeneeded = (_event) => {
  * @param key They key of the item to search in the store
  * @returns The requested item if it exists, else null
  */
-const getItem = (storeName: string, key: string): Promise<unknown> => {
+const getItem = (
+    storeName: string,
+    key: string | string[]
+): Promise<unknown> => {
     return new Promise((resolve, _reject) => {
         let hasFailed = false;
         const attemptLoad = () => {
@@ -136,7 +168,10 @@ const storeItem = (storeName: string, item: unknown): Promise<boolean> => {
  * @param key The key of the item to delete
  * @returns True if item was deleted (without respect to if the item existed or not)
  */
-const deleteItem = (storeName: string, key: string): Promise<boolean> => {
+const deleteItem = (
+    storeName: string,
+    key: string | string[]
+): Promise<boolean> => {
     return new Promise((resolve, _reject) => {
         let hasFailed = false;
         const attemptDelete = () => {
@@ -168,10 +203,44 @@ const deleteItem = (storeName: string, key: string): Promise<boolean> => {
     });
 };
 
+const getAllItems = (storeName: string): Promise<unknown> => {
+    return new Promise((resolve, _reject) => {
+        let hasFailed = false;
+        const attemptLoad = () => {
+            try {
+                const db = database_request.result;
+                const transaction = db.transaction([storeName], "readonly");
+                const objectStore = transaction.objectStore(storeName);
+                const request = objectStore.getAll();
+                request.onerror = () => {
+                    resolve(null);
+                };
+                request.onsuccess = () => {
+                    resolve(request.result ?? null);
+                };
+            } catch {
+                if (hasFailed) {
+                    resolve(null);
+                } else {
+                    hasFailed = true;
+                    setTimeout(attemptLoad, 500);
+                }
+            }
+        };
+
+        if (database_open) {
+            attemptLoad();
+        } else {
+            queuedEvents.push(attemptLoad);
+        }
+    });
+};
+
 const SaveData = {
     getItem,
     storeItem,
     deleteItem,
+    getAllItems,
 };
 
 export { SaveData, DB_STORE_KEYS };
