@@ -1,24 +1,27 @@
 import React, { useContext, useMemo } from "react";
-import SectionView from "./sectionComponents/SectionView";
 import InventoryView from "./inventoryComponents/InventoryView";
-import StickySpacer from "./shared/StickySpacer";
 import ServiceContext from "../contexts/serviceContext";
 import useOption from "../hooks/optionHook";
 import TextClient from "./textClient/TextClient";
 import Flex from "./LayoutUtilities/Flex";
 import Tabs, { Tab } from "./LayoutUtilities/Tabs";
 import { useOrientation } from "../hooks/mediaHook";
+import LocationTrackerDropdownView from "./LocationTrackerViews/DropdownView";
+
+type TrackerLayoutMode = "auto" | "tab" | "flex";
 
 const TrackerScreen = () => {
     const services = useContext(ServiceContext);
-    const showTextClient =
-        useOption(services.optionManager, "showTextClient", "global") ??
-        (true as boolean);
+    const showTextClient = useOption(
+        services.optionManager,
+        "TextClient:show",
+        "global"
+    ) as boolean;
     const layoutMode = useOption(
         services.optionManager,
-        "trackerLayoutMode",
+        "Tracker:layout_mode",
         "global"
-    ) as "auto" | "tab" | "flex" ?? "auto";
+    ) as TrackerLayoutMode;
     const orientation = useOrientation();
     const useTabLayout =
         layoutMode === "tab" ||
@@ -26,13 +29,13 @@ const TrackerScreen = () => {
     const inventory = (
         <>
             <InventoryView />
-            <StickySpacer />
         </>
     );
     const checklist = (
         <>
-            <SectionView name="root" context={{}} />
-            <StickySpacer />
+            <div style={{ display: "grid", gridTemplateRows: "3em 1fr" }}>
+                <LocationTrackerDropdownView />
+            </div>
         </>
     );
 
@@ -45,7 +48,7 @@ const TrackerScreen = () => {
             new Tab("Locations", checklist),
             new Tab("Inventory", inventory),
         ];
-        if(showTextClient){
+        if (showTextClient) {
             res.push(new Tab("Text Client", textClient));
         }
         return res;

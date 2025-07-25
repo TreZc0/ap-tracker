@@ -6,8 +6,11 @@ import NotePad from "./NotePad";
 import { CONNECTION_STATUS } from "../services/connector/connector";
 import ConnectionIcon from "./icons/ConnectionIcon";
 
-const MainHeader = ({ optionsCallback, ...props }:{
-    optionsCallback: React.MouseEventHandler
+const MainHeader = ({
+    optionsCallback,
+    ...props
+}: {
+    optionsCallback: React.MouseEventHandler;
 }) => {
     const trackerState = useContext(TrackerStateContext);
     const [notePadOpen, setNotePadOpen] = useState(false);
@@ -17,6 +20,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
             style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
+                width: "100vw",
                 position: "sticky",
                 top: "0px",
                 boxShadow: "3px 4px 0px rgba(0, 0, 0, 0.5)",
@@ -30,6 +34,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                     display: "flex",
                     columnGap: "1rem",
                     alignItems: "center",
+                    overflow: "auto",
                 }}
                 {...props}
             >
@@ -37,8 +42,11 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 <div style={{ width: "2.5em", marginLeft: "0.25em" }}>
                     <ConnectionIcon status={trackerState.connectionStatus} />
                 </div>
-                <div style={{ marginLeft: "5em" }}>{trackerState.connectionStatus}</div>
-                {slot?.alias && <div>{slot.alias}</div>}
+                {slot?.alias && (
+                    <div style={{ textOverflow: "ellipsis", flex: "auto" }}>
+                        {slot.alias}
+                    </div>
+                )}
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <PrimaryButton
@@ -53,10 +61,7 @@ const MainHeader = ({ optionsCallback, ...props }:{
                 >
                     <Icon type="sticky_note" />
                 </PrimaryButton>
-                <SecondaryButton
-                    $small
-                    onClick={optionsCallback}
-                >
+                <SecondaryButton $small onClick={optionsCallback}>
                     <Icon type="settings" />
                 </SecondaryButton>
             </div>

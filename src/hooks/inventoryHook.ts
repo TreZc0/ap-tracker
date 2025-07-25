@@ -6,7 +6,7 @@ const useInventoryItems = (inventoryManger: InventoryManager) => {
         inventoryManger.getSubscriberCallback(),
         inventoryManger.getItems,
         inventoryManger.getItems
-    )
-}
+    );
+};
 
-export { useInventoryItems }
+export { useInventoryItems };

@@ -3,6 +3,7 @@
 import { DataPackage } from "archipelago.js";
 import { TagData } from "../tags/tagManager";
 import { DB_STORE_KEYS, SaveData } from "../saveData";
+import { JSONValue } from "../dataStores/dataStore";
 
 /** Data that can be used to create a new Saved Connection */
 interface SavedConnectionInfo {
@@ -30,10 +31,10 @@ interface SavedConnection_V2 {
     version: 2;
     settings: unknown;
     saveData?: {
-        locationGroups?: { [groupName: string]: string[] },
+        locationGroups?: { [groupName: string]: string[] };
         tagData?: {
-            [tagId: string]: TagData
-        },
+            [tagId: string]: TagData;
+        };
     };
 }
 
@@ -50,11 +51,19 @@ interface SavedConnection_V3 {
     lastUsedTime: number;
     createdTime: number;
     version: 3;
-    settings: unknown;
+    settings: {
+        /** Which trackers are in use for this slot */
+        itemTracker?: string;
+        locationTracker?: string;
+        /** Options set by trackers */
+        trackerOptions?: {
+            [trackerId: string]: JSONValue;
+        };
+    };
     saveData?: {
         tagData?: {
-            [tagId: string]: TagData
-        },
+            [tagId: string]: TagData;
+        };
     };
 }
 
@@ -73,20 +82,32 @@ const getSubscriberCallback = () => {
 const SAVED_CONNECTION_VERSION = 3;
 const LEGACY_LS_CONNECTION_ITEM_NAME = "archipelagoTrackerSavedConnections";
 
-let cachedConnectionData: { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; } | null = null;
+let cachedConnectionData: {
+    connections: { [s: string]: SavedConnection_V3 };
+    version: number;
+    modified: number;
+} | null = null;
 
 const loadSavedConnectionData = () => {
-    const connectionDataString = localStorage.getItem(LEGACY_LS_CONNECTION_ITEM_NAME);
+    const connectionDataString = localStorage.getItem(
+        LEGACY_LS_CONNECTION_ITEM_NAME
+    );
 
-    const connectionData: { connections: { [s: string]: SavedConnection_V2 | SavedConnection_V3; }; version: number; modified: number; } = connectionDataString
+    const connectionData: {
+        connections: { [s: string]: SavedConnection_V2 | SavedConnection_V3 };
+        version: number;
+        modified: number;
+    } = connectionDataString
         ? JSON.parse(connectionDataString)
         : (cachedConnectionData ?? {
-            connections: {},
-            version: SAVED_CONNECTION_VERSION,
-            modified: Date.now(),
-        });
+              connections: {},
+              version: SAVED_CONNECTION_VERSION,
+              modified: Date.now(),
+          });
 
-    const connectionIds = Object.getOwnPropertyNames(connectionData.connections);
+    const connectionIds = Object.getOwnPropertyNames(
+        connectionData.connections
+    );
     for (const id of connectionIds) {
         const connection = connectionData.connections[id];
 
@@ -112,8 +133,6 @@ const loadSavedConnectionData = () => {
                 new Date().getTime(),
             version: SAVED_CONNECTION_VERSION,
         };
-
-
     }
     connectionData.version = 2;
     // React requires the same object to be returned if nothing has changed
@@ -123,13 +142,28 @@ const loadSavedConnectionData = () => {
     ) {
         return cachedConnectionData;
     }
-    cachedConnectionData = connectionData as { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; };
-    return connectionData as { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; };
+    cachedConnectionData = connectionData as {
+        connections: { [s: string]: SavedConnection_V3 };
+        version: number;
+        modified: number;
+    };
+    return connectionData as {
+        connections: { [s: string]: SavedConnection_V3 };
+        version: number;
+        modified: number;
+    };
 };
 
-const save = (saveData: { connections: { [s: string]: SavedConnection_V3; }; version: number; modified: number; }) => {
+const save = (saveData: {
+    connections: { [s: string]: SavedConnection_V3 };
+    version: number;
+    modified: number;
+}) => {
     saveData.modified = Date.now();
-    localStorage.setItem(LEGACY_LS_CONNECTION_ITEM_NAME, JSON.stringify(saveData));
+    localStorage.setItem(
+        LEGACY_LS_CONNECTION_ITEM_NAME,
+        JSON.stringify(saveData)
+    );
     connectionListeners.forEach((listener) => listener());
 };
 
@@ -145,7 +179,9 @@ const saveConnectionData = (data: SavedConnection_V3) => {
     save(currentSaveData);
 };
 
-const createNewSavedConnection = (data: SavedConnectionInfo): SavedConnection_V3 => {
+const createNewSavedConnection = (
+    data: SavedConnectionInfo
+): SavedConnection_V3 => {
     const connectionId = `${data.seed}-${data.slot}-${new Date().getTime()}`;
     return {
         connectionId,
@@ -169,7 +205,9 @@ const getExistingConnections = (data: SavedConnectionInfo) => {
     const currentSaveData = loadSavedConnectionData();
     /** @type {Set<SavedConnection_V3>} */
     const existingConnections: Set<SavedConnection_V3> = new Set();
-    const connectionIds = Object.getOwnPropertyNames(currentSaveData.connections);
+    const connectionIds = Object.getOwnPropertyNames(
+        currentSaveData.connections
+    );
 
     for (const id of connectionIds) {
         const connection = currentSaveData.connections[id];
@@ -188,7 +226,15 @@ const getExistingConnections = (data: SavedConnectionInfo) => {
  * @param data
  * @returns Object with info for connecting to Archipelago
  */
-const getConnectionInfo = (data: SavedConnection_V2): { host: string; port: string; slot: string; game: string; password: string; } => {
+const getConnectionInfo = (
+    data: SavedConnection_V2
+): {
+    host: string;
+    port: string;
+    slot: string;
+    game: string;
+    password: string;
+} => {
     return {
         host: data.host,
         port: data.port.toString(),
@@ -199,30 +245,65 @@ const getConnectionInfo = (data: SavedConnection_V2): { host: string; port: stri
 };
 
 const getCachedDataPackage = async (seed: string): Promise<DataPackage> => {
-    const dataPackage = await SaveData.getItem(DB_STORE_KEYS.dataPackageCache, seed) as { seed: string, package: DataPackage };
+    const dataPackage = (await SaveData.getItem(
+        DB_STORE_KEYS.dataPackageCache,
+        seed
+    )) as {
+        seed: string;
+        package: DataPackage;
+    };
     return dataPackage ? dataPackage.package : null;
 };
 
-const cacheDataPackage = (seed: string, dataPackage: DataPackage): Promise<boolean> => {
-    return SaveData.storeItem(DB_STORE_KEYS.dataPackageCache, { seed, package: dataPackage });
-}
+const cacheDataPackage = (
+    seed: string,
+    dataPackage: DataPackage
+): Promise<boolean> => {
+    return SaveData.storeItem(DB_STORE_KEYS.dataPackageCache, {
+        seed,
+        package: dataPackage,
+    });
+};
 
 const deleteDataPackage = (seed: string): Promise<boolean> => {
     return SaveData.deleteItem(DB_STORE_KEYS.dataPackageCache, seed);
-}
-
-const getCachedLocationGroups = async (connectionId: string): Promise<{ [name: string]: string[] }> => {
-    const groups = await SaveData.getItem(DB_STORE_KEYS.locationGroupCache, connectionId) as { connectionId: string, groups: { [name: string]: string[] } };
-    return groups ? groups.groups : null;
 };
 
-const cacheLocationGroups = (connectionId: string, groups: { [name: string]: string[] }): Promise<boolean> => {
-    return SaveData.storeItem(DB_STORE_KEYS.locationGroupCache, { connectionId, groups });
-}
+const getCachedGroups = async (
+    connectionId: string
+): Promise<{
+    item: { [name: string]: string[] };
+    location: { [name: string]: string[] };
+}> => {
+    const groups = (await SaveData.getItem(
+        DB_STORE_KEYS.groupCache,
+        connectionId
+    )) as {
+        connectionId: string;
+        location: { [name: string]: string[] };
+        item: { [name: string]: string[] };
+    };
+    return groups && groups.location && groups.item
+        ? { location: groups.location, item: groups.item }
+        : null;
+};
+
+const cacheGroups = (
+    connectionId: string,
+    groups: {
+        item: { [name: string]: string[] };
+        location: { [name: string]: string[] };
+    }
+): Promise<boolean> => {
+    return SaveData.storeItem(DB_STORE_KEYS.groupCache, {
+        connectionId,
+        groups,
+    });
+};
 
 const deleteLocationGroups = (connectionId: string): Promise<boolean> => {
-    return SaveData.deleteItem(DB_STORE_KEYS.locationGroupCache, connectionId);
-}
+    return SaveData.deleteItem(DB_STORE_KEYS.groupCache, connectionId);
+};
 
 /**
  *
@@ -233,7 +314,10 @@ const deleteConnection = (id: string) => {
     const seed = currentSaveData.connections[id]?.seed ?? "";
     delete currentSaveData.connections[id];
     save(currentSaveData);
-    const dataPackageInUse = Object.getOwnPropertyNames(currentSaveData.connections).filter((id) => currentSaveData.connections[id].seed === seed).length > 0;
+    const dataPackageInUse =
+        Object.getOwnPropertyNames(currentSaveData.connections).filter(
+            (id) => currentSaveData.connections[id].seed === seed
+        ).length > 0;
     if (!dataPackageInUse) {
         deleteDataPackage(seed);
     }
@@ -266,9 +350,9 @@ const SavedConnectionManager = {
     saveConnectionData,
     getExistingConnections,
     getCachedDataPackage,
-    getCachedLocationGroups,
+    getCachedGroups,
     cacheDataPackage,
-    cacheLocationGroups,
+    cacheGroups,
     getConnectionInfo,
     loadSavedConnectionData,
     deleteConnection,
@@ -278,4 +362,4 @@ const SavedConnectionManager = {
 };
 
 export default SavedConnectionManager;
-export type { SavedConnection_V3 as SavedConnection, SavedConnectionInfo }
+export type { SavedConnection_V3 as SavedConnection, SavedConnectionInfo };

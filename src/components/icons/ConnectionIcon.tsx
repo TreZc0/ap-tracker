@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { CONNECTION_STATUS } from "../../services/connector/connector";
+import styled from "styled-components";
 
 /**
  * A simple SVG component that displays the letters "MWGG".

@@ -1,29 +1,49 @@
-// @ts-check
 import { useSyncExternalStore } from "react";
-import CustomTrackerManager from "../games/generic/categoryGenerators/customTrackerManager";
-import TrackerManager from "../games/TrackerManager";
+import { CustomTrackerRepository } from "../services/tracker/customTrackerRepository";
+import { TrackerManager } from "../services/tracker/TrackerManager";
+import { ResourceType } from "../services/tracker/resourceEnums";
 
-const useTrackerDirectory = () => {
+const useTrackerDirectory = (trackerManager: TrackerManager) => {
+    const callback = trackerManager
+        ? trackerManager.getDirectorySubscriberCallback()
+        : (_: () => void) => {
+              /* There is nothing to listen to*/ return () => {
+                  /* Empty clean up call */
+              };
+          };
     return useSyncExternalStore(
-        TrackerManager.directory.getSubscriberCallback(),
-        TrackerManager.directory.getDirectory,
-        TrackerManager.directory.getDirectory
+        callback,
+        () => trackerManager?.getDirectory(),
+        () => trackerManager?.getDirectory()
     );
 };
 
-const useCustomTrackerDirectory = () => {
+const useCustomTrackerDirectory = (
+    customTrackerRepository: CustomTrackerRepository
+) => {
     return useSyncExternalStore(
-        CustomTrackerManager.getDirectorySubscriberCallback(),
-        CustomTrackerManager.getDirectory,
-        CustomTrackerManager.getDirectory
+        customTrackerRepository.getUpdateSubscriber(),
+        () => customTrackerRepository.resources,
+        () => customTrackerRepository.resources
     );
 };
 
-const useCurrentGameTracker = (game: string, trackerManager: TrackerManager) => {
+const useCurrentGameTracker = (
+    game: string,
+    trackerManager: TrackerManager,
+    type: ResourceType
+) => {
+    const callback = trackerManager
+        ? trackerManager.getTrackerSubscriberCallback()
+        : (_: () => void) => {
+              /* There is nothing to listen to*/ return () => {
+                  /* Empty clean up call */
+              };
+          };
     return useSyncExternalStore(
-        trackerManager.getTrackerSubscriberCallback(),
-        () => trackerManager.getGameTracker(game),
-        () => trackerManager.getGameTracker(game)
+        callback,
+        () => trackerManager?.getCurrentGameTracker(game, type),
+        () => trackerManager?.getCurrentGameTracker(game, type)
     );
 };
 

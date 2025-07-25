@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import '../index.css';
+import "../index.css";
 
 export const metadata: Metadata = {
     title: "AP Tracker",

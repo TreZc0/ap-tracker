@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import ServiceContext from "../../contexts/serviceContext";
-import TrackerPicker from "./TrackerPicker";
 import CustomTrackerOptions from "./CustomTrackerOptions";
 import OptionBlock from "./OptionBlock";
 import StickySpacer from "../shared/StickySpacer";
 import ChecklistSettings from "./ChecklistSettings";
-import ThemeOptions from "./ThemeOptions";
+import { baseTrackerOptions } from "../../services/options/trackerOptions";
+import OptionView from "./OptionView";
 import InventorySettings from "./InventorySettings";
 import LayoutSettings from "./LayoutSettings";
 
@@ -21,6 +21,10 @@ const OptionsScreen = () => {
     if (!trackerManager) {
         console.warn("No tracker manager provided");
     }
+    const customTrackerRepository = serviceContext.customTrackerRepository;
+    if (!customTrackerRepository) {
+        console.warn("No custom tracker repository added");
+    }
 
     return (
         <div
@@ -31,7 +35,7 @@ const OptionsScreen = () => {
             }}
         >
             <OptionBlock title="Theme Settings">
-                <ThemeOptions optionManager={optionManager} />
+                <OptionView option={baseTrackerOptions["Theme:base"]} />
             </OptionBlock>
             <OptionBlock title="Tracker Layout">
                 <LayoutSettings />
@@ -40,18 +44,13 @@ const OptionsScreen = () => {
                 <ChecklistSettings optionManager={optionManager} />
             </OptionBlock>
             <OptionBlock title="Inventory Settings">
-                <InventorySettings optionManager={optionManager} />
-            </OptionBlock>
-            <OptionBlock title="Tracker Picker">
-                {trackerManager ? (
-                    <TrackerPicker trackerManager={trackerManager} />
-                ) : (
-                    <i>Failed to initiate tracker picker</i>
-                )}
+                <InventorySettings />
             </OptionBlock>
             <OptionBlock title="Custom Tracker Manager">
-                {trackerManager ? (
-                    <CustomTrackerOptions trackerManager={trackerManager} />
+                {customTrackerRepository ? (
+                    <CustomTrackerOptions
+                        customTrackerRepository={customTrackerRepository}
+                    />
                 ) : (
                     <i>Failed to initiate tracker manager</i>
                 )}

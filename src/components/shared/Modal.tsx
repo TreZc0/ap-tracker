@@ -14,6 +14,7 @@ const BackDrop = styled.div`
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
+    z-index: 10;
 `;
 
 const Container = styled.div`
@@ -25,12 +26,16 @@ const Container = styled.div`
     margin: auto;
     width: fit-content;
     height: fit-content;
+    max-height: 95vh;
+    max-width: 95vw;
+    overflow: auto;
     padding: 2rem;
     background-color: ${background};
     color: ${textPrimary};
     border: 0px solid black;
     pointer-events: all;
     box-shadow: 4px 8px 0px rgba(0, 0, 0, 0.5);
+    z-index: 11;
 `;
 /**
  *
@@ -47,7 +52,7 @@ const Modal = ({
 }) => {
     const serviceContext = useContext(ServiceContext);
     const optionManger = serviceContext.optionManager ?? globalOptionManager;
-    const themeValue = useOption(optionManger, "theme", "global") as
+    const themeValue = useOption(optionManger, "Theme:base", "global") as
         | "light"
         | "dark"
         | "system"
@@ -57,7 +62,7 @@ const Modal = ({
             {open &&
                 createPortal(
                     <BackDrop data-theme={readThemeValue(themeValue)}>
-                        <Container>{children}</Container>
+                        <Container className="App">{children}</Container>
                     </BackDrop>,
                     document.body
                 )}

@@ -53,9 +53,7 @@ const Input = forwardRef(
                             style={{
                                 backgroundColor: background,
                                 color: textPrimary,
-                                border: `1px solid ${
-                                    invalid ? danger : tertiary
-                                }`,
+                                border: `1px solid ${invalid ? danger : tertiary}`,
                                 width: "100%",
                                 boxSizing: "border-box",
                             }}

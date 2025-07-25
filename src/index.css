@@ -9,17 +9,17 @@
     --background-tertiary: #afb5af;
     --background-danger: #e82a00;
     --black: #000000;
-    --red: #EE0000;
-    --green: #00DD5F;
+    --red: #ee0000;
+    --green: #00dd5f;
     --yellow: #aaaa00;
-    --blue: #6495ED;
-    --magenta: #EE00EE;
+    --blue: #6495ed;
+    --magenta: #ee00ee;
     --cyan: #008888;
-    --slateblue: #6D8BE8;
-    --plum: #8F29CF;
-    --salmon: #FA8072;
-    --white: #FFFFFF;
-    --orange: #FF7700;
+    --slateblue: #6d8be8;
+    --plum: #8f29cf;
+    --salmon: #fa8072;
+    --white: #ffffff;
+    --orange: #ff7700;
 }
 
 [data-theme="dark"] {
@@ -31,17 +31,17 @@
     --background-tertiary: #afb5af;
     --background-danger: #e82a00;
     --black: #000000;
-    --red: #EE0000;
-    --green: #00FF7F;
-    --yellow: #FAFAD2;
-    --blue: #6495ED;
-    --magenta: #EE00EE;
-    --cyan: #00EEEE;
-    --slateblue: #6D8BE8;
-    --plum: #AF99EF;
-    --salmon: #FA8072;
-    --white: #FFFFFF;
-    --orange: #FF7700;
+    --red: #ee0000;
+    --green: #00ff7f;
+    --yellow: #fafad2;
+    --blue: #6495ed;
+    --magenta: #ee00ee;
+    --cyan: #00eeee;
+    --slateblue: #6d8be8;
+    --plum: #af99ef;
+    --salmon: #fa8072;
+    --white: #ffffff;
+    --orange: #ff7700;
 }
 
 body {
@@ -58,25 +58,32 @@ a {
 
 .App {
     background-color: var(--background);
+    scrollbar-width: thin;
+    scrollbar-color: var(--background-secondary) var(--background);
+    scrollbar-gutter: stable;
 }
 
 .material-symbols-rounded {
-    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+    font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 24;
 }
 
 .interactive {
-    box-shadow: 3px 4px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
     cursor: pointer;
 }
 
 .interactive:hover {
-    box-shadow: 1px 2px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
 }
 
 .interactive:active,
 .interactive:focus,
 .interactive[data-focused="true"] {
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 1);
 }
 
 .interactive:disabled,
@@ -87,8 +94,6 @@ a {
 }
 
 .section_title {
-    border-bottom: 1px solid var(--text-primary);
-    /* width: 50%; */
     font-size: medium;
 }
 

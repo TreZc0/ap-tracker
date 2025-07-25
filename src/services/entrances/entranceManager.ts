@@ -7,14 +7,24 @@ interface EntranceData {
 }
 
 interface EntranceManager {
-    getEntranceSubscriber: (entrance: string) => (listener: () => void) => () => void;
-    setEntrance: (entrance: string, entranceRole: string, doReverse?: boolean | undefined) => void;
+    getEntranceSubscriber: (
+        entrance: string
+    ) => (listener: () => void) => () => void;
+    setEntrance: (
+        entrance: string,
+        entranceRole: string,
+        doReverse?: boolean | undefined
+    ) => void;
     resetEntrance: (entrance: string, doReverse?: boolean) => void;
     clearEntrance: (entrance: string, doReverse?: boolean) => void;
-    resetEntranceTable: (categories?: Set<string | undefined> | undefined) => void;
-    clearEntranceTable: (categories?: Set<string | undefined> | undefined) => void;
+    resetEntranceTable: (
+        categories?: Set<string | undefined> | undefined
+    ) => void;
+    clearEntranceTable: (
+        categories?: Set<string | undefined> | undefined
+    ) => void;
     setAdoptableEntrances: (data: string[]) => void;
-    setReverseCategoryMap: (data: { [x: string]: string; }) => void;
+    setReverseCategoryMap: (data: { [x: string]: string }) => void;
     addEntrance: (entranceData: EntranceData) => void;
     importString: (stringData: string) => boolean;
     exportToString: () => string;
@@ -26,7 +36,6 @@ interface EntranceManager {
     getEntrancesInCategories: (categories: Set<string>) => Set<string>;
     getEntranceAdoptability: (entrance: string) => boolean;
 }
-
 
 const createEntranceManager = (): EntranceManager => {
     const onChangeListeners: Map<string, Set<() => void>> = new Map();
@@ -133,26 +142,23 @@ const createEntranceManager = (): EntranceManager => {
 
     /**
      * Configures the reverse category map
-     * @param data 
+     * @param data
      */
-    const setReverseCategoryMap = (data: { [entranceName: string]: string; }) => {
-        for (const category of Object.getOwnPropertyNames(
-            data
-        )) {
-            reverseCategoryMap.set(
-                category,
-                data[category]
-            );
+    const setReverseCategoryMap = (data: {
+        [entranceName: string]: string;
+    }) => {
+        for (const category of Object.getOwnPropertyNames(data)) {
+            reverseCategoryMap.set(category, data[category]);
         }
-    }
+    };
 
     /**
      * Sets the categories of entrances considered adoptable
-     * @param data 
+     * @param data
      */
     const setAdoptableEntrances = (data: string[]) => {
         adoptableEntrances = new Set(data);
-    }
+    };
 
     /**
      * Clears entries from table
@@ -211,7 +217,11 @@ const createEntranceManager = (): EntranceManager => {
      * @param entranceRole The role the entrance will play
      * @param [doReverse] If true, if a reverse exists, it will be set as well
      */
-    const setEntrance = (entrance: string, entranceRole: string, doReverse: boolean = true) => {
+    const setEntrance = (
+        entrance: string,
+        entranceRole: string,
+        doReverse: boolean = true
+    ) => {
         const doingReverse = doReverse && vanillaReverseTable.has(entrance);
         entranceTable.set(entrance, vanillaTable.get(entranceRole) ?? null);
         if (doingReverse) {
@@ -323,7 +333,12 @@ const createEntranceManager = (): EntranceManager => {
         }
     };
 
-    const jsonReviver = (_key: string, value: {dataType:"Map", value: [string, string][]} | {dataType:"Set", value:string[]}) => {
+    const jsonReviver = (
+        _key: string,
+        value:
+            | { dataType: "Map"; value: [string, string][] }
+            | { dataType: "Set"; value: string[] }
+    ) => {
         if (typeof value === "object" && value !== null) {
             if (value.dataType === "Map") {
                 return new Map(value.value);

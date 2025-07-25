@@ -6,7 +6,15 @@ const useTextClientMessages = (textClientManager: TextClientManager) => {
         textClientManager.getMessageSubscriber(),
         textClientManager.getMessages,
         textClientManager.getMessages
-    )
-}
+    );
+};
 
-export { useTextClientMessages }
+const useTextClientHistory = (textClientManager: TextClientManager) => {
+    return useSyncExternalStore(
+        textClientManager.getHistorySubscriber(),
+        textClientManager.getHistory,
+        textClientManager.getHistory
+    );
+};
+
+export { useTextClientMessages, useTextClientHistory };

@@ -95,9 +95,7 @@ const Toast = ({
             >
                 <circle
                     stroke="black"
-                    strokeDasharray={`${radius * timePercent * Math.PI * 2} ${
-                        7 * radius
-                    }`}
+                    strokeDasharray={`${radius * timePercent * Math.PI * 2} ${7 * radius}`}
                     strokeOpacity={0.25}
                     strokeWidth={5}
                     r={radius}

@@ -4,7 +4,6 @@ import * as colors from "../../constants/colors";
 import ServiceContext from "../../contexts/serviceContext";
 import { EchoMessageNode } from "../../services/textClientManager";
 
-
 const MessagePart = ({ part }: { part: MessageNode | EchoMessageNode }) => {
     const services = useContext(ServiceContext);
     let textColor = colors.textPrimary;
@@ -47,18 +46,17 @@ const MessagePart = ({ part }: { part: MessageNode | EchoMessageNode }) => {
     }
 
     return (
-        <div
+        <span
             style={{
                 color: textColor,
                 backgroundColor,
                 textDecoration: underline ? "underline" : undefined,
                 fontWeight: bold ? "bold" : "normal",
                 whiteSpace: "pre-wrap",
-                display: "inline-block",
             }}
         >
             {part.text}
-        </div>
+        </span>
     );
 };
 

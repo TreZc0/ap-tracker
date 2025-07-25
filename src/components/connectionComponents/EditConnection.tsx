@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Input } from "../inputs";
 import { PrimaryButton, SecondaryButton, DangerButton } from "../buttons";
-import SavedConnectionManager, { SavedConnection } from "../../services/savedConnections/savedConnectionManager";
+import SavedConnectionManager, {
+    SavedConnection,
+} from "../../services/savedConnections/savedConnectionManager";
 import Modal from "../shared/Modal";
 
 const ContentContainer = styled.div`
@@ -24,10 +26,14 @@ const ContentContainer = styled.div`
     grid-template-columns: repeat(3, 5em);
 `;
 
-const EditConnectionDialog = ({ connection, onClose, open }:{
-    connection: SavedConnection,
-    onClose: () => void,
-    open: boolean,
+const EditConnectionDialog = ({
+    connection,
+    onClose,
+    open,
+}: {
+    connection: SavedConnection;
+    onClose: () => void;
+    open: boolean;
 }) => {
     const [data, setData] = useState(connection);
     useEffect(() => {
@@ -35,7 +41,9 @@ const EditConnectionDialog = ({ connection, onClose, open }:{
             setData(connection);
         }
     }, [open, connection]);
-    const defaultChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const defaultChangeHandler = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
         setData({
             ...data,
             [event.target.name]: event.target.value,

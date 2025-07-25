@@ -33,7 +33,7 @@ interface TagData {
     checkName?: string;
 }
 
-const builtInTagTypeDefaults: { [s: string]: TagType; } = {
+const builtInTagTypeDefaults: { [s: string]: TagType } = {
     hint: {
         displayName: "Hint",
         id: "hint",
@@ -113,7 +113,7 @@ enum CounterMode {
     countUnchecked = 0,
     countChecked = 1,
     countAll = 2,
-};
+}
 
 interface TagCounter {
     id: string;
@@ -168,9 +168,9 @@ interface TagManager {
 const createTagManager = (locationManager: LocationManager): TagManager => {
     /** @type {Map<string, Set<()=>void>>} */
     const tagListenerCleanupCalls: Map<string, Set<() => void>> = new Map();
-    const createTagType = () => { };
+    const createTagType = () => {};
 
-    const deleteTagType = () => { };
+    const deleteTagType = () => {};
     const buildTag = (tagData: TagData): Tag => {
         const type = getTagType(tagData.typeId);
         const tag = {
@@ -198,7 +198,7 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
             newTagData.text = tagData.text;
             addTag(newTagData, saveId);
         }
-    }
+    };
 
     /**
      *
@@ -207,7 +207,9 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
      */
     const handleTagConversion = (tag: Tag, saveId: string | undefined) => {
         if (tag.checkName) {
-            const checkStatus = locationManager.getLocationStatus(tag.checkName);
+            const checkStatus = locationManager.getLocationStatus(
+                tag.checkName
+            );
             if (checkStatus.checked) {
                 convertTagTo(tag, tag.type.convertToWhenChecked, saveId);
             } else if (checkStatus.ignored) {
@@ -233,7 +235,9 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
 
         // Add the tag to any relevant checks, set up conversion listeners
         if (tagData.checkName) {
-            const checkStatus = locationManager.getLocationStatus(tagData.checkName);
+            const checkStatus = locationManager.getLocationStatus(
+                tagData.checkName
+            );
             const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
@@ -312,7 +316,9 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
 
         // Remove tag from checks
         if (tag.tagId && tag.checkName) {
-            const checkStatus = locationManager.getLocationStatus(tag.checkName);
+            const checkStatus = locationManager.getLocationStatus(
+                tag.checkName
+            );
             const checkTags = checkStatus.tags.slice();
             // check for existing tag with that id
             let found = false;
@@ -414,4 +420,4 @@ const createTagManager = (locationManager: LocationManager): TagManager => {
 };
 
 export { createTagManager, CounterMode };
-export type { Tag, TagData, TagCounter, TagManager, TagType }
+export type { Tag, TagData, TagCounter, TagManager, TagType };

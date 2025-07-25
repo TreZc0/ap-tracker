@@ -5,25 +5,23 @@ import ButtonRow from "../LayoutUtilities/ButtonRow";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../buttons";
 import Icon from "../icons/icons";
 import { LocationManager } from "../../services/locations/locationManager";
-import { createGroupManager } from "../../services/sections/groupManager";
 import { createEntranceManager } from "../../services/entrances/entranceManager";
-import { createSectionManager } from "../../services/sections/sectionManager";
-import TrackerManager from "../../games/TrackerManager";
 import ServiceContext from "../../contexts/serviceContext";
-import { NameTokenizationOptions } from "../../games/generic/categoryGenerators/locationName";
+import { NameTokenizationOptions } from "../../services/tracker/generic/locationTrackerGenerators/locationName";
 import { Checkbox, Input } from "../inputs";
-import SectionView from "../sectionComponents/SectionView";
+import SectionView from "../LocationTrackerViews/DropDownViewComponents/SectionView";
 import { createTagManager } from "../../services/tags/tagManager";
-import { buildGenericGame } from "../../games/generic/genericGame";
-import { GenericGameMethod } from "../../games/generic/categoryGenerators/genericGameEnums";
+import { GenericGameMethod } from "../../services/tracker/generic/genericGameEnums";
 import NotificationManager, {
     MessageType,
 } from "../../services/notifications/notifications";
-import CustomTrackerManager from "../../games/generic/categoryGenerators/customTrackerManager";
 import { exportJSONFile } from "../../utility/jsonExport";
+import { InventoryManager } from "../../services/inventory/inventoryManager";
+import { ResourceType } from "../../services/tracker/resourceEnums";
+import TemplateLocationTracker from "../../services/tracker/generic/templateTracker";
+import { randomUUID } from "../../utility/uuid";
 
 interface AdditionalParams {
-    useAllChecksInDataPackage?: boolean;
     minChecksPerGroup?: number;
     minTokenCount?: number;
     maxDepth?: number;
@@ -45,19 +43,12 @@ const AnalysisGrid = styled.div`
 `;
 
 const previewLocationManager = new LocationManager();
+const previewInventoryManager = new InventoryManager();
+const templateLocationTracker = new TemplateLocationTracker(
+    previewLocationManager
+);
 const previewEntranceManager = createEntranceManager();
-const previewGroupManager = createGroupManager(previewEntranceManager);
 const previewTagManager = createTagManager(previewLocationManager);
-const previewSectionManager = createSectionManager(
-    previewLocationManager,
-    previewEntranceManager,
-    previewGroupManager
-);
-const previewTrackerManager = new TrackerManager(
-    previewLocationManager,
-    previewGroupManager,
-    previewSectionManager
-);
 
 const NameAnalysisModal = ({
     open,
@@ -68,10 +59,12 @@ const NameAnalysisModal = ({
 }) => {
     const services = useContext(ServiceContext);
     const mainTrackerManager = services.trackerManager;
+    const connection = services.connector.connection;
+    const customTrackerRepository = services.customTrackerRepository;
 
     const [tokenOptions, setTokenOptions]: [
         NameTokenizationOptions,
-        React.Dispatch<React.SetStateAction<NameTokenizationOptions>>
+        React.Dispatch<React.SetStateAction<NameTokenizationOptions>>,
     ] = useState({
         splitCharacters: [" ", ".", "_", "-", ":"],
         splitOnCase: true,
@@ -80,17 +73,16 @@ const NameAnalysisModal = ({
 
     const [otherOptions, setOtherOptions]: [
         AdditionalParams,
-        React.Dispatch<React.SetStateAction<AdditionalParams>>
+        React.Dispatch<React.SetStateAction<AdditionalParams>>,
     ] = useState({
         maxDepth: 1,
-        useAllChecksInDataPackage: true,
         minChecksPerGroup: 3,
         minTokenCount: 1,
     });
 
     const [textOptionsTemp, setTextOptionsTemp]: [
         { [key: string]: string },
-        React.Dispatch<React.SetStateAction<{ [key: string]: string }>>
+        React.Dispatch<React.SetStateAction<{ [key: string]: string }>>,
     ] = useState({
         maxDepth: "1",
         minChecksPerGroup: "3",
@@ -115,45 +107,33 @@ const NameAnalysisModal = ({
     };
 
     useEffect(() => {
-        const mainTrackerParams = mainTrackerManager.getTrackerInitParams();
-        if (
-            mainTrackerParams &&
-            previewTrackerManager.getTrackerInitParams()?.gameName !==
-                mainTrackerParams.gameName
-        ) {
-            previewTrackerManager.initializeTracker(mainTrackerParams);
+        if (connection.slotInfo.game && open) {
             previewLocationManager.pauseUpdateBroadcast();
             previewLocationManager.deleteAllLocations();
-            mainTrackerParams.groups["Everywhere"].forEach((location) => {
-                previewLocationManager.updateLocationStatus(location, {
-                    exists: true,
-                });
-            });
+            connection.slotInfo.groups.location["Everywhere"].forEach(
+                (location) => {
+                    previewLocationManager.updateLocationStatus(location, {
+                        exists: true,
+                    });
+                }
+            );
             previewLocationManager.resumeUpdateBroadcast();
         }
-        if (mainTrackerParams) {
-            const tracker = buildGenericGame(
-                mainTrackerParams.gameName,
-                services.locationManager,
-                mainTrackerParams.groups,
+        if (open) {
+            templateLocationTracker.configure(
+                connection.slotInfo.groups,
                 GenericGameMethod.nameAnalysis,
                 {
-                    useAllChecksInDataPackage:
-                        otherOptions.useAllChecksInDataPackage,
-                    tokenizationOptions: tokenOptions,
-                    groupingOptions: {
+                    tokenOptions,
+                    groupRequirements: {
                         minGroupSize: otherOptions.minChecksPerGroup,
                         maxDepth: otherOptions.maxDepth,
                         minTokenCount: otherOptions.minTokenCount,
                     },
                 }
             );
-            previewTrackerManager.setGameTracker(
-                mainTrackerParams.gameName,
-                tracker
-            );
         }
-    }, [mainTrackerManager, tokenOptions, otherOptions]);
+    }, [mainTrackerManager, tokenOptions, otherOptions, open]);
 
     return (
         <Modal open={open}>
@@ -169,18 +149,15 @@ const NameAnalysisModal = ({
                     <h3>Preview</h3>
                     <ServiceContext.Provider
                         value={{
-                            locationManager:
-                                otherOptions.useAllChecksInDataPackage
-                                    ? previewLocationManager
-                                    : previewLocationManager,
+                            locationManager: previewLocationManager,
                             entranceManager: previewEntranceManager,
-                            groupManager: previewGroupManager,
-                            sectionManager: previewSectionManager,
+                            inventoryManager: previewInventoryManager,
                             tagManager: previewTagManager,
                             optionManager: services.optionManager,
+                            locationTracker: templateLocationTracker,
                         }}
                     >
-                        <SectionView name="root" context={{}} />
+                        <SectionView name="root" />
                     </ServiceContext.Provider>
                 </div>
                 <div
@@ -281,17 +258,6 @@ const NameAnalysisModal = ({
                         }}
                     />
                     <br />
-                    <Checkbox
-                        label="Use all checks in data package"
-                        checked={otherOptions.useAllChecksInDataPackage}
-                        onChange={(e) => {
-                            setOtherOptions({
-                                ...otherOptions,
-                                useAllChecksInDataPackage: e.target.checked,
-                            });
-                        }}
-                    />
-                    <br />
                     <Input
                         type="number"
                         value={textOptionsTemp.minChecksPerGroup}
@@ -366,13 +332,13 @@ const NameAnalysisModal = ({
             </AnalysisGrid>
             <ButtonRow>
                 <PrimaryButton
-                    onClick={async () => {
-                        const customTracker =
-                            previewTrackerManager.getGameTracker(
-                                services.connector.connection.slotInfo.game
-                            );
+                    onClick={() => {
+                        const customTracker = templateLocationTracker;
                         const customTrackerExport =
-                            customTracker.exportTracker();
+                            customTracker.exportDropdowns(randomUUID());
+                        customTrackerExport.manifest.game =
+                            connection.slotInfo.game;
+                        customTrackerExport.manifest.name = `Template for ${connection.slotInfo.game} (${customTrackerExport.manifest.uuid.substring(0, 8)})`;
                         if (!customTracker || !customTrackerExport) {
                             NotificationManager.createToast({
                                 message: "Failed to export and save tracker",
@@ -381,12 +347,14 @@ const NameAnalysisModal = ({
                             return;
                         }
 
-                        await CustomTrackerManager.addCustomTracker(
-                            customTrackerExport
-                        );
+                        customTrackerRepository.addTracker(customTrackerExport);
                         mainTrackerManager.setGameTracker(
-                            customTracker.gameName,
-                            customTrackerExport.id
+                            connection.slotInfo.game,
+                            {
+                                type: ResourceType.locationTracker,
+                                uuid: customTrackerExport.manifest.uuid,
+                                version: customTrackerExport.manifest.version,
+                            }
                         );
                         NotificationManager.createStatus({
                             message: "Successfully added tracker",
@@ -400,10 +368,12 @@ const NameAnalysisModal = ({
                 </PrimaryButton>
                 <SecondaryButton
                     onClick={() => {
-                        const customTracker =
-                            previewTrackerManager.getGameTracker(
-                                services.connector.connection.slotInfo.game
-                            );
+                        const customTracker = templateLocationTracker;
+                        const customTrackerExport =
+                            customTracker.exportDropdowns(randomUUID());
+                        customTrackerExport.manifest.game =
+                            connection.slotInfo.game;
+                        customTrackerExport.manifest.name = `Template for ${connection.slotInfo.game} (${customTrackerExport.manifest.uuid.substring(0, 8)})`;
                         if (!customTracker) {
                             NotificationManager.createToast({
                                 message: "Failed to export tracker",
@@ -412,8 +382,8 @@ const NameAnalysisModal = ({
                             return;
                         }
                         exportJSONFile(
-                            `tracker-export-${Date.now().toString()}`,
-                            customTracker.exportTracker()
+                            `tracker-export-${customTrackerExport.manifest.game.replace(/\s/g, "")}-${customTrackerExport.manifest.uuid.substring(0, 8)}`,
+                            customTrackerExport
                         );
                     }}
                 >
