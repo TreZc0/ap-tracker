@@ -240,7 +240,27 @@ const SectionView = ({
                                     );
                                 }
                             )}
-                            {isClosable ? (isOpen ? " ▲ " : " ▼ ") : ""}
+                            {isClosable ? (
+                                <Icon
+                                    iconParams={{
+                                        fill: 0,
+                                        opticalSize: 24,
+                                        weight: 700,
+                                        grade: 200,
+                                    }}
+                                    type="arrow_drop_down"
+                                    fontSize="24px"
+                                    style={{
+                                        transform: isOpen
+                                            ? "rotate(-180deg)"
+                                            : "rotate(0deg)",
+                                        transition: "all 0.25s",
+                                        userSelect: "none",
+                                    }}
+                                />
+                            ) : (
+                                ""
+                            )}
                         </h3>
                     </TextButton>
                     {isOpen && (

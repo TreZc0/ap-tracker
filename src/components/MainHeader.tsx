@@ -34,7 +34,8 @@ const MainHeader = ({
                     display: "flex",
                     columnGap: "1rem",
                     alignItems: "center",
-                    overflow: "auto",
+                    overflowX: "auto",
+                    overflowY: "hidden",
                 }}
                 {...props}
             >
