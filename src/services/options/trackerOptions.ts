@@ -122,6 +122,12 @@ const baseTrackerOptions: { [optionName: string]: TrackerOption } = {
         type: OptionType.boolean,
         default: true,
     },
+    "TextClient:DoubleClickToCopy": {
+        name: "TextClient:DoubleClickToCopy",
+        display: "Copy text client message via double click",
+        type: OptionType.boolean,
+        default: true,
+    },
     "Theme:base": {
         name: "Theme:base",
         display: "Theme",
@@ -134,7 +140,11 @@ const baseTrackerOptions: { [optionName: string]: TrackerOption } = {
         display: "Tracker Layout",
         type: OptionType.select,
         default: "auto",
-        choices: ["auto", "tabs", "grid"],
+        choices: [
+            { name: "auto", display: "Auto" },
+            { name: "tab", display: "Tabs" },
+            { name: "flex", display: "Grid" },
+        ],
     },
 };
 
