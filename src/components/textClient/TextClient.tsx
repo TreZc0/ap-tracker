@@ -86,6 +86,7 @@ const TextClient = () => {
                     style={{
                         boxSizing: "border-box",
                         overflow: "hidden",
+                        height: "95%"
                     }}
                     ref={listElementRef}
                 />
