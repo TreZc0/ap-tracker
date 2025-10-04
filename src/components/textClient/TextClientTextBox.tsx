@@ -48,7 +48,7 @@ const TextClientTextBox = () => {
         }
     };
     return (
-        <div style={{ display: "flex", padding: "0 0.5em 0.25em 0", margin: "0 0 0 3em", }}>
+        <div style={{ display: "flex", padding: "0 0.5em 0.25em 0", margin: "0 0 1.8em 0", }}>
             <PrimaryButton
                 onClick={processInput}
                 $small
